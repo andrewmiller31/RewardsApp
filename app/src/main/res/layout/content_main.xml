@@ -58,17 +58,4 @@
         app:layout_constraintLeft_toLeftOf="@+id/my_account"
         app:layout_constraintTop_toBottomOf="@+id/my_account" />
 
-    <Button
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/banner_placeholder"
-        android:clickable="false"
-        android:textColor="@color/colorAccent"
-        android:background="@color/colorPrimary"
-        android:textSize="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/choose_charity"
-        app:layout_constraintLeft_toLeftOf="@+id/my_account" />
-
 </android.support.constraint.ConstraintLayout>
