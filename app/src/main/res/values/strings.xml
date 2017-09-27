@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">RewardsApp</string>
+    <string name="log_out">Log Out</string>
+    <string name="about_us">About Us</string>
+    <string name="earn_button">Earn Points</string>
+    <string name="redeem_button">Redeem Points</string>
+    <string name="account_button">My Account</string>
+    <string name="charity_button">Choose a Charity</string>
+    <string name="settings_button">Settings</string>
+</resources>
