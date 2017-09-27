@@ -11,20 +11,20 @@
     <Button
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
         android:id="@+id/earn_points"
         android:text="@string/earn_button"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/redeem_points"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginRight="32dp"
         android:layout_marginTop="16dp"
         android:id="@+id/redeem_points"
         android:text="@string/redeem_button"
+        app:layout_constraintLeft_toRightOf="@+id/earn_points"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -33,18 +33,28 @@
         android:layout_height="150dp"
         android:id="@+id/my_account"
         android:text="@string/account_button"
-        android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/earn_points"/>
+        app:layout_constraintTop_toBottomOf="@+id/earn_points"
+        app:layout_constraintRight_toLeftOf="@+id/choose_charity" />
 
     <Button
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:id="@+id/choose_charity"
         android:text="@string/charity_button"
-        android:layout_marginRight="32dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/redeem_points"/>
+        app:layout_constraintLeft_toRightOf="@+id/my_account"
+        app:layout_constraintTop_toBottomOf="@+id/redeem_points"
+        app:layout_constraintRight_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/settings_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_button"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="@+id/choose_charity"
+        app:layout_constraintLeft_toLeftOf="@+id/my_account"
+        app:layout_constraintTop_toBottomOf="@+id/my_account" />
 </android.support.constraint.ConstraintLayout>
