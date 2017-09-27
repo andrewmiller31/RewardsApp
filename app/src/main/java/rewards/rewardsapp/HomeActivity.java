@@ -38,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Rewards App");
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -147,5 +148,9 @@ public class HomeActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    public void scratchOff(View view){
+
     }
 }
