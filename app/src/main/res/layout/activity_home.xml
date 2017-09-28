@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/whiteSmoke"
-    tools:context="rewards.rewardsapp.HomeActivity">
+    tools:context="rewards.rewardsapp.views.HomeActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"

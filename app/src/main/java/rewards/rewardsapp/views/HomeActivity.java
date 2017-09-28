@@ -1,4 +1,4 @@
-package rewards.rewardsapp;
+package rewards.rewardsapp.views;
 
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import rewards.rewardsapp.R;
 
 public class HomeActivity extends AppCompatActivity {
 
