@@ -28,10 +28,10 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to post
      */
-    public void restPost(String postString, String data){
+    public String restPost(String postString, String data){
         switch (postString){
-            case "": break;
-            default: break;
+            case "": return null;
+            default: return null;
         }
     }
 
@@ -39,10 +39,10 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to put
      */
-    public void restPut(String postString, String data){
+    public String restPut(String postString, String data){
         switch (postString){
-            case "": break;
-            default: break;
+            case "": return null;
+            default: return null;
         }
     }
 
@@ -61,10 +61,10 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to delete
      */
-    public void restDelete(String postString, String data){
+    public String restDelete(String postString, String data){
         switch (postString){
-            case "": break;
-            default: break;
+            case "": return null;
+            default: return null;
         }
     }
 
