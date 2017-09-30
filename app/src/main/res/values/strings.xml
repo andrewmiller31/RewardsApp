@@ -29,5 +29,12 @@
     <string name="title_activity_scratch_off">ScratchOffActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="choose_a_charity">Choose a Charity</string>
+    <string name="edit">Edit</string>
+    <string name="total_points_spent">Total Points Spent:</string>
+    <string name="total_points_earned">Total Points Earned:</string>
+    <string name="next_level_progress">Next Level Progress:</string>
+    <string name="rank">Rank</string>
+    <string name="my_account">My Account</string>
 
 </resources>
