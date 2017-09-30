@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray80"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="rewards.rewardsapp.views.HomeActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/my_account"
+        android:text="My Account"
+        android:textSize="30dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:layout_marginLeft="15dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/rank_view"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:textSize="70dp"
+        android:text="1"
+        android:textColor="@color/whiteSmoke"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/my_account"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rank"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@id/rank_view"
+        app:layout_constraintLeft_toLeftOf="@id/rank_view"
+        android:textSize="18dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="6dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/next_level"
+        android:text="Next Level Progress:"
+        android:textColor="@color/black"
+        android:layout_marginTop="2dp"
+        app:layout_constraintTop_toBottomOf="@id/rank_view"
+        app:layout_constraintLeft_toLeftOf="@id/rank_view" />
+
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0/10,000 points"
+        android:textColor="@color/whiteSmoke"
+        app:layout_constraintLeft_toLeftOf="@id/next_level"
+        app:layout_constraintTop_toBottomOf="@id/next_level"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/rank_view"
+        app:layout_constraintTop_toTopOf="@id/rank_view"
+        android:textColor="@color/black"
+        android:text="John Doe"
+        android:textSize="18dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="18dp"/>
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/rank_view"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        android:textColor="@color/black"
+        android:text="johndoe56@gmail.com"
+        android:textSize="18dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="18dp"/>
+
+    <TextView
+    android:id="@+id/total_points"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/black"
+    app:layout_constraintLeft_toLeftOf="@id/progress"
+    app:layout_constraintTop_toBottomOf="@id/progress"
+    android:text="Total Points Earned:"
+    android:textSize="18dp"
+    android:layout_marginTop="15dp"/>
+
+    <TextView
+        android:id="@+id/points1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        app:layout_constraintLeft_toRightOf="@id/total_points"
+        app:layout_constraintTop_toTopOf="@id/total_points"
+        android:text="0"
+        android:textSize="18dp"
+        android:layout_marginLeft="5dp"/>
+
+    <TextView
+        android:id="@+id/total_spent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        app:layout_constraintLeft_toLeftOf="@id/total_points"
+        app:layout_constraintTop_toBottomOf="@id/total_points"
+        android:text="Total Points Spent:"
+        android:textSize="18dp"
+        android:layout_marginTop="15dp"/>
+
+    <TextView
+        android:id="@+id/points2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        app:layout_constraintLeft_toRightOf="@+id/total_spent"
+        app:layout_constraintTop_toTopOf="@+id/total_spent"
+        android:text="0"
+        android:textSize="18dp"
+        android:layout_marginLeft="5dp"/>
+
+    <Button
+        android:id="@+id/edit_button"
+        android:layout_width="61dp"
+        android:layout_height="39dp"
+        android:text="Edit"
+        app:layout_constraintBottom_toBottomOf="@id/rank_view"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="15dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/total_spent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="Choose a Charity"
+        android:textAllCaps="false"
+        android:textSize="70dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginBottom="50dp"/>
+
+
+</android.support.constraint.ConstraintLayout>

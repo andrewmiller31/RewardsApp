@@ -20,4 +20,14 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
+    <string name="gift_cards">Gift Cards</string>
+    <string name="sweepstakes">Sweepstakes</string>
+    <string name="cash">Cash</string>
+
+    <string name="scratch_title">Match three to win!</string>
+
+    <string name="title_activity_scratch_off">ScratchOffActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

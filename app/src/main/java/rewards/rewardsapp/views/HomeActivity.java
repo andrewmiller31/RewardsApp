@@ -1,5 +1,6 @@
 package rewards.rewardsapp.views;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -107,10 +108,12 @@ public class HomeActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView;
-            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
                 rootView = inflater.inflate(R.layout.fragment_earn, container, false);
-            }
-            else rootView = inflater.inflate(R.layout.fragment_redeem, container, false);;
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2)
+                rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
+            else
+                rootView = inflater.inflate(R.layout.fragment_account, container, false);
             return rootView;
         }
     }
@@ -153,6 +156,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void scratchOff(View view){
-
+        startActivity(new Intent(this, ScratchActivity.class));
     }
 }
