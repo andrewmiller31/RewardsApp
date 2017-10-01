@@ -29,4 +29,7 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="no_action_bar" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
+
 </resources>

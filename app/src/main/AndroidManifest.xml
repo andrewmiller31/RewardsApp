@@ -21,12 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.ScratchActivity" />
         <activity
-            android:name=".ScratchOffActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_scratch_off"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:name=".views.ScratchActivity"
+            android:theme="@style/no_action_bar" />
     </application>
 
 </manifest>

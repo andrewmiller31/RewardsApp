@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.presenters.Presenter;
 
 public class ScratchActivity extends AppCompatActivity {
 
@@ -36,21 +37,21 @@ public class ScratchActivity extends AppCompatActivity {
         setCard();
     }
 
-    private String numGen(){
-        int num = (int)(Math.random() * 4 + 1);
-        values.add(num);
-        return Integer.toString(num);
-    }
-
-    private boolean checkAllRevealed(){
-        int i = 0;
-        boolean allRevealed = true;
-        while(i < revealed.length && allRevealed == true){
-            allRevealed = revealed[i];
-            i++;
-        }
-        return allRevealed;
-    }
+//    private String numGen(){
+//        int num = (int)(Math.random() * 4 + 1);
+//        values.add(num);
+//        return Integer.toString(num);
+//    }
+//
+//    private boolean checkAllRevealed(){
+//        int i = 0;
+//        boolean allRevealed = true;
+//        while(i < revealed.length && allRevealed == true){
+//            allRevealed = revealed[i];
+//            i++;
+//        }
+//        return allRevealed;
+//    }
 
     private void revealAll(){
         scratch1.reveal();
@@ -73,7 +74,7 @@ public class ScratchActivity extends AppCompatActivity {
         for(int i = 0; i < values.size(); i++){
             matchCounter = 0;
             for(int j = i + 1; j < values.size(); j++){
-                if(values.get(i) == values.get(j)) matchCounter++;
+                if(values.get(i).equals(values.get(j))) matchCounter++;
             }
             if(matchCounter >= 2) matchThree = true;
         }
@@ -88,12 +89,12 @@ public class ScratchActivity extends AppCompatActivity {
         scratch5 = (ScratchTextView) findViewById(R.id.scratch_view5);
         scratch6 = (ScratchTextView) findViewById(R.id.scratch_view6);
 
-        scratch1.setText(numGen());
-        scratch2.setText(numGen());
-        scratch3.setText(numGen());
-        scratch4.setText(numGen());
-        scratch5.setText(numGen());
-        scratch6.setText(numGen());
+        scratch1.setText(Presenter.numGen(values));
+        scratch2.setText(Presenter.numGen(values));
+        scratch3.setText(Presenter.numGen(values));
+        scratch4.setText(Presenter.numGen(values));
+        scratch5.setText(Presenter.numGen(values));
+        scratch6.setText(Presenter.numGen(values));
 
         scratch1.setRevealListener(new ScratchTextView.IRevealListener() {
             @Override
@@ -103,7 +104,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[0] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
@@ -117,7 +118,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[1] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
@@ -131,7 +132,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[2] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
@@ -145,7 +146,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[3] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
@@ -159,7 +160,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[4] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
@@ -173,7 +174,7 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchTextView stv, float percent) {
                 if(percent < 25) revealed[5] = true;
-                if(checkAllRevealed()){
+                if(Presenter.checkAllRevealed(revealed)){
                     endGame();
                 }
             }
