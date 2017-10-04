@@ -1,11 +1,16 @@
 package rewards.rewardsapp.presenters;
 
 import android.app.Activity;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
 import rewards.rewardsapp.models.RestModel;
 import rewards.rewardsapp.models.ScratchModel;
+import rewards.rewardsapp.models.SlotReel;
+import rewards.rewardsapp.models.SlotsModel;
+import rewards.rewardsapp.views.SlotsActivity;
 
 /**
  * Created by Andrew Miller on 9/28/2017.
@@ -44,7 +49,13 @@ public class Presenter {
     //
     // This section covers methods related to SlotsModel
     //
+    public static void checkWin(SlotReel[] reels, TextView resultMsg){ SlotsModel.checkWin(reels, resultMsg);}
 
+    public static long randomLong(long lower, long upper){return SlotsModel.randomLong(lower, upper);}
+
+    public static void stopReels(SlotReel[] reels){ SlotsModel.stopReels(reels);}
+
+    public static SlotReel[] initializeReels(ImageView[] slotImgs){ return SlotsModel.initializeReels(slotImgs); }
 
 
 }

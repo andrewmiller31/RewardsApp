@@ -12,18 +12,18 @@ public class SlotReel extends Thread{
         void newIcon(int img);
     }
 
-    private static int[] images = {R.drawable.slots_cherry, R.drawable.slots_chili, R.drawable.slots_gold,
-            R.drawable.slots_horseshoe, R.drawable.slots_moneybag}; //R.drawable.slots_bell
+    private static int[] images;
     public int curIndex;
     private ReelListener reelListener;
     private long duration;
     private long startTime;
     private boolean isStarted;
 
-    public SlotReel(ReelListener reelListener, long duration, long startTime) {
+    public SlotReel(ReelListener reelListener, long duration, long startTime, int[] images) {
         this.reelListener = reelListener;
         this.duration = duration;
         this.startTime = startTime;
+        this.images = images.clone();
         curIndex = 0;
         isStarted = true;
     }
@@ -59,6 +59,10 @@ public class SlotReel extends Thread{
 
     public void stopReel() {
         isStarted = false;
+    }
+
+    public void setBank(int[] images){
+
     }
 
 }
