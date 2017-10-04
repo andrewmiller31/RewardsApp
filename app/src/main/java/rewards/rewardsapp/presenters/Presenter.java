@@ -49,7 +49,7 @@ public class Presenter {
     //
     // This section covers methods related to SlotsModel
     //
-    public static void checkWin(SlotReel[] reels, TextView resultMsg){ SlotsModel.checkWin(reels, resultMsg);}
+    public static int checkWin(SlotReel[] reels, TextView resultMsg){ return SlotsModel.checkWin(reels);}
 
     public static long randomLong(long lower, long upper){return SlotsModel.randomLong(lower, upper);}
 

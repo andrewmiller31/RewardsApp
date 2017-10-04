@@ -1,14 +1,11 @@
 package rewards.rewardsapp.models;
 
-import android.app.Activity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-
 
 /**
  * Created by Andrew Miller on 10/3/2017.
@@ -18,11 +15,13 @@ public class SlotsModel {
 
     private static Random RANDOM = new Random();
 
+    //returns a random long
     public static long randomLong(long lower, long upper) {
         return lower + (long) (RANDOM.nextDouble() * (upper - lower));
     }
 
-    public static void checkWin(SlotReel[] reels, TextView resultMsg){
+    //counts the highest match number in a given array of reels
+    public static int checkWin(SlotReel[] reels){
         List values = new ArrayList();
         for(int i = 0; i < reels.length; i++){
             values.add(reels[i].curIndex);
@@ -37,28 +36,17 @@ public class SlotsModel {
             }
             if(matchCounter >= 2 && winNum < matchCounter - 1) winNum = matchCounter - 1;
         }
-
-        switch (winNum){
-            case 0: resultMsg.setText("You lose :(");
-                break;
-            case 1: resultMsg.setText("Small win.");
-                break;
-            case 2: resultMsg.setText("Medium win!");
-                break;
-            case 3:
-                resultMsg.setText("MAJOR PRIZE!!");
-                break;
-            default: resultMsg.setText("ERROR");
-                break;
-        }
+        return winNum;
     }
 
+    //stops all reels in the given array
     public static void stopReels(SlotReel[] reels){
         for(int i = 0; i < reels.length; i++){
             reels[i].stopReel();
         }
     }
 
+    //returns an array of reels that is the same length as the number of slots
     public static SlotReel[] initializeReels(ImageView[] slotImgs){
         return new SlotReel[slotImgs.length];
     }
