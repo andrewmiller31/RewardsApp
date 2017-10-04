@@ -158,4 +158,8 @@ public class HomeActivity extends AppCompatActivity {
     public void scratchOff(View view){
         startActivity(new Intent(this, ScratchActivity.class));
     }
+
+    public void slots(View view){
+        startActivity(new Intent(this, SlotsActivity.class));
+    }
 }

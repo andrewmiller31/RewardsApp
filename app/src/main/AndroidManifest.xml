@@ -24,6 +24,11 @@
         <activity
             android:name=".views.ScratchActivity"
             android:theme="@style/no_action_bar" />
+        <activity
+            android:name=".views.SlotsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_slots"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

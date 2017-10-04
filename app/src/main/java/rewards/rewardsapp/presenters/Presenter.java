@@ -35,12 +35,15 @@ public class Presenter {
     //
     // This section covers methods related to ScratchModel
     //
-    public static String numGen(List<Integer> values){ return ScratchModel.numGen(values);}
+    public static int numGen(List<Integer> values){ return ScratchModel.numGen(values);}
 
     public static boolean checkAllRevealed(boolean[] revealed){return ScratchModel.checkAllRevealed(revealed);}
 
     public static boolean win(List<Integer> values){ return ScratchModel.win(values);}
 
+    //
+    // This section covers methods related to SlotsModel
+    //
 
 
 
