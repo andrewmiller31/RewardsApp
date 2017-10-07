@@ -20,22 +20,24 @@ public class Presenter {
 
     private Activity activity;
 
-    public Presenter(Activity activity){
-        this.activity = activity;
-    }
+    private RestModel restModel;
 
+    public Presenter(Activity incomingActivity) {
+        restModel = new RestModel();
+        activity = incomingActivity;
+    }
     //
     // This section covers methods related to RestModel
     //
-    public static String restPost(String task, String data) { return RestModel.restPost(task, data); }
+    public String restPost(String task, String data) { return restModel.restPost(task, data); }
 
-    public static String restPut(String task, String data) {
-        return RestModel.restPut(task, data);
+    public String restPut(String task, String data) {
+        return restModel.restPut(task, data);
     }
 
-    public static String restDelete(String task, String toDelete) { return RestModel.restDelete(task, toDelete);}
+    public String restDelete(String task, String toDelete) { return restModel.restDelete(task, toDelete);}
 
-    public static String restGet(String task, String toGet) { return RestModel.restGet(task, toGet); }
+    public String restGet(String task, String toGet) { return restModel.restGet(task, toGet); }
 
     //
     // This section covers methods related to ScratchModel

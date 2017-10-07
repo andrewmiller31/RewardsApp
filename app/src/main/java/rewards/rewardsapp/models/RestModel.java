@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Miller on 9/28/2017.
@@ -22,13 +23,15 @@ import java.net.URL;
 
 public class RestModel {
 
+    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+
     public RestModel(){}
 
     /**
      * @param postString name of task
      * @param data JSON data to post
      */
-    public static String restPost(String postString, String data){
+    public String restPost(String postString, String data){
         switch (postString){
             case "": return null;
             default: return null;
@@ -39,9 +42,9 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to put
      */
-    public static String restPut(String postString, String data){
+    public String restPut(String postString, String data){
         switch (postString){
-            case "": return null;
+            case "putPointsInfo": return putPointsInfo(data);
             default: return null;
         }
     }
@@ -50,9 +53,9 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to get
      */
-    public static String restGet(String postString, String data){
+    public String restGet(String postString, String data){
         switch (postString){
-            case "": return null;
+            case "getPointsInfo": return getPointsInfo();
             default: return null;
         }
     }
@@ -61,11 +64,30 @@ public class RestModel {
      * @param postString name of task
      * @param data JSON data to delete
      */
-    public static String restDelete(String postString, String data){
+    public String restDelete(String postString, String data){
         switch (postString){
             case "": return null;
             default: return null;
         }
+    }
+
+    private String putPointsInfo(String data) {
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/pointsInfo", "PUT", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getPointsInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/pointsInfo", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private class HTTPAsyncTask extends AsyncTask<String, Integer, String> {

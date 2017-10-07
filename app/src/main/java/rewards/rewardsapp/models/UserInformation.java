@@ -12,28 +12,14 @@ import org.json.JSONObject;
  */
 
 public class UserInformation {
-    static private String id;
-    static private String name;
-    static private String email;
-    static private String charity;
-    private int points;
-    private int totalPointsEarned;
-    private int rank;
+    private int pointsSpent;
+    private int pointsEarned;
+    private boolean rankUp;
 
-    /**
-     * Constructor for UserInformation.
-     * @param userInfo be sure to list in correct order.
-     * @param pointsInfo be sure to list in correct order.
-     */
-    public UserInformation(String[] userInfo, int[] pointsInfo){
-        id = userInfo[0];
-        name = userInfo[1];
-        email = userInfo[2];
-        charity = userInfo[3];
-
-        points = pointsInfo[0];
-        totalPointsEarned = pointsInfo[1];
-        rank = pointsInfo[2];
+    public UserInformation(int pointsToAdd, int pointsSpent, boolean rankUp){
+        this.pointsEarned = pointsToAdd;
+        this.pointsSpent = pointsSpent;
+        this.rankUp = rankUp;
     }
 
     /**
@@ -45,13 +31,9 @@ public class UserInformation {
         JSONObject jsonString = null;
         try{
             jsonString = new JSONObject();
-            jsonString.put("id", id);
-            jsonString.put("name", name);
-            jsonString.put("email", email);
-            jsonString.put("charity", charity);
-            jsonString.put("points", points);
-            jsonString.put("totalPointsEarned", totalPointsEarned);
-            jsonString.put("rank", rank);
+            jsonString.put("pointsEarned", pointsEarned);
+            jsonString.put("pointsSpent", pointsSpent);
+            jsonString.put("rankUp", rankUp);
         } catch (JSONException e) {
             e.printStackTrace();
         }

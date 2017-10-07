@@ -8,11 +8,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.SlotReel;
+import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class SlotsActivity extends AppCompatActivity {
+
+    private Presenter presenter;
 
     private ImageView[] slotImgs;
     private SlotReel[] reels;
@@ -28,14 +34,21 @@ public class SlotsActivity extends AppCompatActivity {
     private static final int LOWER_BOUND = 150;
     private static final int UPPER_BOUND = 600;
 
+    private static final int SMALL_WIN = 10;
+    private static final int MEDIUM_WIN = 100;
+    private static final int LARGE_WIN = 1000;
+
     TextView spinsLeft;
     TextView pointsEarned;
-    private int spinCount = 1000;
+    private int spinCount = 100;
     private int totalPoints = 0;
+    private static final int SPIN_TIME = 2200;
+    private static final int AUTO_CLICK_WAIT = 100;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        presenter = new Presenter(this);
         slotImgs = new ImageView[5];
         reels = Presenter.initializeReels(slotImgs);
         super.onCreate(savedInstanceState);
@@ -82,10 +95,18 @@ public class SlotsActivity extends AppCompatActivity {
                             else{
                                 spin.setText("NO SPINS LEFT");
                                 autoSpin.setText("NO SPINS LEFT");
+                                try {
+                                    String jsonResponse = presenter.restGet("getPointsInfo", null);
+                                    JSONObject pointsInfo = new JSONObject(jsonResponse);
+                                    resultMsg.setText("Overall points earned: " + pointsInfo.get("totalEarned").toString());
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                                 done = true;
                             }
                         }
-                    }, 2200);
+                    }, SPIN_TIME);
                 }
             }
         });
@@ -113,7 +134,7 @@ public class SlotsActivity extends AppCompatActivity {
                 spin.performClick();
                 if(!done) clickAgain();
             }
-        }, 2300);
+        }, SPIN_TIME + AUTO_CLICK_WAIT);
     }
 
 
@@ -142,17 +163,20 @@ public class SlotsActivity extends AppCompatActivity {
         switch (winNum){
             case 0: resultMsg.setText("You lose :(");
                 break;
-            case 1: resultMsg.setText("Small win. +10 points");
-                totalPoints += 10;
+            case 1: resultMsg.setText("Small win. +" + SMALL_WIN + " points");
+                presenter.restPut("putPointsInfo", new UserInformation(SMALL_WIN, 0, false).jsonStringify());
+                totalPoints += SMALL_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
-            case 2: resultMsg.setText("Medium win! +100 points");
-                totalPoints += 100;
+            case 2: resultMsg.setText("Medium win! +" + MEDIUM_WIN + " points");
+                presenter.restPut("putPointsInfo", new UserInformation(MEDIUM_WIN, 0, false).jsonStringify());
+                totalPoints += MEDIUM_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 3:
-                resultMsg.setText("MAJOR PRIZE!! +1000 points");
-                totalPoints += 1000;
+                resultMsg.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
+                presenter.restPut("putPointsInfo", new UserInformation(LARGE_WIN, 0, false).jsonStringify());
+                totalPoints += LARGE_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             default: resultMsg.setText("ERROR");
