@@ -139,19 +139,44 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/current_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:text="Current Points: "
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:paddingStart="5dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/total_points"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/points_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="0"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toRightOf="@+id/current_points"
+                app:layout_constraintTop_toTopOf="@+id/current_points" />
+
+            <TextView
                 android:id="@+id/total_points"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/total_points_earned"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:paddingStart="5dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/current_points"
+                app:layout_constraintBottom_toTopOf="@+id/total_spent"/>
 
             <TextView
-                android:id="@+id/points1"
+                android:id="@+id/points_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -159,22 +184,23 @@
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toRightOf="@+id/total_points"
-                app:layout_constraintTop_toTopOf="@+id/total_points" />
+                app:layout_constraintTop_toTopOf="@+id/total_points"/>
 
             <TextView
                 android:id="@+id/total_spent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/total_points_spent"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:paddingStart="5dp"
                 app:layout_constraintLeft_toLeftOf="@+id/total_points"
-                app:layout_constraintTop_toBottomOf="@+id/total_points" />
+                app:layout_constraintTop_toBottomOf="@+id/total_points"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <TextView
-                android:id="@+id/points2"
+                android:id="@+id/points_spent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"

@@ -23,7 +23,8 @@ import java.util.concurrent.ExecutionException;
 
 public class RestModel {
 
-    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+    //public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+    public final String serverAddress = "http://akka.d.umn.edu:5000";
 
     public RestModel(){}
 
@@ -144,7 +145,7 @@ public class RestModel {
                 assert serverConnection != null;
                 serverConnection.disconnect();
             }
-            return "Should not get to this line!";
+            return "Finished!";
         }
         protected void onPostExecute(String result) {
             Log.d("onPostExecute JSON: ", result);

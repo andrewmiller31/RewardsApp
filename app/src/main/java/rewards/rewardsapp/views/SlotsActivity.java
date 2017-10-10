@@ -21,6 +21,7 @@ public class SlotsActivity extends AppCompatActivity {
     private Presenter presenter;
 
     private ImageView[] slotImgs;
+    //this class should have no knowledge of reels
     private SlotReel[] reels;
     private Button spin;
     private Button autoSpin;
@@ -30,17 +31,18 @@ public class SlotsActivity extends AppCompatActivity {
     private static int[] imageBank = {R.drawable.slots_cherry, R.drawable.slots_chili, R.drawable.slots_gold,
             R.drawable.slots_horseshoe, R.drawable.slots_moneybag}; //R.drawable.slots_bell
 
+    //all these variables should be kept in SlotsModel
     private static final int FRAME_DURATION = 75;
     private static final int LOWER_BOUND = 150;
     private static final int UPPER_BOUND = 600;
 
-    private static final int SMALL_WIN = 10;
-    private static final int MEDIUM_WIN = 100;
-    private static final int LARGE_WIN = 1000;
+    private static final int SMALL_WIN = 100;
+    private static final int MEDIUM_WIN = 1000;
+    private static final int LARGE_WIN = 10000;
 
     TextView spinsLeft;
     TextView pointsEarned;
-    private int spinCount = 100;
+    private int spinCount = 10;
     private int totalPoints = 0;
     private static final int SPIN_TIME = 2200;
     private static final int AUTO_CLICK_WAIT = 100;

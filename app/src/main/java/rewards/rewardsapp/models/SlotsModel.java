@@ -1,7 +1,6 @@
 package rewards.rewardsapp.models;
 
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,11 @@ import java.util.Random;
 
 public class SlotsModel {
 
+
     private static Random RANDOM = new Random();
+
+    private int frameDuration, lowerBound, upperBound;
+
 
     //returns a random long
     public static long randomLong(long lower, long upper) {

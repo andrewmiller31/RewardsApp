@@ -20,12 +20,11 @@ app.use(bodyParser.json());
 
 var user = {
     totalEarned: 0,
-    pointsSpent: 0,
+    totalSpent: 0,
     currentPoints: 0,
+    newRank: 10000,
     rank: 1
 };
-
-var newRank = 10000;
 
 /*///////////////////////////
  *   End of dummy users/clubs
@@ -41,20 +40,21 @@ app.put('/pointsInfo', function (req, res) {
     // If for some reason the JSON isn't parsed, return HTTP error 400
     if (!req.body) return res.sendStatus(400);
     user.totalEarned += req.body.pointsEarned;
-    user.pointsSpent -+ req.body.pointsSpent;
+    user.currentPoints += req.body.pointsEarned;
+    user.totalSpent -+ req.body.totalSpent;
     if(req.body.rankUp === true){
     user.rank++;
     }
-    if (user.totalEarned >= newRank){
+    if (user.totalEarned >= user.newRank){
         user.rank++;
-        newRank += 10000;
+        user.newRank += 10000;
     }
 
     var jsonResponse = {
         id: '123', status: 'updated'
     };
-    console.log("\nPoints info in now:\ntotalEarned: " + user.totalEarned + "\npointsSpent: "
-    + user.pointsSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
+    console.log("\nPoints info in now:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
+    + user.totalSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
     res.json(jsonResponse);
 });
 
@@ -65,8 +65,8 @@ app.put('/pointsInfo', function (req, res) {
  */
 
 app.get('/pointsInfo', function (req, res) {
-    console.log("\nSending points info:\ntotalEarned: " + user.totalEarned + "\npointsSpent: "
-    + user.pointsSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
+    console.log("\nSending points info:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
+    + user.totalSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
     res.send(JSON.stringify(user));
 });
 

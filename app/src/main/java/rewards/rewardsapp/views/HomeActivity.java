@@ -15,8 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.presenters.Presenter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -53,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
     }
 
 
@@ -71,11 +76,6 @@ public class HomeActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -88,8 +88,10 @@ public class HomeActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private Presenter presenter;
 
         public PlaceholderFragment() {
+            presenter = new Presenter();
         }
 
         /**
@@ -112,9 +114,33 @@ public class HomeActivity extends AppCompatActivity {
                 rootView = inflater.inflate(R.layout.fragment_earn, container, false);
             else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2)
                 rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
-            else
+            else{
                 rootView = inflater.inflate(R.layout.fragment_account, container, false);
+                setAccountPage(rootView);
+            }
             return rootView;
+        }
+
+        public void setAccountPage(View rootView) {
+
+            TextView progressView = (TextView) rootView.findViewById(R.id.progress);
+            TextView rank = (TextView) rootView.findViewById(R.id.rank_view);
+            TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
+            TextView totalPoints = (TextView) rootView.findViewById(R.id.points_total);
+            TextView totalSpent = (TextView) rootView.findViewById(R.id.points_spent);
+
+            try {
+                String jsonResponse = presenter.restGet("getPointsInfo", null);
+                JSONObject pointsInfo = new JSONObject(jsonResponse);
+                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
+                rank.setText(pointsInfo.get("rank").toString());
+                currentPoints.setText(pointsInfo.get("currentPoints").toString());
+                totalPoints.setText(pointsInfo.get("totalEarned").toString());
+                totalSpent.setText(pointsInfo.get("totalSpent").toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -22,6 +22,10 @@ public class Presenter {
 
     private RestModel restModel;
 
+    public Presenter(){
+        restModel = new RestModel();
+    }
+
     public Presenter(Activity incomingActivity) {
         restModel = new RestModel();
         activity = incomingActivity;
