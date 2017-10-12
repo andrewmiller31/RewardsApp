@@ -1,5 +1,6 @@
 package rewards.rewardsapp.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rewards.rewardsapp.R;
@@ -10,28 +11,24 @@ import rewards.rewardsapp.R;
 
 public class ScratchModel {
 
-    public static int numGen(List<Integer> values){
-        int image;
-        int num = (int)(Math.random() * 5 + 1);
-        values.add(num);
-        switch (num){
-            case 1: image = R.drawable.scratch_cow;
-                break;
-            case 2: image = R.drawable.scratch_dog;
-                break;
-            case 3: image = R.drawable.scratch_pig;
-                break;
-            case 4: image = R.drawable.scratch_sheep;
-                break;
-            case 5: image = R.drawable.scratch_cat;
-                break;
-            default: image = 0;
-                break;
-        }
-        return image;
+    private static int[] imageBank;
+    private List<Integer> values;
+
+    public ScratchModel(int[] imageBank){
+        this.imageBank = imageBank.clone();
+        values = new ArrayList<>();
     }
 
-    public static boolean checkAllRevealed(boolean[] revealed){
+    //randomly chooses a picture and adds to values for comparing later
+    //should only be used when setting images on the scratch card
+    public int numGen(){
+        int num = (int)(Math.random() * imageBank.length);
+        values.add(num);
+        return imageBank[num];
+    }
+
+    //checks if all of the array of boolean values are true
+    public boolean checkAllRevealed(boolean[] revealed){
         int i = 0;
         boolean allRevealed = true;
         while(i < revealed.length && allRevealed){
@@ -41,16 +38,17 @@ public class ScratchModel {
         return allRevealed;
     }
 
-    public static boolean win(List<Integer> values){
-        boolean matchThree = false;
+    //returns the number of matches there are
+    public int win(){
         int matchCounter;
+        int winNum = 0;
         for(int i = 0; i < values.size(); i++){
             matchCounter = 0;
             for(int j = i + 1; j < values.size(); j++){
                 if(values.get(i).equals(values.get(j))) matchCounter++;
             }
-            if(matchCounter >= 2) matchThree = true;
+            if(matchCounter >= 1 && winNum < matchCounter + 1) winNum = matchCounter + 1;
         }
-        return matchThree;
+        return winNum;
     }
 }

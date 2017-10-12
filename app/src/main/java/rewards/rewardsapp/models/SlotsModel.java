@@ -16,7 +16,6 @@ import rewards.rewardsapp.presenters.Presenter;
 
 public class SlotsModel {
     private static Random RANDOM = new Random();
-
     private long frameDuration, lowerBound, upperBound, spinTime;
     private SlotReel.ReelListener[] reelListeners;
     private static int[] imageBank;
@@ -43,6 +42,20 @@ public class SlotsModel {
         this.spinTime = spinTime;
     }
 
+    //setter for frame duration
+    public void setFrameDuration(long frameDuration) {
+        this.frameDuration = frameDuration;
+    }
+
+    //setter for lower bound of random number
+    public void setLowerBound(long lowerBound) {
+        this.lowerBound = lowerBound;
+    }
+
+    //setter for upper bound of random number
+    public void setUpperBound(long upperBound) {
+        this.upperBound = upperBound;
+    }
 
     //counts the highest match number in a given array of reels
     public int checkWin(){
@@ -50,7 +63,6 @@ public class SlotsModel {
         for(int i = 0; i < reels.length; i++){
             values.add(reels[i].curIndex);
         }
-
         int matchCounter;
         int winNum = 0;
         for(int i = 0; i < values.size(); i++){
@@ -58,7 +70,7 @@ public class SlotsModel {
             for(int j = i + 1; j < values.size(); j++){
                 if(values.get(i).equals(values.get(j))) matchCounter++;
             }
-            if(matchCounter >= 2 && winNum < matchCounter) winNum = matchCounter + 1;
+            if(matchCounter >= 1 && winNum < matchCounter + 1) winNum = matchCounter + 1;
         }
         return winNum;
     }
@@ -66,8 +78,7 @@ public class SlotsModel {
     //spins the slot machine
     public void spinReels() {
         for (int i = 0; i < reels.length; i++) {
-            reels[i].startReel();
-            reels[i].start();
+            reels[i].startReel(randomLong(lowerBound, upperBound));
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -88,7 +99,7 @@ public class SlotsModel {
     //creates the reels
     private void reelSetup() {
         for (int i = 0; i < reels.length; i++) {
-            reels[i] = new SlotReel(reelListeners[i], frameDuration, randomLong(lowerBound, upperBound), imageBank);
+            reels[i] = new SlotReel(reelListeners[i], frameDuration, imageBank);
         }
     }
 

@@ -22,6 +22,7 @@ public class Presenter {
 
     private RestModel restModel;
     private SlotsModel slotsModel;
+    private ScratchModel scratchModel;
 
     public Presenter(){
         restModel = new RestModel();
@@ -47,22 +48,32 @@ public class Presenter {
     //
     // This section covers methods related to ScratchModel
     //
-    public static int numGen(List<Integer> values){ return ScratchModel.numGen(values);}
+    public void setScratchModel(int[] imageBank){scratchModel = new ScratchModel(imageBank);}
 
-    public static boolean checkAllRevealed(boolean[] revealed){return ScratchModel.checkAllRevealed(revealed);}
+    public int scratchNumGen(){ return scratchModel.numGen();}
 
-    public static boolean win(List<Integer> values){ return ScratchModel.win(values);}
+    public boolean checkAllRevealed(boolean[] revealed){return scratchModel.checkAllRevealed(revealed);}
+
+    public int checkScratchWin(){ return scratchModel.win();}
 
     //
     // This section covers methods related to SlotsModel
     //
     public void setSlotsModel(int[] imageBank, SlotReel.ReelListener[] reelListeners){ slotsModel = new SlotsModel(imageBank, reelListeners);}
 
-    public int checkWin(){ return slotsModel.checkWin();}
+    public int checkSlotsWin(){ return slotsModel.checkWin();}
+
+    public void spinReels(){slotsModel.spinReels();}
+
+    public void setFrameDuration(long frameDuration) {slotsModel.setFrameDuration(frameDuration);}
+
+    public void setSpinTime(long spinTime){slotsModel.setSpinTime(spinTime);}
 
     public long getSpinTime(){return slotsModel.getSpinTime();}
 
-    public void spinReels(){slotsModel.spinReels();}
+    public void setLowerBound(long lowerBound) {slotsModel.setLowerBound(lowerBound);}
+
+    public void setUpperBound(long upperBound) {slotsModel.setUpperBound(upperBound);}
 
 
 

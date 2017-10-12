@@ -143,22 +143,22 @@ public class SlotsActivity extends AppCompatActivity {
 
     //checks with the presenter for the number of matches and processes the result
     private void checkWinStatus(){
-        int winNum = presenter.checkWin();
+        int winNum = presenter.checkSlotsWin();
 
         switch (winNum){
             case 3: resultMsg.setText("Small win. +" + SMALL_WIN + " points");
-                presenter.restPut("putPointsInfo", new UserInformation(SMALL_WIN, 0, false).jsonStringify());
+                //presenter.restPut("putPointsInfo", new UserInformation(SMALL_WIN, 0, false).jsonStringify());
                 totalPoints += SMALL_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 4: resultMsg.setText("Medium win! +" + MEDIUM_WIN + " points");
-                presenter.restPut("putPointsInfo", new UserInformation(MEDIUM_WIN, 0, false).jsonStringify());
+                //presenter.restPut("putPointsInfo", new UserInformation(MEDIUM_WIN, 0, false).jsonStringify());
                 totalPoints += MEDIUM_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 5:
                 resultMsg.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-                presenter.restPut("putPointsInfo", new UserInformation(LARGE_WIN, 0, false).jsonStringify());
+               // presenter.restPut("putPointsInfo", new UserInformation(LARGE_WIN, 0, false).jsonStringify());
                 totalPoints += LARGE_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
@@ -167,6 +167,7 @@ public class SlotsActivity extends AppCompatActivity {
         }
     }
 
+    //locates all the views used
     private void findViews(){
         slotImgs[0] = (ImageView) findViewById(R.id.slot_1);
         slotImgs[1] = (ImageView) findViewById(R.id.slot_2);

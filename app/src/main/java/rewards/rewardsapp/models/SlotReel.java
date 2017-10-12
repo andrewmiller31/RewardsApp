@@ -19,23 +19,23 @@ public class SlotReel extends Thread{
     private long startTime;
     private boolean isStarted;
 
-    public SlotReel(ReelListener reelListener, long duration, long startTime, int[] images) {
+    public SlotReel(ReelListener reelListener, long duration, int[] images) {
         this.reelListener = reelListener;
         this.duration = duration;
-        this.startTime = startTime;
         this.images = images.clone();
         curIndex = 0;
         isStarted = true;
     }
 
+    //keeps track of the index for the images array
     private void nextImg() {
         ++curIndex;
-
         if (curIndex == images.length) {
             curIndex = 0;
         }
     }
 
+    //method used when start() is called, spins the reel
     @Override
     public void run() {
         try {
@@ -57,12 +57,16 @@ public class SlotReel extends Thread{
         }
     }
 
+    //stops a spinning reel
     public void stopReel() {
         isStarted = false;
     }
 
-    public void startReel() {
+    //starts the reel
+    public void startReel(long startTime) {
+        this.startTime = startTime;
         isStarted = true;
+        start();
     }
 
 }
