@@ -1,30 +1,51 @@
 package rewards.rewardsapp.models;
 
+import android.content.Context;
+import android.os.Handler;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import rewards.rewardsapp.presenters.Presenter;
+
 /**
  * Created by Andrew Miller on 10/3/2017.
  */
 
 public class SlotsModel {
-
-
     private static Random RANDOM = new Random();
 
-    private int frameDuration, lowerBound, upperBound;
+    private long frameDuration, lowerBound, upperBound, spinTime;
+    private SlotReel.ReelListener[] reelListeners;
+    private static int[] imageBank;
+    private SlotReel[] reels;
 
-
-    //returns a random long
-    public static long randomLong(long lower, long upper) {
-        return lower + (long) (RANDOM.nextDouble() * (upper - lower));
+    public SlotsModel(int[] imageBank, SlotReel.ReelListener[] reelListeners){
+        frameDuration = 75;
+        lowerBound = 150;
+        upperBound = 600;
+        spinTime = 2200;
+        this.reelListeners = reelListeners.clone();
+        this.imageBank = imageBank.clone();
+        reels = new SlotReel[reelListeners.length];
+        reelSetup();
     }
 
+    //getter for spinTime
+    public long getSpinTime(){
+        return spinTime;
+    }
+
+    //spinTime setter
+    public void setSpinTime(long spinTime){
+        this.spinTime = spinTime;
+    }
+
+
     //counts the highest match number in a given array of reels
-    public static int checkWin(SlotReel[] reels){
+    public int checkWin(){
         List values = new ArrayList();
         for(int i = 0; i < reels.length; i++){
             values.add(reels[i].curIndex);
@@ -37,22 +58,45 @@ public class SlotsModel {
             for(int j = i + 1; j < values.size(); j++){
                 if(values.get(i).equals(values.get(j))) matchCounter++;
             }
-            if(matchCounter >= 2 && winNum < matchCounter - 1) winNum = matchCounter - 1;
+            if(matchCounter >= 2 && winNum < matchCounter) winNum = matchCounter + 1;
         }
         return winNum;
     }
 
-    //stops all reels in the given array
-    public static void stopReels(SlotReel[] reels){
+    //spins the slot machine
+    public void spinReels() {
+        for (int i = 0; i < reels.length; i++) {
+            reels[i].startReel();
+            reels[i].start();
+        }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                stopReels();
+            }
+        }, spinTime);
+    }
+
+    //stops all reels
+    private void stopReels(){
         for(int i = 0; i < reels.length; i++){
             reels[i].stopReel();
         }
     }
 
-    //returns an array of reels that is the same length as the number of slots
-    public static SlotReel[] initializeReels(ImageView[] slotImgs){
-        return new SlotReel[slotImgs.length];
+    //creates the reels
+    private void reelSetup() {
+        for (int i = 0; i < reels.length; i++) {
+            reels[i] = new SlotReel(reelListeners[i], frameDuration, randomLong(lowerBound, upperBound), imageBank);
+        }
     }
+
+    //returns a random long between the bounds provided
+    private long randomLong(long lower, long upper) {
+        return lower + (long) (RANDOM.nextDouble() * (upper - lower));
+    }
+
 
 
 }

@@ -61,8 +61,8 @@ public class SlotReel extends Thread{
         isStarted = false;
     }
 
-    public void setBank(int[] images){
-
+    public void startReel() {
+        isStarted = true;
     }
 
 }

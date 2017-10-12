@@ -21,6 +21,7 @@ public class Presenter {
     private Activity activity;
 
     private RestModel restModel;
+    private SlotsModel slotsModel;
 
     public Presenter(){
         restModel = new RestModel();
@@ -55,13 +56,14 @@ public class Presenter {
     //
     // This section covers methods related to SlotsModel
     //
-    public static int checkWin(SlotReel[] reels, TextView resultMsg){ return SlotsModel.checkWin(reels);}
+    public void setSlotsModel(int[] imageBank, SlotReel.ReelListener[] reelListeners){ slotsModel = new SlotsModel(imageBank, reelListeners);}
 
-    public static long randomLong(long lower, long upper){return SlotsModel.randomLong(lower, upper);}
+    public int checkWin(){ return slotsModel.checkWin();}
 
-    public static void stopReels(SlotReel[] reels){ SlotsModel.stopReels(reels);}
+    public long getSpinTime(){return slotsModel.getSpinTime();}
 
-    public static SlotReel[] initializeReels(ImageView[] slotImgs){ return SlotsModel.initializeReels(slotImgs); }
+    public void spinReels(){slotsModel.spinReels();}
+
 
 
 }
