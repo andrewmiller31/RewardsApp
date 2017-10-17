@@ -44,24 +44,30 @@ public class ScratchActivity extends AppCompatActivity {
     private void endGame(){
 
         int winNum = presenter.checkScratchWin();
+        int winAmount;
 
         switch (winNum){
-            case 3: resultMessage.setText("Little win. +" + LITTLE_WIN + " points");
-//                presenter.restPut("putPointsInfo", new UserInformation(LITTLE_WIN, 0, false).jsonStringify());
+            case 3:
+                resultMessage.setText("Little win. +" + LITTLE_WIN + " points");
+                winAmount = LITTLE_WIN;
                 break;
-            case 4: resultMessage.setText("Small win. +" + SMALL_WIN + " points");
-//                presenter.restPut("putPointsInfo", new UserInformation(SMALL_WIN, 0, false).jsonStringify());
+            case 4:
+                resultMessage.setText("Small win. +" + SMALL_WIN + " points");
+                winAmount = SMALL_WIN;
                 break;
-            case 5: resultMessage.setText("Medium win! +" + MEDIUM_WIN + " points");
-//                presenter.restPut("putPointsInfo", new UserInformation(MEDIUM_WIN, 0, false).jsonStringify());
+            case 5:
+                resultMessage.setText("Medium win! +" + MEDIUM_WIN + " points");
+                winAmount = MEDIUM_WIN;
                 break;
             case 6:
                 resultMessage.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-//                presenter.restPut("putPointsInfo", new UserInformation(LARGE_WIN, 0, false).jsonStringify());
+                winAmount = LARGE_WIN;
                 break;
-            default: resultMessage.setText("Loss!");
-                break;
+            default:
+                resultMessage.setText("Loss!");
+                return;
         }
+        presenter.sendPoints(winAmount);
     }
 
     private void setCard(){

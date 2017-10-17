@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutionException;
 
 public class RestModel {
 
-    //public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
-    public final String serverAddress = "http://akka.d.umn.edu:5000";
+    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+    //public final String serverAddress = "http://akka.d.umn.edu:5000";
 
     public RestModel(){}
 
@@ -125,7 +125,7 @@ public class RestModel {
                 Log.d("Debug: ", "Response Code : " + responseCode);
                 is = serverConnection.getInputStream();
 
-                if (params[1].equals("GET")) {
+                if (params[1].equals("GET") || params[1].equals("PUT")) {
                     StringBuilder sb = new StringBuilder();
                     String line;
                     BufferedReader br = new BufferedReader(new InputStreamReader(is));

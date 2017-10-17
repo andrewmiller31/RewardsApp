@@ -1,7 +1,13 @@
 package rewards.rewardsapp.views;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -15,13 +21,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class HomeActivity extends AppCompatActivity {
@@ -40,9 +48,11 @@ public class HomeActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Presenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        presenter = new Presenter();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -75,7 +85,6 @@ public class HomeActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -89,9 +98,11 @@ public class HomeActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Presenter presenter;
+        private String jsonResponse;
 
         public PlaceholderFragment() {
             presenter = new Presenter();
+            jsonResponse = presenter.restGet("getPointsInfo", null);
         }
 
         /**
@@ -110,19 +121,31 @@ public class HomeActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView;
-            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
                 rootView = inflater.inflate(R.layout.fragment_earn, container, false);
-            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2)
+            }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
                 rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
-            else{
+                setRedeemPage(rootView);
+            }
+            else {
                 rootView = inflater.inflate(R.layout.fragment_account, container, false);
                 setAccountPage(rootView);
             }
             return rootView;
         }
 
-        public void setAccountPage(View rootView) {
+        public void setRedeemPage(View rootView){
+            TextView currentPoints = (TextView) rootView.findViewById(R.id.redeem_cur_points);
+            try {
+                JSONObject pointsInfo = new JSONObject(jsonResponse);
+                currentPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
+        public void setAccountPage(View rootView) {
             TextView progressView = (TextView) rootView.findViewById(R.id.progress);
             TextView rank = (TextView) rootView.findViewById(R.id.rank_view);
             TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
@@ -130,7 +153,6 @@ public class HomeActivity extends AppCompatActivity {
             TextView totalSpent = (TextView) rootView.findViewById(R.id.points_spent);
 
             try {
-                String jsonResponse = presenter.restGet("getPointsInfo", null);
                 JSONObject pointsInfo = new JSONObject(jsonResponse);
                 progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
                 rank.setText(pointsInfo.get("rank").toString());
@@ -187,5 +209,73 @@ public class HomeActivity extends AppCompatActivity {
 
     public void slots(View view){
         startActivity(new Intent(this, SlotsActivity.class));
+    }
+
+    public void cashClick(View view){
+        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Congrats! You earned $1.", Toast.LENGTH_SHORT);
+            toast.show();
+            refreshAccountInfo();
+        }
+    }
+
+    public void sweepClick(View view){
+        presenter.setRedeemModel(50, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Congrats! You have entered the contest.", Toast.LENGTH_SHORT);
+            toast.show();
+            refreshAccountInfo();
+        }
+    }
+
+    public void giftClick(View view){
+        presenter.setRedeemModel(10000, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Congrats! You earned a $10 card.", Toast.LENGTH_SHORT);
+            toast.show();
+            refreshAccountInfo();
+        }
+    }
+
+    public void refreshAccountInfo() {
+
+        TextView progressView = (TextView) findViewById(R.id.progress);
+        TextView rank = (TextView) findViewById(R.id.rank_view);
+        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+        TextView totalPoints = (TextView) findViewById(R.id.points_total);
+        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
+        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
+
+        if(progressView != null) {
+            try {
+                String jsonResponse = presenter.restGet("getPointsInfo", null);
+                JSONObject pointsInfo = new JSONObject(jsonResponse);
+                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
+                rank.setText(pointsInfo.get("rank").toString());
+                currentPoints.setText(pointsInfo.get("currentPoints").toString());
+                totalPoints.setText(pointsInfo.get("totalEarned").toString());
+                totalSpent.setText(pointsInfo.get("totalSpent").toString());
+                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

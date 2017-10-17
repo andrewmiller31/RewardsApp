@@ -39,20 +39,34 @@ var user = {
 app.put('/pointsInfo', function (req, res) {
     // If for some reason the JSON isn't parsed, return HTTP error 400
     if (!req.body) return res.sendStatus(400);
+
     user.totalEarned += req.body.pointsEarned;
     user.currentPoints += req.body.pointsEarned;
-    user.totalSpent -+ req.body.totalSpent;
+
     if(req.body.rankUp === true){
-    user.rank++;
+        user.rank++;
     }
+
+    if((user.currentPoints - req.body.pointsSpent) >= 0){
+        user.currentPoints -= req.body.pointsSpent;
+        user.totalSpent += req.body.pointsSpent;
+        var jsonResponse = {
+                id: '123', status: 'updated'
+            };
+    }
+
+    else {
+        var jsonResponse = {
+                 id: '333', status: 'failed'
+        };
+    }
+
     if (user.totalEarned >= user.newRank){
         user.rank++;
         user.newRank += 10000;
     }
 
-    var jsonResponse = {
-        id: '123', status: 'updated'
-    };
+
     console.log("\nPoints info in now:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
     + user.totalSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
     res.json(jsonResponse);

@@ -41,5 +41,6 @@
     <string name="spins_remaining">Spins remaining:</string>
     <string name="total_points">Total earned:</string>
     <string name="auto_spin">Auto Spin</string>
+    <string name="gift_card">Gift Card</string>
 
 </resources>

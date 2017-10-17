@@ -6,10 +6,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.RestModel;
 import rewards.rewardsapp.models.ScratchModel;
 import rewards.rewardsapp.models.SlotReel;
 import rewards.rewardsapp.models.SlotsModel;
+import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.views.SlotsActivity;
 
 /**
@@ -23,6 +25,7 @@ public class Presenter {
     private RestModel restModel;
     private SlotsModel slotsModel;
     private ScratchModel scratchModel;
+    private RedeemModel redeemModel;
 
     public Presenter(){
         restModel = new RestModel();
@@ -44,6 +47,18 @@ public class Presenter {
     public String restDelete(String task, String toDelete) { return restModel.restDelete(task, toDelete);}
 
     public String restGet(String task, String toGet) { return restModel.restGet(task, toGet); }
+
+    //
+    //This method is used to send earned points to the server;
+    //
+    public String sendPoints(int points){ return restPut("putPointsInfo", new UserInformation(points, 0, false).jsonStringify());}
+
+    //
+    // This section covers the methods related to RedeemModel
+    //
+    public void setRedeemModel(int cost, RedeemModel.redeemType type){redeemModel = new RedeemModel(cost, type);}
+
+    public String redeemPoints(){return redeemModel.redeem();}
 
     //
     // This section covers methods related to ScratchModel
@@ -74,7 +89,5 @@ public class Presenter {
     public void setLowerBound(long lowerBound) {slotsModel.setLowerBound(lowerBound);}
 
     public void setUpperBound(long upperBound) {slotsModel.setUpperBound(upperBound);}
-
-
 
 }

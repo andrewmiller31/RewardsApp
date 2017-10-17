@@ -53,7 +53,7 @@ public class SlotsActivity extends AppCompatActivity {
         reelListenerSetup();
         presenter.setSlotsModel(imageBank, reelListeners);
         findViews();
-        spinCount = 100;
+        spinCount = 10;
         totalPoints = 0;
         spinsLeft.setText(Integer.toString(spinCount));
         pointsEarned.setText(Integer.toString(totalPoints));
@@ -144,27 +144,29 @@ public class SlotsActivity extends AppCompatActivity {
     //checks with the presenter for the number of matches and processes the result
     private void checkWinStatus(){
         int winNum = presenter.checkSlotsWin();
+        int winAmount = 0;
 
         switch (winNum){
             case 3: resultMsg.setText("Small win. +" + SMALL_WIN + " points");
-                //presenter.restPut("putPointsInfo", new UserInformation(SMALL_WIN, 0, false).jsonStringify());
+                winAmount = SMALL_WIN;
                 totalPoints += SMALL_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 4: resultMsg.setText("Medium win! +" + MEDIUM_WIN + " points");
-                //presenter.restPut("putPointsInfo", new UserInformation(MEDIUM_WIN, 0, false).jsonStringify());
+                winAmount = MEDIUM_WIN;
                 totalPoints += MEDIUM_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 5:
                 resultMsg.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-               // presenter.restPut("putPointsInfo", new UserInformation(LARGE_WIN, 0, false).jsonStringify());
+                winAmount = LARGE_WIN;
                 totalPoints += LARGE_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             default: resultMsg.setText("You lose :(");
-                break;
+                return;
         }
+        presenter.sendPoints(winAmount);
     }
 
     //locates all the views used
