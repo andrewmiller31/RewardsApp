@@ -22,6 +22,7 @@ public class ScratchActivity extends AppCompatActivity {
     private static int[] imageBank = {R.drawable.scratch_cow, R.drawable.scratch_dog, R.drawable.scratch_pig, R.drawable.scratch_sheep}; //, R.drawable.scratch_cat
     private TextView resultMessage;
     private boolean[] revealed;
+    private boolean over;
     Presenter presenter;
 
     //constants
@@ -32,6 +33,7 @@ public class ScratchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        over = false;
         presenter = new Presenter();
         presenter.setScratchModel(imageBank);
         super.onCreate(savedInstanceState);
@@ -103,7 +105,8 @@ public class ScratchActivity extends AppCompatActivity {
             @Override
             public void onRevealPercentChangedListener(ScratchImageView siv, float percent) {
                 if(percent < 25) revealed[num] = true;
-                if(presenter.checkAllRevealed(revealed)){
+                if(presenter.checkAllRevealed(revealed) && !over){
+                    over = true;
                     endGame();
                 }
             }
