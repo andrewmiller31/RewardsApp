@@ -80,5 +80,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <TextView
+        android:textSize="25sp"
+        android:textColor="@color/colorAccent"
+        android:id="@+id/vote_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/send_vote"
+        app:layout_constraintLeft_toLeftOf="@id/radio_group"/>
+
 
 </android.support.constraint.ConstraintLayout>

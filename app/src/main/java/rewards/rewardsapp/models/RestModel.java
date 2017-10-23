@@ -46,6 +46,7 @@ public class RestModel {
     public String restPut(String postString, String data){
         switch (postString){
             case "putPointsInfo": return putPointsInfo(data);
+            case "putCharityVote": return putCharityInfo(data);
             default: return null;
         }
     }
@@ -57,6 +58,7 @@ public class RestModel {
     public String restGet(String postString, String data){
         switch (postString){
             case "getPointsInfo": return getPointsInfo();
+            case "getVotesInfo": return getVotesInfo();
             default: return null;
         }
     }
@@ -81,9 +83,28 @@ public class RestModel {
         return null;
     }
 
+    private String putCharityInfo(String data) {
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/charityVotes", "PUT", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private String getPointsInfo(){
         try{
             return new HTTPAsyncTask().execute(serverAddress + "/pointsInfo", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getVotesInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/charityVotes", "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

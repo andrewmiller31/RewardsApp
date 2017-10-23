@@ -1,13 +1,7 @@
 package rewards.rewardsapp.views;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -21,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,12 +36,9 @@ public class HomeActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
     private Presenter presenter;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +56,8 @@ public class HomeActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        toast = new Toast(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -217,12 +209,10 @@ public class HomeActivity extends AppCompatActivity {
         presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
-            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Insufficient Points.");
         }
         else {
-            Toast toast = Toast.makeText(this, "Congrats! You earned $1.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Congrats! You earned $1.");
             refreshAccountInfo();
         }
     }
@@ -231,12 +221,10 @@ public class HomeActivity extends AppCompatActivity {
         presenter.setRedeemModel(50, RedeemModel.redeemType.cash);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
-            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Insufficient Points.");
         }
         else {
-            Toast toast = Toast.makeText(this, "Congrats! You have entered the contest.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Congrats! You have entered the contest.");
             refreshAccountInfo();
         }
     }
@@ -245,12 +233,10 @@ public class HomeActivity extends AppCompatActivity {
         presenter.setRedeemModel(10000, RedeemModel.redeemType.cash);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
-            Toast toast = Toast.makeText(this, "Insufficient Points.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Insufficient Points.");
         }
         else {
-            Toast toast = Toast.makeText(this, "Congrats! You earned a $10 card.", Toast.LENGTH_SHORT);
-            toast.show();
+            showToast("Congrats! You earned a $10 card.");
             refreshAccountInfo();
         }
     }
@@ -258,6 +244,17 @@ public class HomeActivity extends AppCompatActivity {
     public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
 
     //other
+
+    public void showToast(String message){
+        try{
+            toast.getView().isShown();
+            toast.setText(message);
+        }
+        catch (Exception e) {
+            toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        }
+        toast.show();
+    }
 
     public void refreshAccountInfo() {
 
