@@ -28,7 +28,11 @@
             android:name=".views.SlotsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_slots"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".views.CharityPollActivity"
+            android:label="@string/title_activity_charity_poll"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

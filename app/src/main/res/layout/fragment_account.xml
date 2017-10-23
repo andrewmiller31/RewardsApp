@@ -225,7 +225,8 @@
         android:textAllCaps="false"
         android:textSize="70sp"
         android:background="@color/colorPrimaryDark"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginBottom="50dp"
+        android:onClick="charityPoll"/>
 
 
 </android.support.constraint.ConstraintLayout>

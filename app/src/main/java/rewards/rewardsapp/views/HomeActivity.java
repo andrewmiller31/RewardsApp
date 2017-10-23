@@ -203,6 +203,8 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    //onClick Methods
+
     public void scratchOff(View view){
         startActivity(new Intent(this, ScratchActivity.class));
     }
@@ -252,6 +254,10 @@ public class HomeActivity extends AppCompatActivity {
             refreshAccountInfo();
         }
     }
+
+    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
+
+    //other
 
     public void refreshAccountInfo() {
 

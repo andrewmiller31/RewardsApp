@@ -28,7 +28,7 @@
     <string name="title_activity_scratch_off">ScratchOffActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="choose_a_charity">Choose a Charity</string>
+    <string name="choose_a_charity">Vote for a Charity</string>
     <string name="edit">Edit</string>
     <string name="total_points_spent">Total Points Spent:</string>
     <string name="total_points_earned">Total Points Earned:</string>
@@ -42,5 +42,8 @@
     <string name="total_points">Total earned:</string>
     <string name="auto_spin">Auto Spin</string>
     <string name="gift_card">Gift Card</string>
+    <string name="title_activity_charity_poll">CharityPollActivity</string>
+    <string name="vote_for_the_charity_you_would_like_a_portion_of_our_profits_to_go_to">Vote for the charity you would like a portion of our profits to go to:</string>
+    <string name="send_vote">Send Vote</string>
 
 </resources>
