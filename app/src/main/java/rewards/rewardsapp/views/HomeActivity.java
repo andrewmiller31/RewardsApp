@@ -15,8 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,12 +44,16 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private Presenter presenter;
     private Toast toast;
+    private AdView mAdView;
+    private Button closeAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         presenter = new Presenter();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Rewards App");
@@ -56,8 +65,15 @@ public class HomeActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         toast = new Toast(this);
+
+        closeAd = (Button) findViewById(R.id.close_ad);
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -172,7 +188,9 @@ public class HomeActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            Fragment test = PlaceholderFragment.newInstance(position + 1);
+            test.setUserVisibleHint(true);
+            return test;
         }
 
         @Override
@@ -196,14 +214,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     //onClick Methods
-
-    public void scratchOff(View view){
-        startActivity(new Intent(this, ScratchActivity.class));
-    }
-
-    public void slots(View view){
-        startActivity(new Intent(this, SlotsActivity.class));
-    }
 
     public void cashClick(View view){
         presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
@@ -241,9 +251,36 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
+
+
+    public void scratchOff(View view){
+        startActivity(new Intent(this, ScratchActivity.class));
+    }
+
+    public void slots(View view){
+        startActivity(new Intent(this, SlotsActivity.class));
+    }
+
+    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}{}
+
+    public void closeAd(View view){
+        mAdView.setClickable(false);
+        mAdView.setVisibility(View.GONE);
+        mAdView.pause();
+        closeAd.setClickable(false);
+        closeAd.setVisibility(View.GONE);
+    }
 
     //other
+
+    public void showAd(){
+        mAdView.setClickable(true);
+        mAdView.setVisibility(View.VISIBLE);
+        mAdView.resume();
+        closeAd.setClickable(true);
+        closeAd.setVisibility(View.VISIBLE);
+
+    }
 
     public void showToast(String message){
         try{
@@ -257,7 +294,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void refreshAccountInfo() {
-
         TextView progressView = (TextView) findViewById(R.id.progress);
         TextView rank = (TextView) findViewById(R.id.rank_view);
         TextView currentPoints = (TextView) findViewById(R.id.points_current);
@@ -269,16 +305,25 @@ public class HomeActivity extends AppCompatActivity {
             try {
                 String jsonResponse = presenter.restGet("getPointsInfo", null);
                 JSONObject pointsInfo = new JSONObject(jsonResponse);
+                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
                 progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
                 rank.setText(pointsInfo.get("rank").toString());
                 currentPoints.setText(pointsInfo.get("currentPoints").toString());
                 totalPoints.setText(pointsInfo.get("totalEarned").toString());
                 totalSpent.setText(pointsInfo.get("totalSpent").toString());
-                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        refreshAccountInfo();
+        showAd();
+    }
+
 }

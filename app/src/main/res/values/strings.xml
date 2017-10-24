@@ -45,5 +45,7 @@
     <string name="title_activity_charity_poll">CharityPollActivity</string>
     <string name="vote_for_the_charity_you_would_like_a_portion_of_our_profits_to_go_to">Vote for the charity you would like a portion of our profits to go to:</string>
     <string name="send_vote">Send Vote</string>
+    <string name="title_activity_test">testAct</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 </resources>

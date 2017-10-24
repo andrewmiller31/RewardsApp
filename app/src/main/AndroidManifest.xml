@@ -32,7 +32,7 @@
         <activity
             android:name=".views.CharityPollActivity"
             android:label="@string/title_activity_charity_poll"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

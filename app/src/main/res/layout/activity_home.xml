@@ -40,4 +40,28 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center|bottom"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+    </com.google.android.gms.ads.AdView>
+
+    <Button
+        android:id="@+id/close_ad"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="22dp"
+        android:onClick="closeAd"
+        android:text="x"
+        android:textSize="10sp"
+        android:layout_gravity="right|bottom"/>
+
 </android.support.design.widget.CoordinatorLayout>
