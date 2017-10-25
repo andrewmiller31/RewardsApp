@@ -77,6 +77,7 @@ public class SlotsModel {
 
     //spins the slot machine
     public void spinReels() {
+        reelSetup();
         for (int i = 0; i < reels.length; i++) {
             reels[i].startReel(randomLong(lowerBound, upperBound));
         }
