@@ -46,6 +46,7 @@ public class HomeActivity extends AppCompatActivity {
     private Toast toast;
     private AdView mAdView;
     private Button closeAd;
+    private Button passiveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,8 @@ public class HomeActivity extends AppCompatActivity {
         toast = new Toast(this);
 
         closeAd = (Button) findViewById(R.id.close_ad);
+        passiveButton = new Button(this);
+        passiveButton = (Button) findViewById(R.id.passive_button);
 
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -251,8 +254,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
-
     public void scratchOff(View view){
         startActivity(new Intent(this, ScratchActivity.class));
     }
@@ -261,7 +262,18 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(this, SlotsActivity.class));
     }
 
-    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}{}
+    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
+
+    public void passiveEarn(View view){
+        startActivity(new Intent(this, OverlayEarnActivity.class));
+            if (!OverlayHUD.isRunning) {
+                if(passiveButton != null) passiveButton.setText("Turn Off Passive Earn");
+                showToast("Passive Earn enabled. You can now use your phone freely!");
+            } else if(OverlayHUD.isRunning) {
+                if(passiveButton != null) passiveButton.setText("Passive Earn");
+                showToast("Passive Earn disabled.");
+            }
+    }
 
     public void closeAd(View view){
         mAdView.setClickable(false);
@@ -324,6 +336,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         refreshAccountInfo();
         showAd();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(OverlayHUD.isRunning) startActivity(new Intent(this, OverlayEarnActivity.class));
     }
 
 }

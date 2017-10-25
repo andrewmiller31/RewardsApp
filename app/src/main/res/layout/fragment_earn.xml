@@ -46,6 +46,7 @@
         android:layout_width="370dp"
         android:layout_height="100dp"
         android:text="@string/passive_earn"
+        android:onClick="passiveEarn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf= "@+id/slots_button"

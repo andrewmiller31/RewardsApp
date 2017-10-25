@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="rewards.rewardsapp">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +15,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,6 +30,19 @@
             android:name=".views.CharityPollActivity"
             android:label="@string/title_activity_charity_poll"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".views.OverlayEarnActivity"
+            android:label="@string/title_activity_charity_poll" />
+
+        <service
+            android:name=".views.OverlayHUD"
+            android:exported="true"
+            android:stopWithTask="true"/>
     </application>
+
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
 
 </manifest>
