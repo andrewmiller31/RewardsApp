@@ -268,10 +268,10 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(this, OverlayEarnActivity.class));
             if (!OverlayHUD.isRunning) {
                 if(passiveButton != null) passiveButton.setText("Turn Off Passive Earn");
-                showToast("Passive Earn enabled. You can now use your phone freely!");
+                showToast("Surf & Earn enabled. You can now use your phone freely!");
             } else if(OverlayHUD.isRunning) {
                 if(passiveButton != null) passiveButton.setText("Passive Earn");
-                showToast("Passive Earn disabled.");
+                showToast("Surf & Earn disabled.");
             }
     }
 
