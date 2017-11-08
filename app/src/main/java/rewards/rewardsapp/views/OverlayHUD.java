@@ -17,6 +17,11 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+
 import rewards.rewardsapp.R;
 
 
@@ -24,18 +29,27 @@ import rewards.rewardsapp.R;
  * Created by Andrew Miller on 10/24/2017.
  */
 
-public class OverlayHUD extends Service implements View.OnTouchListener {
+public class OverlayHUD extends Service implements View.OnTouchListener, RewardedVideoAdListener {
     private TextView enabledText;
     public static boolean isRunning;
     private static boolean showAd;
     private AdView mAdView;
+    private RewardedVideoAd mRewardedVideoAd;
+    private int clickCount;
+    private Runnable task;
 
     @Override
     public void onCreate() {
+        clickCount = 1;
         super.onCreate();
         enabledText = new TextView(this);
-
+        enabledText.setOnTouchListener(this);
         mAdView = new AdView(this);
+        mAdView.setOnTouchListener(this);
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+
         mAdView.setAdSize(AdSize.BANNER);
         mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -61,39 +75,49 @@ public class OverlayHUD extends Service implements View.OnTouchListener {
                         |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         |WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
                 PixelFormat.TRANSLUCENT);
+
         params.gravity = Gravity.CENTER | Gravity.BOTTOM;
         params.verticalMargin = 0.01f;
         final WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         wm.addView(enabledText, params);
 
         final Handler handler = new Handler();
-        final Runnable task = new Runnable() {
+        task = new Runnable() {
             @Override
             public void run() {
-                if(showAd) {
+                if(showAd && isRunning) {
                     params.verticalMargin = 0.01f;
                     wm.addView(enabledText, params);
                     wm.removeView(mAdView);
                     showAd = false;
+                    handler.postDelayed(this, 5000);
                 }
-                else {
+                else if(isRunning){
                     params.verticalMargin = 0;
                     wm.removeView(enabledText);
                     wm.addView(mAdView, params);
                     showAd = true;
-                }
-                if (isRunning) {
-                    handler.postDelayed(this, 1000);
+                    handler.postDelayed(this, 30000);
                 }
             }
         };
-        handler.postDelayed(task, 1000);
+        handler.postDelayed(task, 30000);
         isRunning = true;
+        loadRewardedVideoAd();
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Toast.makeText(this,"Overlay button event", Toast.LENGTH_SHORT).show();
+        clickCount++;
+        mAdView.performClick();
+        if(clickCount%30 == 0) {
+//            Toast.makeText(this, "VIDEO AD HERE", Toast.LENGTH_SHORT).show();
+            if (mRewardedVideoAd.isLoaded()) {
+                mRewardedVideoAd.show();
+                loadRewardedVideoAd();
+            }
+            else loadRewardedVideoAd();
+        }
         return false;
     }
 
@@ -105,10 +129,52 @@ public class OverlayHUD extends Service implements View.OnTouchListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        isRunning = false;
         if(enabledText != null)
         {
             ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(enabledText);
-            enabledText = null;
         }
+        mAdView.destroy();
+        enabledText = null;
+    }
+
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
+                new AdRequest.Builder().build());
+    }
+
+    @Override
+    public void onRewarded(RewardItem reward) {
+        Toast.makeText(this, "onRewarded! currency: " + reward.getType() + "  amount: " +
+                reward.getAmount(), Toast.LENGTH_SHORT).show();
+        // Reward the user.
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+        Toast.makeText(this, "onRewardedVideoAdLeftApplication",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int errorCode) {
+        Toast.makeText(this, "ERROR: problem loading video.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
     }
 }
