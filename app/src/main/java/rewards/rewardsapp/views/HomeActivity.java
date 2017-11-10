@@ -1,7 +1,17 @@
 package rewards.rewardsapp.views;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Build;
+import android.os.IBinder;
+import android.provider.Settings;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -71,7 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         toast = new Toast(this);
 
         closeAd = (Button) findViewById(R.id.close_ad);
-        passiveButton = new Button(this);
         passiveButton = (Button) findViewById(R.id.passive_button);
 
         mAdView = (AdView) findViewById(R.id.adView);
@@ -254,25 +263,29 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void scratchOff(View view){
-        startActivity(new Intent(this, ScratchActivity.class));
+    public void scratchOff(View view) {
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, ScratchActivity.class));
+        }
     }
 
     public void slots(View view){
-        startActivity(new Intent(this, SlotsActivity.class));
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, SlotsActivity.class));
+        }
     }
 
     public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
 
-    public void passiveEarn(View view){
-        startActivity(new Intent(this, OverlayEarnActivity.class));
-            if (!OverlayHUD.isRunning) {
-                if(passiveButton != null) passiveButton.setText("Turn Off Passive Earn");
+    public void passiveEarn(View view) {
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, OverlayEarnActivity.class));
+            if (!OverlayHUD.isIsRunning()) {
                 showToast("Surf & Earn enabled. You can now use your phone freely!");
-            } else if(OverlayHUD.isRunning) {
-                if(passiveButton != null) passiveButton.setText("Passive Earn");
+            } else if (OverlayHUD.isIsRunning()) {
                 showToast("Surf & Earn disabled.");
             }
+        }
     }
 
     public void closeAd(View view){
@@ -334,6 +347,12 @@ public class HomeActivity extends AppCompatActivity {
     public void onResume()
     {
         super.onResume();
+
+        if(OverlayHUD.isReturningFromAd()) {
+            onBackPressed();
+            OverlayHUD.setReturningFromAd(false);
+        }
+
         refreshAccountInfo();
         showAd();
     }
@@ -341,7 +360,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if(OverlayHUD.isRunning) startActivity(new Intent(this, OverlayEarnActivity.class));
+        if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
     }
 
 }
