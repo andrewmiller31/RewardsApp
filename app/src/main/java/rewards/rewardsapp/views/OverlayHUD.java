@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,9 +37,10 @@ import rewards.rewardsapp.presenters.Presenter;
 
 public class OverlayHUD extends Service implements View.OnTouchListener, RewardedVideoAdListener {
     private TextView enabledText;
+    private AdView mAdView;
+    private TextView closeAd;
     private static boolean isRunning;
     private boolean showAd;
-    private AdView mAdView;
     private RewardedVideoAd mRewardedVideoAd;
     private int clickCount;
     private Presenter presenter;
@@ -52,6 +54,8 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     private static final int BAN_TIME = 30000;
     //amount of time enabled text shows between ads
     private static final int TEXT_TIME = 5000;
+    //closeAd size
+    private static final int CLOSE_AD_SIZE = 50;
 
     @Override
     public void onCreate() {
@@ -94,6 +98,9 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         enabledText.setOnTouchListener(this);
         mAdView = new AdView(this);
         mAdView.setOnTouchListener(this);
+        closeAd = new TextView(this);
+        closeAd.setOnTouchListener(this);
+        closeAd.setClickable(true);
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
@@ -114,6 +121,18 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         enabledText.setBackground(rect);
         enabledText.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
         enabledText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        GradientDrawable square = new GradientDrawable();
+        square.setShape(GradientDrawable.RECTANGLE);
+        square.setColor(ContextCompat.getColor(this, R.color.whiteSmoke));
+        square.setSize(CLOSE_AD_SIZE, CLOSE_AD_SIZE);
+        square.setCornerRadii(new float[] { 8,8,8,8,8,8,8,8});
+        square.setStroke(1,ContextCompat.getColor(this, R.color.black));
+
+        closeAd.setText("x");
+        closeAd.setTextSize(12);
+        closeAd.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        closeAd.setBackground(square);
     }
 
     private void wmSetup(){
@@ -135,12 +154,15 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         showAd = false;
 
         final Handler handler = new Handler();
-        Runnable task = new Runnable() {
+        final Runnable task = new Runnable() {
             @Override
             public void run() {
                 if (showAd && isRunning) {
+                    params.gravity = Gravity.CENTER | Gravity.BOTTOM;
                     params.verticalMargin = 0.01f;
+                    params.horizontalMargin = 0f;
                     wm.addView(enabledText, params);
+                    wm.removeView(closeAd);
                     wm.removeView(mAdView);
                     showAd = false;
                     handler.postDelayed(this, TEXT_TIME);
@@ -148,6 +170,10 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
                     params.verticalMargin = 0;
                     wm.removeView(enabledText);
                     wm.addView(mAdView, params);
+                    params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+                    params.verticalMargin = 0.045f;
+                    params.horizontalMargin = 0.005f;
+                    wm.addView(closeAd, params);
                     showAd = true;
                     handler.postDelayed(this, BAN_TIME);
                 }
@@ -156,6 +182,20 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
                 }
             }
         };
+
+        closeAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (showAd && isRunning) {
+                    params.gravity = Gravity.CENTER | Gravity.BOTTOM;
+                    params.verticalMargin = 0.01f;
+                    wm.addView(enabledText, params);
+                    wm.removeView(closeAd);
+                    wm.removeView(mAdView);
+                    showAd = false;
+                }
+            }
+        });
         handler.postDelayed(task, TEXT_TIME);
     }
 
@@ -178,6 +218,8 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         enabledText.setClickable(false);
         mAdView.setVisibility(View.GONE);
         mAdView.setClickable(false);
+        closeAd.setVisibility(View.GONE);
+        closeAd.setClickable(false);
     }
 
     private void enableChildren(){
@@ -185,12 +227,23 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         enabledText.setClickable(true);
         mAdView.setVisibility(View.VISIBLE);
         mAdView.setClickable(true);
+        closeAd.setVisibility(View.VISIBLE);
+        closeAd.setClickable(true);
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        float cLeft = closeAd.getLeft();
+        float cRight = cLeft + CLOSE_AD_SIZE;
+        float cTop = closeAd.getTop();
+        float cBottom = cTop + CLOSE_AD_SIZE;
         clickCount++;
         mAdView.performClick();
+        if((x > closeAd.getLeft() && x < cRight) && (y > cTop && y < cBottom)){
+            closeAd.performClick();
+        }
         if(clickCount%CLICKS == 0) runAd(0);
         return false;
     }
