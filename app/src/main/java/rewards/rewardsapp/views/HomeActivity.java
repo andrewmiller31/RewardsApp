@@ -41,81 +41,211 @@ import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class HomeActivity extends AppCompatActivity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    private Presenter presenter;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    private Presenter presenter;
     private Toast toast;
     private AdView mAdView;
     private Button closeAd;
-    private Button passiveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        presenter = new Presenter();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        presenter = new Presenter();
+        toast = new Toast(this);
+        adSetup();
+        viewSetup();
+    }
 
+    //ad setup
+    private void adSetup(){
         MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+    }
 
+    //view setup
+    private void viewSetup(){
+        setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Rewards App");
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
 
-        toast = new Toast(this);
-
         closeAd = (Button) findViewById(R.id.close_ad);
-        passiveButton = (Button) findViewById(R.id.passive_button);
-
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 
+    //options menu setup
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    //onClick Methods
+
+    public void cashClick(View view){
+        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            showToast("Insufficient Points.");
+        }
+        else {
+            showToast("Congrats! You earned $1.");
+            refreshAccountInfo();
+        }
+    }
+
+    public void sweepClick(View view){
+        presenter.setRedeemModel(50, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            showToast("Insufficient Points.");
+        }
+        else {
+            showToast("Congrats! You have entered the contest.");
+            refreshAccountInfo();
+        }
+    }
+
+    public void giftClick(View view){
+        presenter.setRedeemModel(10000, RedeemModel.redeemType.cash);
+        String result = presenter.redeemPoints();
+        if(result.equals("333")){
+            showToast("Insufficient Points.");
+        }
+        else {
+            showToast("Congrats! You earned a $10 card.");
+            refreshAccountInfo();
+        }
+    }
+
+    public void scratchOff(View view) {
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, ScratchActivity.class));
+        }
+    }
+
+    public void slots(View view){
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, SlotsActivity.class));
+        }
+    }
+
+    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
+
+    public void passiveEarn(View view) {
+        if(!OverlayHUD.isReturningFromAd()) {
+            startActivity(new Intent(this, OverlayEarnActivity.class));
+            if (!OverlayHUD.isIsRunning()) {
+                showToast("Surf & Earn enabled. You can now use your phone freely!");
+            } else if (OverlayHUD.isIsRunning()) {
+                showToast("Surf & Earn disabled.");
+            }
+        }
+    }
+
+    //closes ad banner
+    public void closeAd(View view){
+        mAdView.setClickable(false);
+        mAdView.setVisibility(View.GONE);
+        mAdView.pause();
+        closeAd.setClickable(false);
+        closeAd.setVisibility(View.GONE);
+    }
+
+    //opens ad banner
+    public void showAd(){
+        mAdView.setClickable(true);
+        mAdView.setVisibility(View.VISIBLE);
+        mAdView.resume();
+        closeAd.setClickable(true);
+        closeAd.setVisibility(View.VISIBLE);
+
+    }
+
+    //shows toast of message
+    public void showToast(String message){
+        try{
+            toast.getView().isShown();
+            toast.setText(message);
+        }
+        catch (Exception e) {
+            toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        }
+        toast.show();
+    }
+
+    //refreshes account info
+    public void refreshAccountInfo() {
+        TextView progressView = (TextView) findViewById(R.id.progress);
+        TextView rank = (TextView) findViewById(R.id.rank_view);
+        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+        TextView totalPoints = (TextView) findViewById(R.id.points_total);
+        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
+        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
+
+        if(progressView != null) {
+            try {
+                String jsonResponse = presenter.restGet("getPointsInfo", null);
+                JSONObject pointsInfo = new JSONObject(jsonResponse);
+                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
+                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
+                rank.setText(pointsInfo.get("rank").toString());
+                currentPoints.setText(pointsInfo.get("currentPoints").toString());
+                totalPoints.setText(pointsInfo.get("totalEarned").toString());
+                totalSpent.setText(pointsInfo.get("totalSpent").toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //life cycle methods
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if(OverlayHUD.isReturningFromAd()) {
+            onBackPressed();
+            OverlayHUD.setReturningFromAd(false);
+        }
+        refreshAccountInfo();
+        showAd();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+    }
+
+    //find and set up fragments used
+
     public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Presenter presenter;
         private String jsonResponse;
@@ -125,10 +255,6 @@ public class HomeActivity extends AppCompatActivity {
             jsonResponse = presenter.restGet("getPointsInfo", null);
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -223,150 +349,6 @@ public class HomeActivity extends AppCompatActivity {
             }
             return null;
         }
-    }
-
-    //onClick Methods
-
-    public void cashClick(View view){
-        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
-            showToast("Insufficient Points.");
-        }
-        else {
-            showToast("Congrats! You earned $1.");
-            refreshAccountInfo();
-        }
-    }
-
-    public void sweepClick(View view){
-        presenter.setRedeemModel(50, RedeemModel.redeemType.cash);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
-            showToast("Insufficient Points.");
-        }
-        else {
-            showToast("Congrats! You have entered the contest.");
-            refreshAccountInfo();
-        }
-    }
-
-    public void giftClick(View view){
-        presenter.setRedeemModel(10000, RedeemModel.redeemType.cash);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
-            showToast("Insufficient Points.");
-        }
-        else {
-            showToast("Congrats! You earned a $10 card.");
-            refreshAccountInfo();
-        }
-    }
-
-    public void scratchOff(View view) {
-        if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, ScratchActivity.class));
-        }
-    }
-
-    public void slots(View view){
-        if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, SlotsActivity.class));
-        }
-    }
-
-    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
-
-    public void passiveEarn(View view) {
-        if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, OverlayEarnActivity.class));
-            if (!OverlayHUD.isIsRunning()) {
-                showToast("Surf & Earn enabled. You can now use your phone freely!");
-            } else if (OverlayHUD.isIsRunning()) {
-                showToast("Surf & Earn disabled.");
-            }
-        }
-    }
-
-    public void closeAd(View view){
-        mAdView.setClickable(false);
-        mAdView.setVisibility(View.GONE);
-        mAdView.pause();
-        closeAd.setClickable(false);
-        closeAd.setVisibility(View.GONE);
-    }
-
-    //other
-
-    public void showAd(){
-        mAdView.setClickable(true);
-        mAdView.setVisibility(View.VISIBLE);
-        mAdView.resume();
-        closeAd.setClickable(true);
-        closeAd.setVisibility(View.VISIBLE);
-
-    }
-
-    public void showToast(String message){
-        try{
-            toast.getView().isShown();
-            toast.setText(message);
-        }
-        catch (Exception e) {
-            toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        }
-        toast.show();
-    }
-
-    public void refreshAccountInfo() {
-        TextView progressView = (TextView) findViewById(R.id.progress);
-        TextView rank = (TextView) findViewById(R.id.rank_view);
-        TextView currentPoints = (TextView) findViewById(R.id.points_current);
-        TextView totalPoints = (TextView) findViewById(R.id.points_total);
-        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
-        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
-
-        if(progressView != null) {
-            try {
-                String jsonResponse = presenter.restGet("getPointsInfo", null);
-                JSONObject pointsInfo = new JSONObject(jsonResponse);
-                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
-                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
-                rank.setText(pointsInfo.get("rank").toString());
-                currentPoints.setText(pointsInfo.get("currentPoints").toString());
-                totalPoints.setText(pointsInfo.get("totalEarned").toString());
-                totalSpent.setText(pointsInfo.get("totalSpent").toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        if(OverlayHUD.isReturningFromAd()) {
-            onBackPressed();
-            OverlayHUD.setReturningFromAd(false);
-        }
-
-        refreshAccountInfo();
-        showAd();
-    }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
     }
 
 }
