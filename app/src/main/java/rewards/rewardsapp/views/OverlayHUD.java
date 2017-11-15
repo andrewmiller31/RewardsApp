@@ -45,6 +45,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     private int clickCount;
     private Presenter presenter;
     private static boolean returningFromAd;
+    private boolean restart;
 
     //amount the user earns per video watched
     private static final int EARN_AMOUNT = 10;
@@ -231,8 +232,22 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         closeAd.setClickable(true);
     }
 
+    private void restartAd(){
+        mRewardedVideoAd.destroy(this);
+        mRewardedVideoAd = null;
+        RewardedVideoAd newAd;
+        newAd = MobileAds.getRewardedVideoAdInstance(this);
+        newAd.setRewardedVideoAdListener(this);
+        newAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mRewardedVideoAd = newAd;
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        if(restart){
+            restartAd();
+            restart = false;
+        }
         float x = event.getX();
         float y = event.getY();
         float cLeft = closeAd.getLeft();
@@ -244,7 +259,9 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         if((x > closeAd.getLeft() && x < cRight) && (y > cTop && y < cBottom)){
             closeAd.performClick();
         }
-        if(clickCount%CLICKS == 0) runAd(0);
+        if(clickCount%CLICKS == 0){
+            runAd(0);
+        }
         return false;
     }
 
@@ -281,8 +298,8 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     @Override
     public void onRewardedVideoAdClosed() {
         returningFromAd = true;
+        restart = true;
         enableChildren();
-        loadRewardedVideoAd();
     }
 
     @Override

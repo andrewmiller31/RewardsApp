@@ -170,6 +170,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             if (!OverlayHUD.isIsRunning()) {
                 showToast("Surf & Earn enabled. You can now use your phone freely!");
             } else if (OverlayHUD.isIsRunning()) {
+                OverlayHUD.setReturningFromAd(false);
                 showToast("Surf & Earn disabled.");
             }
         }
@@ -246,76 +247,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 e.printStackTrace();
             }
         }
-    }
-
-    //life cycle methods
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        restartAd();
-        if(OverlayHUD.isReturningFromAd()) {
-            onBackPressed();
-            OverlayHUD.setReturningFromAd(false);
-        }
-        refreshAccountInfo();
-        showAd();
-    }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        mAdView.destroy();
-        mRewardedVideoAd.destroy(this);
-        if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-    }
-
-    //RewardedAdListener methods
-
-    @Override
-    public void onRewardedVideoAdLoaded() {
-
-    }
-
-    @Override
-    public void onRewardedVideoAdOpened() {
-
-    }
-
-    @Override
-    public void onRewardedVideoStarted() {
-
-    }
-
-    @Override
-    public void onRewardedVideoAdClosed() {
-        if(adRewarded) {
-            startActivity(earnIntent);
-            adRewarded = false;
-        }
-        else showToast("You must watch the entire ad to proceed.");
-        loadRewardedVideoAd();
-    }
-
-    @Override
-    public void onRewarded(RewardItem rewardItem) {
-        adRewarded = true;
-    }
-
-    @Override
-    public void onRewardedVideoAdLeftApplication() {
-    }
-
-    @Override
-    public void onRewardedVideoAdFailedToLoad(int i) {
-        startActivity(earnIntent);
     }
 
     //find and set up fragments used
@@ -426,4 +357,73 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
     }
 
+    //life cycle methods
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if(OverlayHUD.isReturningFromAd()) {
+            onBackPressed();
+            OverlayHUD.setReturningFromAd(false);
+        }
+        else restartAd();
+        refreshAccountInfo();
+        showAd();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        mAdView.destroy();
+        mRewardedVideoAd.destroy(this);
+//        if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+    }
+
+    //RewardedAdListener methods
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        if(adRewarded) {
+            startActivity(earnIntent);
+            adRewarded = false;
+        }
+        else showToast("You must watch the entire ad to proceed.");
+        loadRewardedVideoAd();
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        adRewarded = true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+        startActivity(earnIntent);
+    }
 }
