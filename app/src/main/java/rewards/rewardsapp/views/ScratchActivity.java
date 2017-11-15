@@ -1,17 +1,27 @@
 package rewards.rewardsapp.views;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cooltechworks.views.ScratchImageView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
-public class ScratchActivity extends AppCompatActivity {
+public class ScratchActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
     private ScratchImageView scratch1;
     private ScratchImageView scratch2;
@@ -23,7 +33,11 @@ public class ScratchActivity extends AppCompatActivity {
     private TextView resultMessage;
     private boolean[] revealed;
     private boolean over;
-    Presenter presenter;
+    private RewardedVideoAd mRewardedVideoAd;
+    private int winAmount;
+    private Button claim;
+    private Presenter presenter;
+    private boolean rewarded;
 
     //constants
     private static final int LITTLE_WIN = 10;
@@ -33,20 +47,24 @@ public class ScratchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         over = false;
+        rewarded = false;
         presenter = new Presenter();
         presenter.setScratchModel(imageBank);
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scratch);
         revealed = new boolean[6];
         resultMessage = (TextView) findViewById(R.id.end_result);
+        claim = (Button) findViewById(R.id.claim_button);
         setCard();
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
     }
 
     private void endGame(){
 
         int winNum = presenter.checkScratchWin();
-        int winAmount;
 
         switch (winNum){
             case 3:
@@ -67,9 +85,14 @@ public class ScratchActivity extends AppCompatActivity {
                 break;
             default:
                 resultMessage.setText("Loss!");
+                winAmount = 0;
+                rewarded = true;
                 return;
         }
-        presenter.sendPoints(winAmount);
+        if(winAmount != 0){
+            claim.setVisibility(View.VISIBLE);
+            claim.setClickable(true);
+        }
     }
 
     private void setCard(){
@@ -95,7 +118,6 @@ public class ScratchActivity extends AppCompatActivity {
         scratchListenerSet(scratch6, 5);
     }
 
-
     private void scratchListenerSet(ScratchImageView siv, final int num) {
         siv.setRevealListener(new ScratchImageView.IRevealListener() {
             @Override
@@ -111,5 +133,77 @@ public class ScratchActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void claimPoints(View view){
+        if(mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
+        else {
+            Toast.makeText(this, "Ad not loaded. Must be watched to receive points.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        if(rewarded) {
+            onBackPressed();
+        }
+        else {
+            mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+            Toast.makeText(this, "You must watch the video to receive points!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        presenter.sendPoints(winAmount);
+        Toast.makeText(this, "+" + winAmount + " Points", Toast.LENGTH_SHORT).show();
+        rewarded = true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        mRewardedVideoAd.destroy(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        mRewardedVideoAd.destroy(this);
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(rewarded){
+            finish();
+        }
     }
 }

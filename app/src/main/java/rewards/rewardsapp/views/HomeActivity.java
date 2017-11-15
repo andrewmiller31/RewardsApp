@@ -30,8 +30,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,29 +44,35 @@ import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.presenters.Presenter;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements RewardedVideoAdListener {
     private Presenter presenter;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private Toast toast;
-    private AdView mAdView;
     private Button closeAd;
+    private AdView mAdView;
+    private RewardedVideoAd mRewardedVideoAd;
+    private Intent earnIntent;
+    private boolean adRewarded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new Presenter();
         toast = new Toast(this);
-        adSetup();
         viewSetup();
+        adSetup();
     }
 
     //ad setup
     private void adSetup(){
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         mAdView = (AdView) findViewById(R.id.adView);
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        loadRewardedVideoAd();
     }
 
     //view setup
@@ -137,13 +147,18 @@ public class HomeActivity extends AppCompatActivity {
 
     public void scratchOff(View view) {
         if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, ScratchActivity.class));
+            earnIntent = new Intent(this, ScratchActivity.class);
+            if(mRewardedVideoAd.isLoaded()){
+                mRewardedVideoAd.show();
+            }
+            else startActivity(earnIntent);
         }
     }
 
     public void slots(View view){
         if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, SlotsActivity.class));
+            earnIntent = new Intent(this, SlotsActivity.class);
+            mRewardedVideoAd.show();
         }
     }
 
@@ -158,6 +173,22 @@ public class HomeActivity extends AppCompatActivity {
                 showToast("Surf & Earn disabled.");
             }
         }
+    }
+
+    //loads the rewarded video
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+    }
+
+    //restarts ad upon resume
+    private void restartAd(){
+        mRewardedVideoAd.destroy(this);
+        mRewardedVideoAd = null;
+        RewardedVideoAd newAd;
+        newAd = MobileAds.getRewardedVideoAdInstance(this);
+        newAd.setRewardedVideoAdListener(this);
+        newAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mRewardedVideoAd = newAd;
     }
 
     //closes ad banner
@@ -223,6 +254,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onResume()
     {
         super.onResume();
+        restartAd();
         if(OverlayHUD.isReturningFromAd()) {
             onBackPressed();
             OverlayHUD.setReturningFromAd(false);
@@ -234,6 +266,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        mAdView.destroy();
+        mRewardedVideoAd.destroy(this);
         if(!OverlayHUD.isIsRunning()) startActivity(new Intent(this, OverlayEarnActivity.class));
     }
 
@@ -241,6 +275,47 @@ public class HomeActivity extends AppCompatActivity {
     public void onPause()
     {
         super.onPause();
+    }
+
+    //RewardedAdListener methods
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        if(adRewarded) {
+            startActivity(earnIntent);
+            adRewarded = false;
+        }
+        else showToast("You must watch the entire ad to proceed.");
+        loadRewardedVideoAd();
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        adRewarded = true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+        startActivity(earnIntent);
     }
 
     //find and set up fragments used

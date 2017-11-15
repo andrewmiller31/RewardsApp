@@ -119,6 +119,19 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         app:layout_constraintTop_toBottomOf="@id/scratch_card"
+        app:layout_constraintBottom_toTopOf="@id/claim_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/claim_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:clickable="false"
+        android:text="Claim"
+        android:onClick="claimPoints"
+        app:layout_constraintTop_toBottomOf="@id/end_result"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

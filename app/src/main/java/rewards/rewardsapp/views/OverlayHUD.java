@@ -272,12 +272,10 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     public void onRewarded(RewardItem reward) {
         Toast.makeText(this, "+10 Points", Toast.LENGTH_SHORT).show();
         presenter.sendPoints(EARN_AMOUNT);
-        // Reward the user.
     }
 
     @Override
     public void onRewardedVideoAdLeftApplication() {
-//        Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show();
     }
 
     @Override
