@@ -1,21 +1,16 @@
 package rewards.rewardsapp.views;
 
-import android.app.Activity;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +18,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.mediation.OnContextChangedListener;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
@@ -200,18 +194,23 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         handler.postDelayed(task, TEXT_TIME);
     }
 
-    private void runAd(int num){
-        int count = num;
-        if (mRewardedVideoAd.isLoaded()) {
-            disableChildren();
-            mRewardedVideoAd.show();
-            returningFromAd = true;
-        }
-        else if(count <= 100){
-            count++;
-            runAd(count);
-        }
-        else Toast.makeText(this, "Failed to load ad.", Toast.LENGTH_SHORT).show();
+    //Checks if ad is loaded until it is loaded and then runs ad
+    private void runAd(){
+        final Handler handler = new Handler();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (mRewardedVideoAd.isLoaded()) {
+                    disableChildren();
+                    mRewardedVideoAd.show();
+                    returningFromAd = true;
+                    handler.removeCallbacksAndMessages(this);
+                    return;
+                }
+                handler.postDelayed(this, 50);
+            }
+        };
+        handler.post(task);
     }
 
     private void disableChildren(){
@@ -245,7 +244,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if(restart){
-            restartAd();
+            loadRewardedVideoAd();
             restart = false;
         }
         float x = event.getX();
@@ -256,11 +255,11 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         float cBottom = cTop + CLOSE_AD_SIZE;
         clickCount++;
         mAdView.performClick();
-        if((x > closeAd.getLeft() && x < cRight) && (y > cTop && y < cBottom)){
+        if((x > cLeft && x < cRight) && (y > cTop && y < cBottom)){
             closeAd.performClick();
         }
-        if(clickCount%CLICKS == 0){
-            runAd(0);
+        if(clickCount%(CLICKS*2) == 0){
+            runAd();
         }
         return false;
     }

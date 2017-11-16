@@ -8,7 +8,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -70,8 +72,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.setRewardedVideoAdListener(this);
         loadRewardedVideoAd();
     }
 
@@ -146,20 +146,21 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     public void scratchOff(View view) {
-        if(!OverlayHUD.isReturningFromAd()) {
+        if(!OverlayHUD.isIsRunning()) {
+            loadRewardedVideoAd();
             earnIntent = new Intent(this, ScratchActivity.class);
-            if(mRewardedVideoAd.isLoaded()){
-                mRewardedVideoAd.show();
-            }
-            else startActivity(earnIntent);
+            runAd();
         }
+        else showToast("Cannot play scratch offs while using Surf & Earn");
     }
 
     public void slots(View view){
-        if(!OverlayHUD.isReturningFromAd()) {
+        if(!OverlayHUD.isIsRunning()) {
+            loadRewardedVideoAd();
             earnIntent = new Intent(this, SlotsActivity.class);
-            mRewardedVideoAd.show();
+            runAd();
         }
+        else showToast("Cannot play slots while using Surf & Earn");
     }
 
     public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
@@ -178,18 +179,9 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     //loads the rewarded video
     private void loadRewardedVideoAd() {
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
-    }
-
-    //restarts ad upon resume
-    private void restartAd(){
-        mRewardedVideoAd.destroy(this);
-        mRewardedVideoAd = null;
-        RewardedVideoAd newAd;
-        newAd = MobileAds.getRewardedVideoAdInstance(this);
-        newAd.setRewardedVideoAdListener(this);
-        newAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
-        mRewardedVideoAd = newAd;
     }
 
     //closes ad banner
@@ -247,6 +239,23 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 e.printStackTrace();
             }
         }
+    }
+
+    //Checks if ad is loaded until it is loaded and then runs ad
+    private void runAd(){
+        final Handler handler = new Handler();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (mRewardedVideoAd.isLoaded()) {
+                    mRewardedVideoAd.show();
+                    handler.removeCallbacksAndMessages(this);
+                    return;
+                }
+                handler.postDelayed(this, 50);
+            }
+        };
+        handler.post(task);
     }
 
     //find and set up fragments used
@@ -367,7 +376,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             onBackPressed();
             OverlayHUD.setReturningFromAd(false);
         }
-        else restartAd();
         refreshAccountInfo();
         showAd();
     }
@@ -409,8 +417,10 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             startActivity(earnIntent);
             adRewarded = false;
         }
-        else showToast("You must watch the entire ad to proceed.");
-        loadRewardedVideoAd();
+        else {
+            loadRewardedVideoAd();
+            showToast("You must watch the entire ad to proceed.");
+        }
     }
 
     @Override

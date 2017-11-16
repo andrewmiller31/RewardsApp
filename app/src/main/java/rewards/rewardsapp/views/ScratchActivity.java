@@ -1,6 +1,7 @@
 package rewards.rewardsapp.views;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -49,7 +50,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         over = false;
-        rewarded = false;
+        rewarded = true;
         presenter = new Presenter();
         presenter.setScratchModel(imageBank);
         setContentView(R.layout.activity_scratch);
@@ -70,23 +71,26 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             case 3:
                 resultMessage.setText("Little win. +" + LITTLE_WIN + " points");
                 winAmount = LITTLE_WIN;
+                rewarded = false;
                 break;
             case 4:
                 resultMessage.setText("Small win. +" + SMALL_WIN + " points");
                 winAmount = SMALL_WIN;
+                rewarded = false;
                 break;
             case 5:
                 resultMessage.setText("Medium win! +" + MEDIUM_WIN + " points");
                 winAmount = MEDIUM_WIN;
+                rewarded = false;
                 break;
             case 6:
                 resultMessage.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
                 winAmount = LARGE_WIN;
+                rewarded = false;
                 break;
             default:
                 resultMessage.setText("Loss!");
                 winAmount = 0;
-                rewarded = true;
                 return;
         }
         if(winAmount != 0){
@@ -136,13 +140,24 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     }
 
     public void claimPoints(View view){
-        if(mRewardedVideoAd.isLoaded()) {
-            mRewardedVideoAd.show();
-        }
-        else {
-            Toast.makeText(this, "Ad not loaded. Must be watched to receive points.", Toast.LENGTH_SHORT).show();
-        }
+        runAd();
+    }
 
+    //Checks if ad is loaded until it is loaded and then runs ad
+    private void runAd(){
+        final Handler handler = new Handler();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (mRewardedVideoAd.isLoaded()) {
+                    mRewardedVideoAd.show();
+                    handler.removeCallbacksAndMessages(this);
+                    return;
+                }
+                handler.postDelayed(this, 50);
+            }
+        };
+        handler.post(task);
     }
 
     @Override
@@ -163,7 +178,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     @Override
     public void onRewardedVideoAdClosed() {
         if(rewarded) {
-            onBackPressed();
+            this.onBackPressed();
         }
         else {
             mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
@@ -205,5 +220,6 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         if(rewarded){
             finish();
         }
+        else Toast.makeText(this, "Watch the video to claim your points!", Toast.LENGTH_SHORT).show();
     }
 }

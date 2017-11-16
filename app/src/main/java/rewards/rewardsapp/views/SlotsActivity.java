@@ -7,6 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +23,7 @@ import rewards.rewardsapp.models.SlotReel;
 import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
-public class SlotsActivity extends AppCompatActivity {
+public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
     //presenter
     private Presenter presenter;
@@ -30,10 +37,13 @@ public class SlotsActivity extends AppCompatActivity {
     //views
     private Button spin;
     private Button autoSpin;
+    private Button claim;
     private TextView resultMsg;
     TextView spinsLeft;
     TextView pointsEarned;
     private boolean done;
+    private boolean rewarded;
+
 
     //constants
     private static final int SMALL_WIN = 100;
@@ -42,6 +52,8 @@ public class SlotsActivity extends AppCompatActivity {
     private static final long AUTO_CLICK_WAIT = 100;
 
     private int spinCount, totalPoints;
+
+    private RewardedVideoAd mRewardedVideoAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +69,11 @@ public class SlotsActivity extends AppCompatActivity {
         totalPoints = 0;
         spinsLeft.setText(Integer.toString(spinCount));
         pointsEarned.setText(Integer.toString(totalPoints));
+
+        rewarded = true;
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
     }
 
     //spins the reels and waits for them to stop spinning before checking for win
@@ -166,7 +183,11 @@ public class SlotsActivity extends AppCompatActivity {
             default: resultMsg.setText("You lose :(");
                 return;
         }
-        presenter.sendPoints(winAmount);
+        if(totalPoints > 0){
+            claim.setClickable(true);
+            claim.setVisibility(View.VISIBLE);
+            rewarded = false;
+        }
     }
 
     //locates all the views used
@@ -178,9 +199,96 @@ public class SlotsActivity extends AppCompatActivity {
         slotImgs[4] = (ImageView) findViewById(R.id.slot_5);
         spin = (Button) findViewById(R.id.spin);
         autoSpin = (Button) findViewById(R.id.auto_spin);
+        claim = (Button) findViewById(R.id.claim_slots);
         resultMsg = (TextView) findViewById(R.id.win_message);
         spinsLeft = (TextView) findViewById(R.id.remaining);
         pointsEarned = (TextView) findViewById(R.id.points_won);
+        claim = (Button) findViewById(R.id.claim_slots);
+    }
+
+    public void claimPoints(View view){
+        runAd();
+    }
+
+    //Checks if ad is loaded until it is loaded and then runs ad
+    private void runAd(){
+        final Handler handler = new Handler();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (mRewardedVideoAd.isLoaded()) {
+                    mRewardedVideoAd.show();
+                    handler.removeCallbacksAndMessages(this);
+                    return;
+                }
+                handler.postDelayed(this, 50);
+            }
+        };
+        handler.post(task);
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        if(rewarded) {
+            this.onBackPressed();
+        }
+        else {
+            mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+            Toast.makeText(this, "You must watch the video to receive points!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem){
+        presenter.sendPoints(totalPoints);
+        Toast.makeText(this, "+" + totalPoints + " Points", Toast.LENGTH_SHORT).show();
+        rewarded = true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        mRewardedVideoAd.destroy(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        mRewardedVideoAd.destroy(this);
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(rewarded){
+            finish();
+        }
+        else Toast.makeText(this, "Watch the video to claim your points!", Toast.LENGTH_SHORT).show();
+
     }
 
 }
