@@ -1,19 +1,8 @@
 package rewards.rewardsapp.views;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.provider.Settings;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -32,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
@@ -178,6 +166,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     //loads the rewarded video
+    //NOTE: only call after previous ad has completely finished its life. Otherwise there will be an interference with the next ad loading properly.
     private void loadRewardedVideoAd() {
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
@@ -259,19 +248,25 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     //find and set up fragments used
-
     public static class PlaceholderFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Presenter presenter;
         private String jsonResponse;
+        private Bundle extras;
 
         public PlaceholderFragment() {
             presenter = new Presenter();
             jsonResponse = presenter.restGet("getPointsInfo", null);
         }
 
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public PlaceholderFragment(Bundle extras) {
+            presenter = new Presenter();
+            jsonResponse = presenter.restGet("getPointsInfo", null);
+            this.extras = extras;
+        }
+
+        public static PlaceholderFragment newInstance(int sectionNumber, Bundle extras) {
+            PlaceholderFragment fragment = new PlaceholderFragment(extras);
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -312,6 +307,13 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
             TextView totalPoints = (TextView) rootView.findViewById(R.id.points_total);
             TextView totalSpent = (TextView) rootView.findViewById(R.id.points_spent);
+            TextView name = (TextView) rootView.findViewById(R.id.name);
+            TextView email = (TextView) rootView.findViewById(R.id.email);
+
+            if (extras != null) {
+                name.setText(extras.getString("name"));
+                email.setText(extras.getString("email"));
+            }
 
             try {
                 JSONObject pointsInfo = new JSONObject(jsonResponse);
@@ -341,7 +343,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Fragment test = PlaceholderFragment.newInstance(position + 1);
+            Fragment test = PlaceholderFragment.newInstance(position + 1, getIntent().getExtras());
             test.setUserVisibleHint(true);
             return test;
         }
