@@ -1,5 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var GoogleAuth = require('google-auth-library');
+var mongodb = require('./mongoDBFunctions.js');
 
 // Initialize main instanced class
 var app = express();
@@ -18,6 +20,8 @@ app.use(bodyParser.json());
 //var mongodb = require('./mongoDBFunctions.js');
 //console.log(mongodb);
 
+var CLIENT_ID = '82658629626-fpsre8l5v7orb9ngqaogjnos9usvr1pc.apps.googleusercontent.com';
+
 var user = {
     totalEarned: 0,
     totalSpent: 0,
@@ -35,9 +39,41 @@ var votes = {
     winning: 0
 }
 
-/*///////////////////////////
- *   End of dummy users/clubs
- *////////////////////////////
+/*
+ ************************
+ * POST ROUTE SECTION
+ ************************
+ */
+
+ app.post('/verifySignIn', function(req, res) {
+    if (!req.body) return res.sendStatus(400);
+    var auth = new GoogleAuth;
+    var client = new auth.OAuth2(CLIENT_ID, '', '');
+    client.verifyIdToken(
+        req.body.token,
+        CLIENT_ID,
+        function(e, login) {
+          var payload = login.getPayload();
+          var userid = payload['sub'];
+          console.log(userid);
+          mongodb.findUser(userid, function(result, newUser){
+                if(newUser === false){
+                   var user = result[0];
+                   console.log("Found user.");
+                   res.body = JSON.stringify(user.userData);
+                   res.send(res.body);
+                   }
+                else{
+                    var user = result.userData;
+                    console.log("Added user");
+                    res.body = JSON.stringify(user);
+                    res.send(res.body);
+                }
+               });
+
+        });
+ });
+
 
 /*
  ************************
@@ -137,6 +173,18 @@ app.put('/charityVotes', function (req, res) {
  * GET ROUTE SECTION
  ************************
  */
+
+app.get('/users/:userID', function (req,res) {
+     var club;
+     console.log("Looking for " + req.params.userID);
+
+     mongodb.findUser(req.params.userID, function(result){
+         var user = result[0];
+         console.log("Found user.");
+         res.body = JSON.stringify(user.userData);
+         res.send(res.body);
+     });
+});
 
 app.get('/pointsInfo', function (req, res) {
     console.log("\nSending points info:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
