@@ -57,7 +57,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        presenter = new Presenter(this);
+        presenter = new Presenter();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slots);
         slotImgs = new ImageView[5];

@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutionException;
 
 public class RestModel {
 
-//    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
-    public final String serverAddress = "http://akka.d.umn.edu:5000";
+    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+//    public final String serverAddress = "http://akka.d.umn.edu:5000";
 
     public RestModel(){}
 
@@ -34,7 +34,7 @@ public class RestModel {
      */
     public String restPost(String postString, String data){
         switch (postString){
-            case "": return null;
+            case "verifySignIn": return verifySignIn(data);
             default: return null;
         }
     }
@@ -112,6 +112,15 @@ public class RestModel {
         return null;
     }
 
+    private String verifySignIn(String data){
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/verifySignIn", "POST", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private class HTTPAsyncTask extends AsyncTask<String, Integer, String> {
 
         @Override
@@ -127,18 +136,17 @@ public class RestModel {
                 serverConnection = (HttpURLConnection) url.openConnection();
                 serverConnection.setRequestMethod(params[1]);
 
-                if (params[1].equals("PUT")) {
-                    if(params[1].equals("PUT")) {
-                        Log.d("DEBUG PUT:", "In put: params[0]=" + params[0] + ", params[1]=" + params[1] + ", params[2]=" + params[2]);
-                        serverConnection.setDoOutput(true);
-                        serverConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-                        serverConnection.setRequestProperty("Content-Length", "" +
-                                Integer.toString(params[2].getBytes().length));
-                        DataOutputStream out = new DataOutputStream(serverConnection.getOutputStream());
-                        out.writeBytes(params[2]);
-                        out.flush();
-                        out.close();
-                    }
+
+                if (params[1].equals("PUT") || params[1].equals("POST")) {
+                    Log.d("DEBUG PUT:", "In put: params[0]=" + params[0] + ", params[1]=" + params[1] + ", params[2]=" + params[2]);
+                    serverConnection.setDoOutput(true);
+                    serverConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                    serverConnection.setRequestProperty("Content-Length", "" +
+                            Integer.toString(params[2].getBytes().length));
+                    DataOutputStream out = new DataOutputStream(serverConnection.getOutputStream());
+                    out.writeBytes(params[2]);
+                    out.flush();
+                    out.close();
                 }
 
                 int responseCode = serverConnection.getResponseCode();
@@ -146,7 +154,7 @@ public class RestModel {
                 Log.d("Debug: ", "Response Code : " + responseCode);
                 is = serverConnection.getInputStream();
 
-                if (params[1].equals("GET") || params[1].equals("PUT")) {
+                if (params[1].equals("GET") || params[1].equals("PUT") || params[1].equals("POST")) {
                     StringBuilder sb = new StringBuilder();
                     String line;
                     BufferedReader br = new BufferedReader(new InputStreamReader(is));

@@ -20,8 +20,6 @@ import rewards.rewardsapp.views.SlotsActivity;
 
 public class Presenter {
 
-    private Activity activity;
-
     private RestModel restModel;
     private SlotsModel slotsModel;
     private ScratchModel scratchModel;
@@ -31,10 +29,6 @@ public class Presenter {
         restModel = new RestModel();
     }
 
-    public Presenter(Activity incomingActivity) {
-        restModel = new RestModel();
-        activity = incomingActivity;
-    }
     //
     // This section covers methods related to RestModel
     //
@@ -89,5 +83,13 @@ public class Presenter {
     public void setLowerBound(long lowerBound) {slotsModel.setLowerBound(lowerBound);}
 
     public void setUpperBound(long upperBound) {slotsModel.setUpperBound(upperBound);}
+
+    //
+    // This section covers REST calls for verifying users
+    //
+    public String verifySignIn(String jsonToken) {
+        return restPost("verifySignIn", jsonToken);
+    }
+
 
 }

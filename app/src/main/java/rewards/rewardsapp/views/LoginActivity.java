@@ -17,16 +17,23 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.presenters.Presenter;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
 
     private SignInButton signInButton;
     private GoogleApiClient mGoogleApiClient;
+    Presenter presenter;
+    private String idToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        presenter = new Presenter();
         setContentView(R.layout.activity_login);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
@@ -37,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void signInInitialize(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -52,10 +60,29 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void updateUI(GoogleSignInAccount account){
         if(account != null){
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("email", account.getEmail());
-            intent.putExtra("name", account.getDisplayName());
-            startActivity(intent);
+            idToken = account.getIdToken();
+            JSONObject jsonString = null;
+            try {
+                jsonString = new JSONObject();
+                jsonString.put("token", idToken);
+                String jsonResponse = presenter.verifySignIn(jsonString.toString());
+                JSONObject userInfo = new JSONObject(jsonResponse);
+
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.putExtra("id", userInfo.get("id").toString());
+                intent.putExtra("currentPoints", userInfo.get("currentPoints").toString());
+                intent.putExtra("totalEarned", userInfo.get("totalEarned").toString());
+                intent.putExtra("totalSpent", userInfo.get("totalSpent").toString());
+                intent.putExtra("rank", userInfo.get("rank").toString());
+                intent.putExtra("newRank", userInfo.get("newRank").toString());
+                intent.putExtra("email", account.getEmail());
+                intent.putExtra("name", account.getDisplayName());
+                startActivity(intent);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 

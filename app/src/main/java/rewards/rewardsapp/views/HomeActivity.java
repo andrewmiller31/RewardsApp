@@ -1,5 +1,6 @@
 package rewards.rewardsapp.views;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -105,7 +106,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
         else {
             showToast("Congrats! You earned $1.");
-            refreshAccountInfo();
+//            refreshAccountInfo();
         }
     }
 
@@ -117,7 +118,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
         else {
             showToast("Congrats! You have entered the contest.");
-            refreshAccountInfo();
+//            refreshAccountInfo();
         }
     }
 
@@ -129,7 +130,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
         else {
             showToast("Congrats! You earned a $10 card.");
-            refreshAccountInfo();
+//            refreshAccountInfo();
         }
     }
 
@@ -205,30 +206,30 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     //refreshes account info
-    public void refreshAccountInfo() {
-        TextView progressView = (TextView) findViewById(R.id.progress);
-        TextView rank = (TextView) findViewById(R.id.rank_view);
-        TextView currentPoints = (TextView) findViewById(R.id.points_current);
-        TextView totalPoints = (TextView) findViewById(R.id.points_total);
-        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
-        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
-
-        if(progressView != null) {
-            try {
-                String jsonResponse = presenter.restGet("getPointsInfo", null);
-                JSONObject pointsInfo = new JSONObject(jsonResponse);
-                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
-                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
-                rank.setText(pointsInfo.get("rank").toString());
-                currentPoints.setText(pointsInfo.get("currentPoints").toString());
-                totalPoints.setText(pointsInfo.get("totalEarned").toString());
-                totalSpent.setText(pointsInfo.get("totalSpent").toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public void refreshAccountInfo() {
+//        TextView progressView = (TextView) findViewById(R.id.progress);
+//        TextView rank = (TextView) findViewById(R.id.rank_view);
+//        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+//        TextView totalPoints = (TextView) findViewById(R.id.points_total);
+//        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
+//        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
+//
+//        if(progressView != null) {
+//            try {
+//                String jsonResponse = presenter.restGet("getPointsInfo", null);
+//                JSONObject pointsInfo = new JSONObject(jsonResponse);
+//                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
+//                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
+//                rank.setText(pointsInfo.get("rank").toString());
+//                currentPoints.setText(pointsInfo.get("currentPoints").toString());
+//                totalPoints.setText(pointsInfo.get("totalEarned").toString());
+//                totalSpent.setText(pointsInfo.get("totalSpent").toString());
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){
@@ -255,13 +256,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         private Bundle extras;
 
         public PlaceholderFragment() {
-            presenter = new Presenter();
-            jsonResponse = presenter.restGet("getPointsInfo", null);
+//            presenter = new Presenter();
+//            jsonResponse = presenter.restGet("getPointsInfo", null);
         }
 
+        @SuppressLint("ValidFragment")
         public PlaceholderFragment(Bundle extras) {
-            presenter = new Presenter();
-            jsonResponse = presenter.restGet("getPointsInfo", null);
+//            presenter = new Presenter();
+//            jsonResponse = presenter.restGet("getPointsInfo", null);
             this.extras = extras;
         }
 
@@ -293,12 +295,13 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
         public void setRedeemPage(View rootView){
             TextView currentPoints = (TextView) rootView.findViewById(R.id.redeem_cur_points);
-            try {
-                JSONObject pointsInfo = new JSONObject(jsonResponse);
-                currentPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            currentPoints.setText("Current points: " + extras.getString("currentPoints"));
+//            try {
+//                JSONObject pointsInfo = new JSONObject(jsonResponse);
+//                currentPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         }
 
         public void setAccountPage(View rootView) {
@@ -313,19 +316,24 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             if (extras != null) {
                 name.setText(extras.getString("name"));
                 email.setText(extras.getString("email"));
+                progressView.setText(extras.getString("totalEarned") + "/" + extras.getString("newRank"));
+                rank.setText(extras.getString("rank"));
+                currentPoints.setText(extras.getString("currentPoints"));
+                totalPoints.setText(extras.getString("totalEarned"));
+                totalSpent.setText(extras.getString("totalSpent"));
             }
 
-            try {
-                JSONObject pointsInfo = new JSONObject(jsonResponse);
-                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
-                rank.setText(pointsInfo.get("rank").toString());
-                currentPoints.setText(pointsInfo.get("currentPoints").toString());
-                totalPoints.setText(pointsInfo.get("totalEarned").toString());
-                totalSpent.setText(pointsInfo.get("totalSpent").toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                JSONObject pointsInfo = new JSONObject(jsonResponse);
+//                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
+//                rank.setText(pointsInfo.get("rank").toString());
+//                currentPoints.setText(pointsInfo.get("currentPoints").toString());
+//                totalPoints.setText(pointsInfo.get("totalEarned").toString());
+//                totalSpent.setText(pointsInfo.get("totalSpent").toString());
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
@@ -378,7 +386,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             onBackPressed();
             OverlayHUD.setReturningFromAd(false);
         }
-        refreshAccountInfo();
+//        refreshAccountInfo();
         showAd();
     }
 
