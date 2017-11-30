@@ -15,11 +15,13 @@ public class UserInformation {
     private int pointsSpent;
     private int pointsEarned;
     private boolean rankUp;
+    private String id;
 
-    public UserInformation(int pointsToAdd, int pointsSpent, boolean rankUp){
+    public UserInformation(int pointsToAdd, int pointsSpent, boolean rankUp, String id){
         this.pointsEarned = pointsToAdd;
         this.pointsSpent = pointsSpent;
         this.rankUp = rankUp;
+        this.id = id;
     }
 
     /**
@@ -34,6 +36,7 @@ public class UserInformation {
             jsonString.put("pointsEarned", pointsEarned);
             jsonString.put("pointsSpent", pointsSpent);
             jsonString.put("rankUp", rankUp);
+            jsonString.put("id", id);
         } catch (JSONException e) {
             e.printStackTrace();
         }

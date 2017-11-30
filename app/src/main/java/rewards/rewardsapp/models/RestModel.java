@@ -35,42 +35,50 @@ public class RestModel {
     public String restPost(String postString, String data){
         switch (postString){
             case "verifySignIn": return verifySignIn(data);
-            default: return null;
+            default:
+                Log.d("NO ROUTE FOR: ", postString);
+                return null;
         }
     }
 
     /**
-     * @param postString name of task
+     * @param putString name of task
      * @param data JSON data to put
      */
-    public String restPut(String postString, String data){
-        switch (postString){
+    public String restPut(String putString, String data){
+        switch (putString){
             case "putPointsInfo": return putPointsInfo(data);
             case "putCharityVote": return putCharityInfo(data);
-            default: return null;
+            default:
+                Log.d("NO ROUTE FOR: ", putString);
+                return null;
         }
     }
 
     /**
-     * @param postString name of task
+     * @param getString name of task
      * @param data JSON data to get
      */
-    public String restGet(String postString, String data){
-        switch (postString){
-            case "getPointsInfo": return getPointsInfo();
+    public String restGet(String getString, String data){
+        switch (getString){
+            case "getPointsInfo": return getPointsInfo(data);
             case "getVotesInfo": return getVotesInfo();
-            default: return null;
+            default:
+                Log.d("NO ROUTE FOR: ", getString);
+                return null;
         }
     }
 
     /**
-     * @param postString name of task
+     * @param deleteString name of task
      * @param data JSON data to delete
      */
-    public String restDelete(String postString, String data){
-        switch (postString){
+    public String restDelete(String deleteString, String data){
+        switch (deleteString){
             case "": return null;
-            default: return null;
+            default:
+                Log.d("NO ROUTE FOR: ", deleteString);
+                return null;
         }
     }
 
@@ -92,9 +100,9 @@ public class RestModel {
         return null;
     }
 
-    private String getPointsInfo(){
+    private String getPointsInfo(String id){
         try{
-            return new HTTPAsyncTask().execute(serverAddress + "/pointsInfo", "GET").get();
+            return new HTTPAsyncTask().execute(serverAddress + "/users/" + id, "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

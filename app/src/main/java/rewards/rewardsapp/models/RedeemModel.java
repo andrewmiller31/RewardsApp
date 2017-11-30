@@ -10,9 +10,11 @@ import rewards.rewardsapp.presenters.Presenter;
  */
 
 public class RedeemModel {
-    Presenter presenter;
+    private Presenter presenter;
     private int cost;
     private redeemType type;
+    private String id;
+
 //    private String title;
 //    private String info;
     public static enum redeemType{
@@ -21,14 +23,15 @@ public class RedeemModel {
         sweepstakes
     }
 
-    public RedeemModel(int cost, redeemType type){
+    public RedeemModel(int cost, redeemType type, String id){
         presenter = new Presenter();
         this.cost = cost;
         this.type = type;
+        this.id = id;
     }
 
     public String redeem(){
-        String jsonResponse = presenter.restPut("putPointsInfo",  new UserInformation(0, cost, false).jsonStringify());
+        String jsonResponse = presenter.restPut("putPointsInfo",  new UserInformation(0, cost, false, id).jsonStringify());
         try {
             JSONObject responseInfo = new JSONObject(jsonResponse);
             String response = responseInfo.get("id").toString();

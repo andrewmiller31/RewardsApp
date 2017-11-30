@@ -3,7 +3,7 @@ var mongojs = require("mongojs");
 
 var url = 'mongodb://127.0.0.1:27017/rewardsDB';
 
-var collections = ['users', 'slots', 'scratches'];
+var collections = ['users', 'slots', 'scratches', 'charities'];
 
 var assert = require('assert');
 
@@ -17,7 +17,7 @@ console.log("MongoDB is active.")
 */
 
 module.exports.findUser = function(userID, callback) {
-    mongoDBRef.collection('users').find({user: userID}).toArray(function(err, docs) {
+    mongoDBRef.users.find({id: userID}).toArray(function(err, docs) {
 	    if (docs.length === 0 && !err) {
 	        console.log("User does not exist. Creating new profile...")
 	        var userData = {
@@ -26,9 +26,10 @@ module.exports.findUser = function(userID, callback) {
                 totalSpent: 0,
                 currentPoints: 0,
                 newRank: 10000,
-                rank: 1
+                rank: 1,
+                role: 'User'
             };
-	        mongoDBRef.collection('users').save({user: userID, userData}, function(err, result){
+	        mongoDBRef.collection('users').save(userData, function(err, result){
                 if(err || !result) console.log("User failed to save in database.");
                 else {
                     console.log("User inserted into users collection in MongoDB.");
@@ -37,10 +38,46 @@ module.exports.findUser = function(userID, callback) {
             });
 	    }
 	    else if(!err){
-            console.log("Found the following records");
             callback(docs, false);
         }
     });
+};
+
+module.exports.updateUser = function(userID, newData) {
+    mongoDBRef.users.find({id: userID}).toArray(function(err, docs) {
+    	    if(!err){
+                var tEarned = docs[0].totalEarned + newData.pointsEarned;
+                var cPoints = docs[0].currentPoints + newData.pointsEarned;
+                var tSpent = docs[0].totalSpent;
+                var nRnk = docs[0].newRank;
+                var rnk = docs[0].rank;
+
+                if((cPoints - newData.pointsSpent) >= 0){
+                    cPoints -= newData.pointsSpent;
+                    tSpent += newData.pointsSpent;
+                    }
+
+                if (tEarned >= nRnk){
+                    rnk++;
+                    nRnk += 10000;
+                    }
+
+                var newValues = { $set: { totalEarned: tEarned,
+                                            totalSpent: tSpent,
+                                            currentPoints: cPoints,
+                                            newRank: nRnk,
+                                            rank: rnk, } };
+
+                mongoDBRef.users.findAndModify({
+                	        query: {id: userID},
+                	        update: newValues,
+                	        new: true},
+                	        function (err, tank) {
+                              if (err) throw err;
+                            });
+            }
+        });
+
 };
 
 

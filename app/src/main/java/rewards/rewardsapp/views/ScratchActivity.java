@@ -188,7 +188,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
-        presenter.sendPoints(winAmount);
+        presenter.sendPoints(winAmount, getIntent().getStringExtra("id"));
         Toast.makeText(this, "+" + winAmount + " Points", Toast.LENGTH_SHORT).show();
         rewarded = true;
     }

@@ -45,12 +45,12 @@ public class Presenter {
     //
     //This method is used to send earned points to the server;
     //
-    public String sendPoints(int points){ return restPut("putPointsInfo", new UserInformation(points, 0, false).jsonStringify());}
+    public String sendPoints(int points, String id){ return restPut("putPointsInfo", new UserInformation(points, 0, false, id).jsonStringify());}
 
     //
     // This section covers the methods related to RedeemModel
     //
-    public void setRedeemModel(int cost, RedeemModel.redeemType type){redeemModel = new RedeemModel(cost, type);}
+    public void setRedeemModel(int cost, RedeemModel.redeemType type, String id){redeemModel = new RedeemModel(cost, type, id);}
 
     public String redeemPoints(){return redeemModel.redeem();}
 

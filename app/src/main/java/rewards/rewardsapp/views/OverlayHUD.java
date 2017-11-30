@@ -24,7 +24,6 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.presenters.Presenter;
 
-
 /**
  * Created by Andrew Miller on 10/24/2017.
  */
@@ -40,6 +39,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     private Presenter presenter;
     private static boolean returningFromAd;
     private boolean restart;
+    private String id;
 
     //amount the user earns per video watched
     private static final int EARN_AMOUNT = 10;
@@ -59,6 +59,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         viewSetup();
         loadRewardedVideoAd();
         wmSetup();
+
 
         clickCount = 1;
         isRunning = true;
@@ -265,6 +266,12 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        id = intent.getStringExtra("id");
+        return START_STICKY;
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
@@ -287,7 +294,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     @Override
     public void onRewarded(RewardItem reward) {
         Toast.makeText(this, "+10 Points", Toast.LENGTH_SHORT).show();
-        presenter.sendPoints(EARN_AMOUNT);
+        presenter.sendPoints(EARN_AMOUNT, id);
     }
 
     @Override

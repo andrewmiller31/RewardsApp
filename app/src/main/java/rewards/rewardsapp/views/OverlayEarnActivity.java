@@ -27,6 +27,7 @@ public class OverlayEarnActivity extends Activity{
         super.onCreate(savedInstanceState);
 
         Intent overlay = new Intent(this, OverlayHUD.class);
+        overlay.putExtra("id", getIntent().getStringExtra("id"));
         if(!OverlayHUD.isIsRunning()) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {

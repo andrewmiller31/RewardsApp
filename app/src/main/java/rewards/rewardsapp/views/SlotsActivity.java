@@ -255,7 +255,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     @Override
     public void onRewarded(RewardItem rewardItem){
-        presenter.sendPoints(totalPoints);
+        presenter.sendPoints(totalPoints, getIntent().getStringExtra("id"));
         Toast.makeText(this, "+" + totalPoints + " Points", Toast.LENGTH_SHORT).show();
         rewarded = true;
     }

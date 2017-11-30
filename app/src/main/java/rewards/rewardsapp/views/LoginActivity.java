@@ -58,6 +58,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivityForResult(signInIntent, 5000);
     }
 
+    private void signOut(){
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+//        Intent intent = new Intent(this, LoginActivity.class);
+//        startActivity(intent);
+    }
+
     private void updateUI(GoogleSignInAccount account){
         if(account != null){
             idToken = account.getIdToken();
@@ -114,18 +120,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onStart(){
         super.onStart();
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            Log.d("LoginActivity", "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else{
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
-                }
-            });
+        if(getIntent().getBooleanExtra("signOff",false) == true){
+            signOut();
+        }
+        else {
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()) {
+                Log.d("LoginActivity", "Got cached sign-in");
+                GoogleSignInResult result = opr.get();
+                handleSignInResult(result);
+            } else {
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(GoogleSignInResult googleSignInResult) {
+                        handleSignInResult(googleSignInResult);
+                    }
+                });
+            }
+
         }
     }
 
@@ -137,4 +149,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             handleSignInResult(result);
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(OverlayHUD.isReturningFromAd()) {
+            onBackPressed();
+            OverlayHUD.setReturningFromAd(false);
+        }
+    }
+
 }

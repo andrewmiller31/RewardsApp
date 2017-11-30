@@ -27,6 +27,11 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,9 +50,12 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     private RewardedVideoAd mRewardedVideoAd;
     private Intent earnIntent;
     private boolean adRewarded;
+    private GoogleApiClient mGoogleApiClient;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        id = getIntent().getStringExtra("id");
         super.onCreate(savedInstanceState);
         presenter = new Presenter();
         toast = new Toast(this);
@@ -93,44 +101,59 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        switch (id){
+            case R.id.log_out:
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                        new ResultCallback<Status>() {
+                            @Override
+                            public void onResult(Status status) {
+                                // ...
+                                Toast.makeText(getApplicationContext(),"Logged Out",Toast.LENGTH_SHORT).show();
+                                Intent loginIntent =new Intent(HomeActivity.this, LoginActivity.class);
+                                startActivity(loginIntent);
+                            }
+                        });
+                break;
+            default: break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     //onClick Methods
 
     public void cashClick(View view){
-        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash);
+        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash, id);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
             showToast("Insufficient Points.");
         }
         else {
             showToast("Congrats! You earned $1.");
-//            refreshAccountInfo();
+            refreshAccountInfo();
         }
     }
 
     public void sweepClick(View view){
-        presenter.setRedeemModel(50, RedeemModel.redeemType.cash);
+        presenter.setRedeemModel(50, RedeemModel.redeemType.sweepstakes, id);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
             showToast("Insufficient Points.");
         }
         else {
             showToast("Congrats! You have entered the contest.");
-//            refreshAccountInfo();
+            refreshAccountInfo();
         }
     }
 
     public void giftClick(View view){
-        presenter.setRedeemModel(10000, RedeemModel.redeemType.cash);
+        presenter.setRedeemModel(10000, RedeemModel.redeemType.card, id);
         String result = presenter.redeemPoints();
         if(result.equals("333")){
             showToast("Insufficient Points.");
         }
         else {
             showToast("Congrats! You earned a $10 card.");
-//            refreshAccountInfo();
+            refreshAccountInfo();
         }
     }
 
@@ -156,7 +179,9 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     public void passiveEarn(View view) {
         if(!OverlayHUD.isReturningFromAd()) {
-            startActivity(new Intent(this, OverlayEarnActivity.class));
+            Intent newIntent = new Intent(this, OverlayEarnActivity.class);
+            newIntent.putExtra("id", id);
+            startActivity(newIntent);
             if (!OverlayHUD.isIsRunning()) {
                 showToast("Surf & Earn enabled. You can now use your phone freely!");
             } else if (OverlayHUD.isIsRunning()) {
@@ -205,31 +230,31 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         toast.show();
     }
 
-    //refreshes account info
-//    public void refreshAccountInfo() {
-//        TextView progressView = (TextView) findViewById(R.id.progress);
-//        TextView rank = (TextView) findViewById(R.id.rank_view);
-//        TextView currentPoints = (TextView) findViewById(R.id.points_current);
-//        TextView totalPoints = (TextView) findViewById(R.id.points_total);
-//        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
-//        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
-//
-//        if(progressView != null) {
-//            try {
-//                String jsonResponse = presenter.restGet("getPointsInfo", null);
-//                JSONObject pointsInfo = new JSONObject(jsonResponse);
-//                redeemCurPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
-//                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
-//                rank.setText(pointsInfo.get("rank").toString());
-//                currentPoints.setText(pointsInfo.get("currentPoints").toString());
-//                totalPoints.setText(pointsInfo.get("totalEarned").toString());
-//                totalSpent.setText(pointsInfo.get("totalSpent").toString());
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+//    refreshes account info
+    public void refreshAccountInfo() {
+        TextView progressView = (TextView) findViewById(R.id.progress);
+        TextView rank = (TextView) findViewById(R.id.rank_view);
+        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+        TextView totalPoints = (TextView) findViewById(R.id.points_total);
+        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
+        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
+
+        if(progressView != null) {
+            try {
+                String jsonResponse = presenter.restGet("getPointsInfo", getIntent().getStringExtra("id"));
+                JSONObject userInfo = new JSONObject(jsonResponse);
+                redeemCurPoints.setText("Current points: " + userInfo.get("currentPoints").toString());
+                progressView.setText(userInfo.get("totalEarned").toString() + "/" + userInfo.get("newRank").toString());
+                rank.setText(userInfo.get("rank").toString());
+                currentPoints.setText(userInfo.get("currentPoints").toString());
+                totalPoints.setText(userInfo.get("totalEarned").toString());
+                totalSpent.setText(userInfo.get("totalSpent").toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){
@@ -251,8 +276,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     //find and set up fragments used
     public static class PlaceholderFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private Presenter presenter;
-        private String jsonResponse;
         private Bundle extras;
 
         public PlaceholderFragment() {
@@ -384,9 +407,9 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         super.onResume();
         if(OverlayHUD.isReturningFromAd()) {
             onBackPressed();
-            OverlayHUD.setReturningFromAd(false);
+//            OverlayHUD.setReturningFromAd(false);
         }
-//        refreshAccountInfo();
+        refreshAccountInfo();
         showAd();
     }
 
@@ -424,6 +447,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public void onRewardedVideoAdClosed() {
         if(adRewarded) {
+            earnIntent.putExtra("id", id);
             startActivity(earnIntent);
             adRewarded = false;
         }
@@ -446,4 +470,19 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     public void onRewardedVideoAdFailedToLoad(int i) {
         startActivity(earnIntent);
     }
+
+    @Override
+    protected void onStart() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
 }
+
+

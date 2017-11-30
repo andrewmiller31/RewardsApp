@@ -55,17 +55,14 @@ var votes = {
         function(e, login) {
           var payload = login.getPayload();
           var userid = payload['sub'];
-          console.log(userid);
           mongodb.findUser(userid, function(result, newUser){
                 if(newUser === false){
                    var user = result[0];
-                   console.log("Found user.");
-                   res.body = JSON.stringify(user.userData);
+                   res.body = JSON.stringify(user);
                    res.send(res.body);
                    }
                 else{
-                    var user = result.userData;
-                    console.log("Added user");
+                    var user = result;
                     res.body = JSON.stringify(user);
                     res.send(res.body);
                 }
@@ -85,35 +82,35 @@ app.put('/pointsInfo', function (req, res) {
     // If for some reason the JSON isn't parsed, return HTTP error 400
     if (!req.body) return res.sendStatus(400);
 
-    user.totalEarned += req.body.pointsEarned;
-    user.currentPoints += req.body.pointsEarned;
+    mongodb.updateUser(req.body.id, req.body);
 
-    if(req.body.rankUp === true){
-        user.rank++;
-    }
+//    user.totalEarned += req.body.pointsEarned;
+//    user.currentPoints += req.body.pointsEarned;
+//
+//    if(req.body.rankUp === true){
+//        user.rank++;
+//    }
+//
+//    if((user.currentPoints - req.body.pointsSpent) >= 0){
+//        user.currentPoints -= req.body.pointsSpent;
+//        user.totalSpent += req.body.pointsSpent;
+//
+//    }
+//
+//    else {
+//        var jsonResponse = {
+//                 id: '333', status: 'failed'
+//        };
+//    }
+//
+//    if (user.totalEarned >= user.newRank){
+//        user.rank++;
+//        user.newRank += 10000;
+//    }
 
-    if((user.currentPoints - req.body.pointsSpent) >= 0){
-        user.currentPoints -= req.body.pointsSpent;
-        user.totalSpent += req.body.pointsSpent;
-        var jsonResponse = {
+    var jsonResponse = {
                 id: '123', status: 'updated'
             };
-    }
-
-    else {
-        var jsonResponse = {
-                 id: '333', status: 'failed'
-        };
-    }
-
-    if (user.totalEarned >= user.newRank){
-        user.rank++;
-        user.newRank += 10000;
-    }
-
-
-    console.log("\nPoints info in now:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
-    + user.totalSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
     res.json(jsonResponse);
 });
 
@@ -176,12 +173,10 @@ app.put('/charityVotes', function (req, res) {
 
 app.get('/users/:userID', function (req,res) {
      var club;
-     console.log("Looking for " + req.params.userID);
 
      mongodb.findUser(req.params.userID, function(result){
          var user = result[0];
-         console.log("Found user.");
-         res.body = JSON.stringify(user.userData);
+         res.body = JSON.stringify(user);
          res.send(res.body);
      });
 });
