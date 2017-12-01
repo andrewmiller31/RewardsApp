@@ -158,12 +158,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     public void scratchOff(View view) {
-        if(!OverlayHUD.isIsRunning()) {
-            loadRewardedVideoAd();
-            earnIntent = new Intent(this, ScratchActivity.class);
-            runAd();
-        }
-        else showToast("Cannot play scratch offs while using Surf & Earn");
+//        if(!OverlayHUD.isIsRunning()) {
+//            loadRewardedVideoAd();
+//            earnIntent = new Intent(this, ScratchActivity.class);
+//            runAd();
+//        }
+//        else showToast("Cannot play scratch offs while using Surf & Earn");
+        earnIntent = new Intent(this, ScratchActivity.class);
+        startActivity(earnIntent);
     }
 
     public void slots(View view){

@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Objects;
 
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.RestModel;
@@ -23,6 +24,7 @@ public class Presenter {
     private RestModel restModel;
     private SlotsModel slotsModel;
     private ScratchModel scratchModel;
+    private ScratchModel bonusScratchModel;
     private RedeemModel redeemModel;
 
     public Presenter(){
@@ -57,13 +59,31 @@ public class Presenter {
     //
     // This section covers methods related to ScratchModel
     //
-    public void setScratchModel(int[] imageBank){scratchModel = new ScratchModel(imageBank);}
+    public void setScratchModel(String modelName, int[] imageBank, int[] winners){
+        if(Objects.equals(modelName, "scratchModel")) scratchModel = new ScratchModel(imageBank, winners);
+        if(modelName.equals("tokenModel")) bonusScratchModel = new ScratchModel(imageBank, winners);
+    }
 
-    public int scratchNumGen(){ return scratchModel.numGen();}
+    public int scratchNumGen(String modelName){
+        if(Objects.equals(modelName, "scratchModel")) return scratchModel.numGen();
+        if(Objects.equals(modelName, "tokenModel")) return bonusScratchModel.numGen();
+        return 0;
+    }
+
+    public int checkScratchWin(String modelName){
+        if(Objects.equals(modelName, "scratchModel")) return scratchModel.win();
+        if(modelName.equals("tokenModel")) return bonusScratchModel.win();
+        return 0;
+    }
+
+    public int getScratchWinner(String modelName){
+        if(Objects.equals(modelName, "scratchModel")) return scratchModel.getWinningImage();
+        if(modelName.equals("tokenModel")) return bonusScratchModel.getWinningImage();
+        return 0;
+    }
 
     public boolean checkAllRevealed(boolean[] revealed){return scratchModel.checkAllRevealed(revealed);}
 
-    public int checkScratchWin(){ return scratchModel.win();}
 
     //
     // This section covers methods related to SlotsModel

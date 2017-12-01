@@ -5,135 +5,252 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="rewards.rewardsapp.views.ScratchActivity"
-    android:background="@color/whiteSmoke">
+    android:background="@color/black">
 
     <android.support.v7.widget.CardView
         android:id="@+id/scratch_card"
-        android:layout_width="300dp"
-        android:layout_height="430dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:paddingTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/end_result">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardBackgroundColor="@color/whiteSmoke"
+        app:cardCornerRadius="2dp">
+
+        <ImageView
+            android:id="@+id/card_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="background image" />
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:background="@color/colorAccent">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/scratch_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/sketchetik_light"
+                android:gravity="center"
                 android:text="@string/scratch_title"
                 android:textColor="@color/black"
-                android:textSize="25sp"
+                android:textSize="50sp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                app:layout_constraintBottom_toTopOf="@id/main_scratches"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/scratch_view1"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toTopOf="@+id/scratch_view3"
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/main_scratches"
+                android:layout_width="210dp"
+                android:layout_height="330dp"
+                app:cardBackgroundColor="@color/grayMaterial500"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/scratch_view2"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_title" />
+                app:layout_constraintRight_toLeftOf="@+id/bonus_scratch"
+                app:layout_constraintTop_toBottomOf="@+id/scratch_title"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view2"
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/match_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        app:cardBackgroundColor="@color/gray80"
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="0dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/instructions_text1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="35dp"
+                                android:fontFamily="@font/sketchetik_light"
+                                android:text="Match three"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"/>
+
+                            <ImageView
+                                android:id="@+id/match_symbol"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/scratch_cat"
+                                android:layout_toRightOf="@+id/instructions_text1"/>
+
+                            <TextView
+                                android:id="@+id/instructions_text2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/sketchetik_light"
+                                android:text="to win!"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:layout_toRightOf="@id/match_symbol"/>
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view1"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/scratch_view3"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@+id/scratch_view2"
+                        app:layout_constraintTop_toBottomOf="@+id/match_box"/>
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view2"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/scratch_view4"
+                        app:layout_constraintLeft_toRightOf="@+id/scratch_view1"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/match_box" />
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view3"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/scratch_view5"
+                        app:layout_constraintLeft_toLeftOf="@+id/scratch_view1"
+                        app:layout_constraintTop_toBottomOf="@+id/scratch_view1" />
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view4"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/scratch_view6"
+                        app:layout_constraintRight_toRightOf="@+id/scratch_view2"
+                        app:layout_constraintTop_toBottomOf="@+id/scratch_view1" />
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view5"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="@+id/scratch_view1"
+                        app:layout_constraintTop_toBottomOf="@+id/scratch_view3" />
+
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/scratch_view6"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="@+id/scratch_view2"
+                        app:layout_constraintTop_toBottomOf="@+id/scratch_view4" />
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/bonus_scratch"
+                android:layout_height="120dp"
                 android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toTopOf="@+id/scratch_view4"
-                app:layout_constraintLeft_toRightOf="@+id/scratch_view1"
+                app:layout_constraintLeft_toRightOf="@+id/main_scratches"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_title" />
+                app:layout_constraintTop_toTopOf="@+id/main_scratches"
+                app:layout_constraintBottom_toBottomOf="@+id/main_scratches"
+                app:cardBackgroundColor="@color/grayMaterial500">
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toTopOf="@+id/scratch_view5"
-                app:layout_constraintLeft_toLeftOf="@+id/scratch_view1"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_view1" />
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toTopOf="@+id/scratch_view6"
-                app:layout_constraintRight_toRightOf="@+id/scratch_view2"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_view1" />
+                    <TextView
+                        android:id="@+id/bonus_tokens"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/primaryText"
+                        android:text="Bonus Tokens"
+                        android:background="@color/gray80"
+                        app:layout_constraintLeft_toRightOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="@+id/scratch_view1"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_view3" />
+                    <com.cooltechworks.views.ScratchImageView
+                        android:id="@+id/token_scratch"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="@color/whiteSmoke"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@+id/bonus_tokens"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <com.cooltechworks.views.ScratchImageView
-                android:id="@+id/scratch_view6"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:background="@color/whiteSmoke"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="@+id/scratch_view2"
-                app:layout_constraintTop_toBottomOf="@+id/scratch_view4" />
+
+                </android.support.constraint.ConstraintLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+
+            <!--<TextView-->
+                <!--android:id="@+id/end_result"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--app:layout_constraintTop_toBottomOf="@id/scratch_card"-->
+                <!--app:layout_constraintBottom_toTopOf="@id/claim_button"-->
+                <!--app:layout_constraintLeft_toLeftOf="parent"-->
+                <!--app:layout_constraintRight_toRightOf="parent"/>-->
+
+            <!--<Button-->
+                <!--android:id="@+id/claim_button"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:clickable="false"-->
+                <!--android:text="Claim"-->
+                <!--android:onClick="claimPoints"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/main_scratches"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent"/>-->
 
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
 
-    <TextView
-        android:id="@+id/end_result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        app:layout_constraintTop_toBottomOf="@id/scratch_card"
-        app:layout_constraintBottom_toTopOf="@id/claim_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
-    <Button
-        android:id="@+id/claim_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:clickable="false"
-        android:text="Claim"
-        android:onClick="claimPoints"
-        app:layout_constraintTop_toBottomOf="@id/end_result"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

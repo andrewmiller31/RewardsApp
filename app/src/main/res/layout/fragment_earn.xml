@@ -8,7 +8,7 @@
     tools:context="rewards.rewardsapp.views.HomeActivity">
 
     <Button
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:textAllCaps="false"
         android:textColor="@color/whiteSmoke"
         android:textSize="40sp"
@@ -23,7 +23,7 @@
         android:onClick="scratchOff"/>
 
     <Button
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:textAllCaps="false"
         android:textColor="@color/whiteSmoke"
         android:textSize="40sp"
@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toTopOf="@+id/passive_button"/>
 
     <Button
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:textAllCaps="false"
         android:textColor="@color/whiteSmoke"
         android:textSize="40sp"

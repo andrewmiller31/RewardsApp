@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,34 +31,50 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     private ScratchImageView scratch4;
     private ScratchImageView scratch5;
     private ScratchImageView scratch6;
+    private ScratchImageView tokenScratch;
+
     private static int[] imageBank = {R.drawable.scratch_cow, R.drawable.scratch_dog, R.drawable.scratch_pig, R.drawable.scratch_sheep}; //, R.drawable.scratch_cat
-    private TextView resultMessage;
+    private static int[] winner1 = {R.drawable.scratch_dog};
+
+    private static int[] tokenBank = {R.drawable.scratch_one_token, R.drawable.scratch_token_pile, R.drawable.scratch_token_jackpot, R.drawable.scratch_one_token, R.drawable.scratch_lose};
+    private static int[] winner2 = {R.drawable.scratch_one_token, R.drawable.scratch_token_jackpot, R.drawable.scratch_token_pile};
+
+    //    private TextView resultMessage;
     private boolean[] revealed;
     private boolean over;
     private RewardedVideoAd mRewardedVideoAd;
     private int winAmount;
-    private Button claim;
+    private int tokenWin;
+//    private Button claim;
+    private ImageView winner;
     private Presenter presenter;
     private boolean rewarded;
 
     //constants
-    private static final int LITTLE_WIN = 10;
-    private static final int SMALL_WIN = 100;
-    private static final int MEDIUM_WIN = 1000;
-    private static final int LARGE_WIN = 10000;
+    private static final int SCRATCH_WIN = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         over = false;
         rewarded = true;
         presenter = new Presenter();
-        presenter.setScratchModel(imageBank);
+
+        presenter.setScratchModel( "tokenModel",tokenBank, winner2);
+        presenter.setScratchModel( "scratchModel",imageBank, winner1);
+
+        revealed = new boolean[7];
+//        resultMessage = (TextView) findViewById(R.id.end_result);
+//        claim = (Button) findViewById(R.id.claim_button);
         setContentView(R.layout.activity_scratch);
-        revealed = new boolean[6];
-        resultMessage = (TextView) findViewById(R.id.end_result);
-        claim = (Button) findViewById(R.id.claim_button);
+        ImageView background = (ImageView) findViewById(R.id.card_background);
+        background.setImageResource(R.drawable.background_field);
+        winner = (ImageView) findViewById(R.id.match_symbol);
+        winner.setImageResource(R.drawable.scratch_dog);
         setCard();
+
+
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
@@ -65,37 +82,25 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
     private void endGame(){
 
-        int winNum = presenter.checkScratchWin();
+        int winNum = presenter.checkScratchWin("scratchModel");
+        int tokenWinNum = presenter.checkScratchWin("tokenModel");
 
-        switch (winNum){
-            case 3:
-                resultMessage.setText("Little win. +" + LITTLE_WIN + " points");
-                winAmount = LITTLE_WIN;
-                rewarded = false;
-                break;
-            case 4:
-                resultMessage.setText("Small win. +" + SMALL_WIN + " points");
-                winAmount = SMALL_WIN;
-                rewarded = false;
-                break;
-            case 5:
-                resultMessage.setText("Medium win! +" + MEDIUM_WIN + " points");
-                winAmount = MEDIUM_WIN;
-                rewarded = false;
-                break;
-            case 6:
-                resultMessage.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-                winAmount = LARGE_WIN;
-                rewarded = false;
-                break;
-            default:
-                resultMessage.setText("Loss!");
-                winAmount = 0;
-                return;
+        if(winNum >= 3){
+            winAmount = SCRATCH_WIN;
+            rewarded = false;
         }
-        if(winAmount != 0){
-            claim.setVisibility(View.VISIBLE);
-            claim.setClickable(true);
+        if(tokenWinNum > 0){
+            int tokenWinner = presenter.getScratchWinner("tokenModel");
+            tokenWin = 1;
+        }
+        if(winNum < 3 && tokenWinNum < 1){
+            winAmount = 0;
+        }
+
+
+        if(winAmount != 0 || tokenWin != 0){
+//            claim.setVisibility(View.VISIBLE);
+//            claim.setClickable(true);
         }
     }
 
@@ -107,12 +112,12 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         scratch5 = (ScratchImageView) findViewById(R.id.scratch_view5);
         scratch6 = (ScratchImageView) findViewById(R.id.scratch_view6);
 
-        scratch1.setImageResource(presenter.scratchNumGen());
-        scratch2.setImageResource(presenter.scratchNumGen());
-        scratch3.setImageResource(presenter.scratchNumGen());
-        scratch4.setImageResource(presenter.scratchNumGen());
-        scratch5.setImageResource(presenter.scratchNumGen());
-        scratch6.setImageResource(presenter.scratchNumGen());
+        scratch1.setImageResource(presenter.scratchNumGen("scratchModel"));
+        scratch2.setImageResource(presenter.scratchNumGen("scratchModel"));
+        scratch3.setImageResource(presenter.scratchNumGen("scratchModel"));
+        scratch4.setImageResource(presenter.scratchNumGen("scratchModel"));
+        scratch5.setImageResource(presenter.scratchNumGen("scratchModel"));
+        scratch6.setImageResource(presenter.scratchNumGen("scratchModel"));
 
         scratchListenerSet(scratch1, 0);
         scratchListenerSet(scratch2, 1);
@@ -120,6 +125,10 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         scratchListenerSet(scratch4, 3);
         scratchListenerSet(scratch5, 4);
         scratchListenerSet(scratch6, 5);
+
+        tokenScratch = (ScratchImageView) findViewById(R.id.token_scratch);
+        tokenScratch.setImageResource(presenter.scratchNumGen("tokenModel"));
+        scratchListenerSet(tokenScratch, 6);
     }
 
     private void scratchListenerSet(ScratchImageView siv, final int num) {
@@ -139,9 +148,9 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         });
     }
 
-    public void claimPoints(View view){
-        runAd();
-    }
+//    public void claimPoints(View view){
+//        runAd();
+//    }
 
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){

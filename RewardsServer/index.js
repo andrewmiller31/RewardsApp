@@ -84,30 +84,6 @@ app.put('/pointsInfo', function (req, res) {
 
     mongodb.updateUser(req.body.id, req.body);
 
-//    user.totalEarned += req.body.pointsEarned;
-//    user.currentPoints += req.body.pointsEarned;
-//
-//    if(req.body.rankUp === true){
-//        user.rank++;
-//    }
-//
-//    if((user.currentPoints - req.body.pointsSpent) >= 0){
-//        user.currentPoints -= req.body.pointsSpent;
-//        user.totalSpent += req.body.pointsSpent;
-//
-//    }
-//
-//    else {
-//        var jsonResponse = {
-//                 id: '333', status: 'failed'
-//        };
-//    }
-//
-//    if (user.totalEarned >= user.newRank){
-//        user.rank++;
-//        user.newRank += 10000;
-//    }
-
     var jsonResponse = {
                 id: '123', status: 'updated'
             };
@@ -172,8 +148,6 @@ app.put('/charityVotes', function (req, res) {
  */
 
 app.get('/users/:userID', function (req,res) {
-     var club;
-
      mongodb.findUser(req.params.userID, function(result){
          var user = result[0];
          res.body = JSON.stringify(user);

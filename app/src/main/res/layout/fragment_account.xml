@@ -224,7 +224,7 @@
         android:text="@string/choose_a_charity"
         android:textAllCaps="false"
         android:textSize="70sp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:layout_marginBottom="50dp"
         android:onClick="charityPoll"/>
 

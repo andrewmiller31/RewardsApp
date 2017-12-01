@@ -11,11 +11,19 @@ import rewards.rewardsapp.R;
 
 public class ScratchModel {
 
-    private static int[] imageBank;
+    private  int[] imageBank;
+    private int[] winners;
     private List<Integer> values;
+    private int winningImage;
 
-    public ScratchModel(int[] imageBank){
+    /**
+     * Ctor for ScratchModel
+     * @param imageBank the array of images to randomly place
+     * @param winners array of possible winners (usually will just contain one element)
+     */
+    public ScratchModel(int[] imageBank, int[] winners){
         this.imageBank = imageBank.clone();
+        this.winners = winners.clone();
         values = new ArrayList<>();
     }
 
@@ -42,13 +50,30 @@ public class ScratchModel {
     public int win(){
         int matchCounter;
         int winNum = 0;
-        for(int i = 0; i < values.size(); i++){
-            matchCounter = 0;
-            for(int j = i + 1; j < values.size(); j++){
-                if(values.get(i).equals(values.get(j))) matchCounter++;
+        int size = values.size();
+        for(int i = 0; i < size; i++) {
+            if (isWinner(values.get(i))) {
+                matchCounter = 1;
+                for (int j = i + 1; j < size; j++) {
+                    if (values.get(i).equals(values.get(j))) matchCounter++;
+                }
+                if (winNum < matchCounter){
+                    winNum = matchCounter;
+                    winningImage = imageBank[i];
+                }
             }
-            if(matchCounter >= 1 && winNum < matchCounter + 1) winNum = matchCounter + 1;
         }
         return winNum;
+    }
+
+    public int getWinningImage(){
+        return winningImage;
+    }
+
+    private boolean isWinner(int checkValue){
+        for (int winner : winners) {
+            if (checkValue == winner) return true;
+        }
+        return false;
     }
 }
