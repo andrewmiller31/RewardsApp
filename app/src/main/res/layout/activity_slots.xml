@@ -4,142 +4,291 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/whiteSmoke"
+    android:background="@drawable/background_field"
     tools:context="rewards.rewardsapp.views.SlotsActivity">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/slot_images"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
+        android:id="@+id/slot_machine"
+        android:layout_width="285dp"
+        android:layout_height="350dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toTopOf="@+id/tokens_card"
+        app:cardCornerRadius="10dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_card_gray">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="51dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/ultra"
+                android:text="Spin &amp; Win"
+                android:textColor="@color/primaryText"
+                android:textSize="35sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/slot_images"
+                android:layout_width="235dp"
+                android:layout_height="60dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                android:layout_marginTop="5dp"
+                app:cardCornerRadius="6dp">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/background_reels">
+
+                    <ImageView
+                        android:id="@+id/slot_1"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/slots_cherry"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/slot_2"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/slot_2"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/slots_cherry"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/slot_1"
+                        app:layout_constraintRight_toLeftOf="@id/slot_3"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/slot_3"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/slots_cherry"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/slot_2"
+                        app:layout_constraintRight_toLeftOf="@id/slot_4"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/slot_4"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/slots_cherry"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/slot_3"
+                        app:layout_constraintRight_toLeftOf="@id/slot_5"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/slot_5"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/slots_cherry"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/slot_4"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:id="@+id/slot_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Costs 2"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="3dp"
+                app:layout_constraintLeft_toLeftOf="@id/slot_images"
+                app:layout_constraintTop_toBottomOf="@id/slot_images"
+                />
+
+            <ImageView
+                android:id="@+id/token_img"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/app_token"
+                app:layout_constraintLeft_toRightOf="@+id/slot_cost"
+                app:layout_constraintTop_toTopOf="@id/slot_cost"
+                app:layout_constraintBottom_toBottomOf="@id/slot_cost"
+                android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="per play"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:layout_marginStart="5dp"
+                app:layout_constraintLeft_toRightOf="@id/token_img"
+                app:layout_constraintTop_toTopOf="@id/slot_cost"
+                />
+
+            <Button
+                android:id="@+id/spin"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_spin_button"
+                android:text="Spin to Win!"
+                android:fontFamily="@font/ultra"
+                android:textAllCaps="false"
+                android:onClick="spin"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="30dp"
+                />
+
+            <TextView
+                android:id="@+id/jackpot_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ultra"
+                android:text="Jackpot:"
+                android:textColor="@color/primaryText"
+                android:layout_marginTop="3dp"
+                app:layout_constraintBottom_toTopOf="@+id/jackpot_box"
+                app:layout_constraintLeft_toLeftOf="@+id/slot_images"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/jackpot_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/whiteSmoke"
+                app:cardCornerRadius="2dp"
+                android:layout_marginTop="3dp"
+                app:layout_constraintLeft_toLeftOf="@+id/jackpot_title"
+                app:layout_constraintTop_toBottomOf="@+id/slot_cost"
+                app:layout_constraintBottom_toTopOf="@+id/spin">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="235dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/jackpot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="50sp"
+                        android:fontFamily="@font/digital_regular"
+                        android:text="0000010000"
+                        android:textColor="@color/red"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.v7.widget.CardView>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/tokens_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/slot_machine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/slot_machine"
+        app:layout_constraintRight_toLeftOf="@+id/points_card">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="50dp"
+            android:background="@drawable/background_card_gray">
 
             <ImageView
-                android:id="@+id/slot_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/slots_cherry"
+                android:id="@+id/tokens_available_symbol"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:src="@drawable/app_token"
+                android:layout_marginStart="5dp"/>
 
-            <ImageView
-                android:id="@+id/slot_2"
+            <TextView
+                android:id="@+id/tokens_available"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/slots_cherry"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/slot_1"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-            <ImageView
-                android:id="@+id/slot_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/slots_cherry"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/slot_2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/slot_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/slots_cherry"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/slot_3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/slot_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/slots_cherry"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/slot_4"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="0"
+                android:textColor="@color/white"
+                android:layout_marginStart="3dp"
+                android:paddingEnd="20dp"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toRightOf="@+id/tokens_available_symbol"
+                app:layout_constraintBottom_toBottomOf="@+id/tokens_available_symbol"
+                app:layout_constraintTop_toTopOf="@+id/tokens_available_symbol"
+                />
 
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
 
-    <TextView
-        android:id="@+id/spins_remaining"
+    <android.support.v7.widget.CardView
+        android:id="@+id/points_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/spins_remaining"
-        app:layout_constraintTop_toBottomOf="@+id/slot_images"
-        app:layout_constraintBottom_toTopOf="@+id/spin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/remaining"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/slot_images"
-        app:layout_constraintBottom_toTopOf="@+id/spin"
-        app:layout_constraintLeft_toRightOf="@+id/spins_remaining"
-        android:layout_marginStart="3dp"
-        />
-
-    <TextView
-        android:id="@+id/total_points"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/total_points"
-        app:layout_constraintTop_toBottomOf="@+id/spins_remaining"
-        app:layout_constraintBottom_toTopOf="@+id/spin"
-        app:layout_constraintLeft_toLeftOf="@+id/spins_remaining"
-        />
-
-    <TextView
-        android:id="@+id/points_won"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/spins_remaining"
-        app:layout_constraintBottom_toTopOf="@+id/spin"
-        app:layout_constraintLeft_toRightOf="@+id/total_points"
-        android:layout_marginStart="3dp" />
-
-    <Button
-        android:id="@+id/spin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/spin"
-        android:textAllCaps="false"
-        android:onClick="spin"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/slot_machine"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/auto_spin"
-        app:layout_constraintTop_toBottomOf="@+id/slot_images" />
+        app:layout_constraintLeft_toRightOf="@+id/tokens_card"
+        app:layout_constraintRight_toRightOf="@+id/slot_machine">
 
-    <Button
-        android:id="@+id/auto_spin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/auto_spin"
-        android:textAllCaps="false"
-        android:onClick="autoSpin"
-        app:layout_constraintLeft_toRightOf="@+id/spin"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slot_images"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/background_card_gray">
 
-    <TextView
-        android:id="@+id/win_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/spin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+            <ImageView
+                android:id="@+id/total_points_symbol"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:src="@drawable/app_points"
+                android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:id="@+id/current_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@color/white"
+                android:layout_marginStart="3dp"
+                android:paddingEnd="20dp"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toRightOf="@+id/total_points_symbol"
+                app:layout_constraintBottom_toBottomOf="@+id/total_points_symbol"
+                app:layout_constraintTop_toTopOf="@+id/total_points_symbol"
+                />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
 
 
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package rewards.rewardsapp.views;
 
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -26,7 +27,6 @@ import org.json.JSONObject;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.SlotReel;
-import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -42,12 +42,8 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     //views
     private Button spin;
-    private Button autoSpin;
-//    private Button claim;
-    private TextView resultMsg;
-    TextView spinsLeft;
-    TextView pointsEarned;
-    private boolean done;
+    TextView tokensLeft;
+    TextView totalEarned;
     private boolean rewarded;
     private PopupWindow claimPopUp;
     private ConstraintLayout cLayout;
@@ -58,8 +54,9 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     private static final int MEDIUM_WIN = 1000;
     private static final int LARGE_WIN = 10000;
     private static final long AUTO_CLICK_WAIT = 100;
+    private static final int COST = 2;
 
-    private int spinCount, totalPoints;
+    private int tokenCount, pointsEarned, currentPoints;
 
     private RewardedVideoAd mRewardedVideoAd;
 
@@ -73,10 +70,8 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         reelListenerSetup();
         presenter.setSlotsModel(imageBank, reelListeners);
         findViews();
-        initSpinCount();
-        totalPoints = 0;
-        spinsLeft.setText(Integer.toString(spinCount));
-        pointsEarned.setText(Integer.toString(totalPoints));
+        initTokensPointsCount();
+        pointsEarned = 0;
 
         rewarded = true;
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
@@ -89,75 +84,34 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     //spins the reels and waits for them to stop spinning before checking for win
     public void spin(View view){
         try{
-            String jsonResponse = presenter.sendPoints(0, 0,1, getIntent().getStringExtra("id"));
+            String jsonResponse = presenter.sendPoints(0, 0, COST, getIntent().getStringExtra("id"));
             JSONObject updateResult = new JSONObject(jsonResponse);
             if(updateResult.get("status").toString().equals("negative")){
                 Toast.makeText(this, "You don't have enough tokens!", Toast.LENGTH_SHORT).show();
                 return;
             }
+            else{
+                spin.setText("Spinning...");
+                spin.setClickable(false);
+                tokenCount -= COST;
+                tokensLeft.setText(Integer.toString(tokenCount));
+                presenter.spinReels();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkWinStatus();
+                        spin.setText("Spin to Win!");
+                        spin.setClickable(true);
+                    }
+                }, presenter.getSpinTime());
+            }
+
         }  catch (JSONException e) {
             e.printStackTrace();
         }
-        if(spinCount > 0) {
-            resultMsg.setText("");
-            done = false;
-            spin.setText("Spinning...");
-            autoSpin.setText("Spinning...");
-            autoSpin.setClickable(false);
-            spin.setClickable(false);
-            spinCount--;
-            spinsLeft.setText(Integer.toString(spinCount));
-
-            presenter.spinReels();
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkWinStatus();
-                    if (spinCount != 0) {
-                        spin.setClickable(true);
-                        spin.setText("Spin");
-                        autoSpin.setClickable(true);
-                        autoSpin.setText("Auto Spin");
-                    } else {
-                        spin.setText("NO SPINS LEFT");
-                        autoSpin.setText("NO SPINS LEFT");
-                        try {
-                            String jsonResponse = presenter.restGet("getPointsInfo", null);
-                            JSONObject pointsInfo = new JSONObject(jsonResponse);
-                            resultMsg.setText("Overall points earned: " + pointsInfo.get("totalEarned").toString());
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        done = true;
-                    }
-                }
-            }, presenter.getSpinTime());
-        }
     }
 
-    //spins the slot machine until all spins are used
-    public void autoSpin(View view){
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                spin.performClick();
-                if(!done) clickAgain();
-            }
-        });
-    }
-
-    //helper method for autoSpin
-    private void clickAgain(){
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                spin.performClick();
-                if(!done) clickAgain();
-            }
-        }, presenter.getSpinTime() + AUTO_CLICK_WAIT);
-    }
 
     //sets the reel listeners that are sent to the SlotsModel through the presenter
     private void reelListenerSetup(){
@@ -183,23 +137,20 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         int winNum = presenter.checkSlotsWin();
 
         switch (winNum){
-            case 3: resultMsg.setText("Small win. +" + SMALL_WIN + " points");
-                totalPoints += SMALL_WIN;
-                pointsEarned.setText(Integer.toString(totalPoints));
+            case 3:
+                pointsEarned = SMALL_WIN;
                 break;
-            case 4: resultMsg.setText("Medium win! +" + MEDIUM_WIN + " points");
-                totalPoints += MEDIUM_WIN;
-                pointsEarned.setText(Integer.toString(totalPoints));
+            case 4:
+                pointsEarned = MEDIUM_WIN;
                 break;
             case 5:
-                resultMsg.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-                totalPoints += LARGE_WIN;
-                pointsEarned.setText(Integer.toString(totalPoints));
+                pointsEarned = LARGE_WIN;
                 break;
-            default: resultMsg.setText("You lose :(");
+            default:
                 return;
         }
-        if(totalPoints > 0){
+
+        if(pointsEarned > 0){
             LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
             View claimView = inflater.inflate(R.layout.claim_popup,null);
             claimPopUp = new PopupWindow(
@@ -223,8 +174,8 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
             TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
 
-            if(totalPoints != 0){
-                prizeText.setText(totalPoints + " points");
+            if(pointsEarned != 0){
+                prizeText.setText(pointsEarned + " points");
             }
             claimPopUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
             rewarded = false;
@@ -239,17 +190,15 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         slotImgs[3] = (ImageView) findViewById(R.id.slot_4);
         slotImgs[4] = (ImageView) findViewById(R.id.slot_5);
         spin = (Button) findViewById(R.id.spin);
-        autoSpin = (Button) findViewById(R.id.auto_spin);
-//        claim = (Button) findViewById(R.id.claim_slots);
-        resultMsg = (TextView) findViewById(R.id.win_message);
-        spinsLeft = (TextView) findViewById(R.id.remaining);
-        pointsEarned = (TextView) findViewById(R.id.points_won);
-//        claim = (Button) findViewById(R.id.claim_slots);
-    }
+        tokensLeft = (TextView) findViewById(R.id.tokens_available);
+        totalEarned = (TextView) findViewById(R.id.current_points);
 
-//    public void claimPoints(View view){
-//        runAd();
-//    }
+//        TextView jackpot = (TextView) findViewById(R.id.jackpot);
+//
+//        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/digital_regular.ttf");
+//
+//        jackpot.setTypeface(custom_font);
+    }
 
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){
@@ -268,11 +217,14 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         handler.post(task);
     }
 
-    public void initSpinCount() {
+    public void initTokensPointsCount() {
         try {
             String jsonResponse = presenter.restGet("getPointsInfo", getIntent().getStringExtra("id"));
             JSONObject userInfo = new JSONObject(jsonResponse);
-            spinCount = userInfo.getInt("currentTokens");
+            tokenCount = userInfo.getInt("currentTokens");
+            currentPoints = userInfo.getInt("currentPoints");
+            tokensLeft.setText(Integer.toString(tokenCount));
+            totalEarned.setText(Integer.toString(currentPoints));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -306,9 +258,10 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     @Override
     public void onRewarded(RewardItem rewardItem){
-        presenter.sendPoints(totalPoints, 0,0, getIntent().getStringExtra("id"));
-        Toast.makeText(this, "+" + totalPoints + " Points", Toast.LENGTH_SHORT).show();
-        totalPoints = 0;
+        presenter.sendPoints(pointsEarned, 0,0, getIntent().getStringExtra("id"));
+        initTokensPointsCount();
+        Toast.makeText(this, "+" + pointsEarned + " Points", Toast.LENGTH_SHORT).show();
+        pointsEarned = 0;
         rewarded = true;
     }
 
