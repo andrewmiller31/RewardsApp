@@ -161,20 +161,29 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 //        if(!OverlayHUD.isIsRunning()) {
 //            loadRewardedVideoAd();
 //            earnIntent = new Intent(this, ScratchActivity.class);
-//            runAd();
-//        }
-//        else showToast("Cannot play scratch offs while using Surf & Earn");
+//        earnIntent.putExtra("id", id);
+//        runAd();
+//    }
+//        else
+//
+//    showToast("Cannot play scratch offs while using Surf & Earn");
         earnIntent = new Intent(this, ScratchActivity.class);
+        earnIntent.putExtra("id", id);
         startActivity(earnIntent);
     }
 
     public void slots(View view){
-        if(!OverlayHUD.isIsRunning()) {
-            loadRewardedVideoAd();
-            earnIntent = new Intent(this, SlotsActivity.class);
-            runAd();
-        }
-        else showToast("Cannot play slots while using Surf & Earn");
+//        if (!OverlayHUD.isIsRunning()) {
+//            loadRewardedVideoAd();
+//            earnIntent = new Intent(this, SlotsActivity.class);
+//            earnIntent.putExtra("id", id);
+//            runAd();
+//        }
+//        else showToast("Cannot play slots while using Surf & Earn");
+
+        earnIntent = new Intent(this, SlotsActivity.class);
+        earnIntent.putExtra("id", id);
+        startActivity(earnIntent);
     }
 
     public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
@@ -449,7 +458,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public void onRewardedVideoAdClosed() {
         if(adRewarded) {
-            earnIntent.putExtra("id", id);
             startActivity(earnIntent);
             adRewarded = false;
         }
@@ -470,7 +478,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdFailedToLoad(int i) {
-        startActivity(earnIntent);
     }
 
     @Override

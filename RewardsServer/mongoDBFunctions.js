@@ -25,6 +25,7 @@ module.exports.findUser = function(userID, callback) {
                 totalEarned: 0,
                 totalSpent: 0,
                 currentPoints: 0,
+                currentTokens: 0,
                 newRank: 10000,
                 rank: 1,
                 role: 'User'
@@ -43,38 +44,46 @@ module.exports.findUser = function(userID, callback) {
     });
 };
 
-module.exports.updateUser = function(userID, newData) {
+module.exports.updateUser = function(userID, newData, callback) {
     mongoDBRef.users.find({id: userID}).toArray(function(err, docs) {
     	    if(!err){
                 var tEarned = docs[0].totalEarned + newData.pointsEarned;
                 var cPoints = docs[0].currentPoints + newData.pointsEarned;
+                var cTokens = docs[0].currentTokens + newData.tokensEarned;
                 var tSpent = docs[0].totalSpent;
+                var tokSpent = docs[0].tokensSpent;
                 var nRnk = docs[0].newRank;
                 var rnk = docs[0].rank;
 
-                if((cPoints - newData.pointsSpent) >= 0){
-                    cPoints -= newData.pointsSpent;
-                    tSpent += newData.pointsSpent;
-                    }
+                cPoints -= newData.pointsSpent;
+                tSpent += newData.pointsSpent;
+                cTokens -= newData.tokensSpent;
 
                 if (tEarned >= nRnk){
                     rnk++;
                     nRnk += 10000;
                     }
 
-                var newValues = { $set: { totalEarned: tEarned,
+                if(cPoints >= 0 && cTokens >= 0){
+                    var newValues = { $set: { totalEarned: tEarned,
                                             totalSpent: tSpent,
                                             currentPoints: cPoints,
+                                            currentTokens: cTokens,
                                             newRank: nRnk,
                                             rank: rnk, } };
 
-                mongoDBRef.users.findAndModify({
-                	        query: {id: userID},
-                	        update: newValues,
-                	        new: true},
-                	        function (err, tank) {
-                              if (err) throw err;
-                            });
+                    mongoDBRef.users.findAndModify({
+                	            query: {id: userID},
+                	            update: newValues,
+                	            new: true},
+                	            function (err, tank) {
+                                if (err) throw err;
+                    });
+                    callback(true);
+                }
+                else {
+                    callback(false);
+                }
             }
         });
 

@@ -31,7 +31,7 @@ public class RedeemModel {
     }
 
     public String redeem(){
-        String jsonResponse = presenter.restPut("putPointsInfo",  new UserInformation(0, cost, false, id).jsonStringify());
+        String jsonResponse = presenter.restPut("putPointsInfo",  new UserInformation(0, 0, cost, 0, id).jsonStringify());
         try {
             JSONObject responseInfo = new JSONObject(jsonResponse);
             String response = responseInfo.get("id").toString();

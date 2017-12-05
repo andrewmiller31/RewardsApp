@@ -14,13 +14,15 @@ import org.json.JSONObject;
 public class UserInformation {
     private int pointsSpent;
     private int pointsEarned;
-    private boolean rankUp;
+    private int tokensEarned;
+    private int tokensSpent;
     private String id;
 
-    public UserInformation(int pointsToAdd, int pointsSpent, boolean rankUp, String id){
+    public UserInformation(int pointsToAdd, int tokensToAdd, int pointsSpent, int tokensSpent, String id){
         this.pointsEarned = pointsToAdd;
+        this.tokensEarned = tokensToAdd;
         this.pointsSpent = pointsSpent;
-        this.rankUp = rankUp;
+        this.tokensSpent = tokensSpent;
         this.id = id;
     }
 
@@ -34,8 +36,9 @@ public class UserInformation {
         try{
             jsonString = new JSONObject();
             jsonString.put("pointsEarned", pointsEarned);
+            jsonString.put("tokensEarned", tokensEarned);
             jsonString.put("pointsSpent", pointsSpent);
-            jsonString.put("rankUp", rankUp);
+            jsonString.put("tokensSpent", tokensSpent);
             jsonString.put("id", id);
         } catch (JSONException e) {
             e.printStackTrace();

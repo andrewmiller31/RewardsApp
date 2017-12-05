@@ -1,11 +1,17 @@
 package rewards.rewardsapp.views;
 
+import android.os.Build;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +43,14 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     //views
     private Button spin;
     private Button autoSpin;
-    private Button claim;
+//    private Button claim;
     private TextView resultMsg;
     TextView spinsLeft;
     TextView pointsEarned;
     private boolean done;
     private boolean rewarded;
+    private PopupWindow claimPopUp;
+    private ConstraintLayout cLayout;
 
 
     //constants
@@ -65,7 +73,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         reelListenerSetup();
         presenter.setSlotsModel(imageBank, reelListeners);
         findViews();
-        spinCount = 10;
+        initSpinCount();
         totalPoints = 0;
         spinsLeft.setText(Integer.toString(spinCount));
         pointsEarned.setText(Integer.toString(totalPoints));
@@ -74,10 +82,22 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+
+        cLayout = (ConstraintLayout) findViewById(R.id.slots_layout);
     }
 
     //spins the reels and waits for them to stop spinning before checking for win
     public void spin(View view){
+        try{
+            String jsonResponse = presenter.sendPoints(0, 0,1, getIntent().getStringExtra("id"));
+            JSONObject updateResult = new JSONObject(jsonResponse);
+            if(updateResult.get("status").toString().equals("negative")){
+                Toast.makeText(this, "You don't have enough tokens!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }  catch (JSONException e) {
+            e.printStackTrace();
+        }
         if(spinCount > 0) {
             resultMsg.setText("");
             done = false;
@@ -161,22 +181,18 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     //checks with the presenter for the number of matches and processes the result
     private void checkWinStatus(){
         int winNum = presenter.checkSlotsWin();
-        int winAmount = 0;
 
         switch (winNum){
             case 3: resultMsg.setText("Small win. +" + SMALL_WIN + " points");
-                winAmount = SMALL_WIN;
                 totalPoints += SMALL_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 4: resultMsg.setText("Medium win! +" + MEDIUM_WIN + " points");
-                winAmount = MEDIUM_WIN;
                 totalPoints += MEDIUM_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
             case 5:
                 resultMsg.setText("MAJOR PRIZE!! +" + LARGE_WIN + " points");
-                winAmount = LARGE_WIN;
                 totalPoints += LARGE_WIN;
                 pointsEarned.setText(Integer.toString(totalPoints));
                 break;
@@ -184,8 +200,33 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 return;
         }
         if(totalPoints > 0){
-            claim.setClickable(true);
-            claim.setVisibility(View.VISIBLE);
+            LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View claimView = inflater.inflate(R.layout.claim_popup,null);
+            claimPopUp = new PopupWindow(
+                    claimView,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
+
+            // requires API level 21
+            if(Build.VERSION.SDK_INT>=21){
+                claimPopUp.setElevation(5.0f);
+            }
+
+            Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    runAd();
+                }
+            });
+
+            TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+
+            if(totalPoints != 0){
+                prizeText.setText(totalPoints + " points");
+            }
+            claimPopUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
             rewarded = false;
         }
     }
@@ -199,16 +240,16 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         slotImgs[4] = (ImageView) findViewById(R.id.slot_5);
         spin = (Button) findViewById(R.id.spin);
         autoSpin = (Button) findViewById(R.id.auto_spin);
-        claim = (Button) findViewById(R.id.claim_slots);
+//        claim = (Button) findViewById(R.id.claim_slots);
         resultMsg = (TextView) findViewById(R.id.win_message);
         spinsLeft = (TextView) findViewById(R.id.remaining);
         pointsEarned = (TextView) findViewById(R.id.points_won);
-        claim = (Button) findViewById(R.id.claim_slots);
+//        claim = (Button) findViewById(R.id.claim_slots);
     }
 
-    public void claimPoints(View view){
-        runAd();
-    }
+//    public void claimPoints(View view){
+//        runAd();
+//    }
 
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){
@@ -225,6 +266,17 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             }
         };
         handler.post(task);
+    }
+
+    public void initSpinCount() {
+        try {
+            String jsonResponse = presenter.restGet("getPointsInfo", getIntent().getStringExtra("id"));
+            JSONObject userInfo = new JSONObject(jsonResponse);
+            spinCount = userInfo.getInt("currentTokens");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -244,19 +296,19 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     @Override
     public void onRewardedVideoAdClosed() {
-        if(rewarded) {
-            this.onBackPressed();
-        }
-        else {
-            mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        if(!rewarded) {
             Toast.makeText(this, "You must watch the video to receive points!", Toast.LENGTH_SHORT).show();
+        } else {
+            claimPopUp.dismiss();
         }
     }
 
     @Override
     public void onRewarded(RewardItem rewardItem){
-        presenter.sendPoints(totalPoints, getIntent().getStringExtra("id"));
+        presenter.sendPoints(totalPoints, 0,0, getIntent().getStringExtra("id"));
         Toast.makeText(this, "+" + totalPoints + " Points", Toast.LENGTH_SHORT).show();
+        totalPoints = 0;
         rewarded = true;
     }
 

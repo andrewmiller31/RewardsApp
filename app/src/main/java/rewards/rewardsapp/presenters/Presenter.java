@@ -47,7 +47,7 @@ public class Presenter {
     //
     //This method is used to send earned points to the server;
     //
-    public String sendPoints(int points, String id){ return restPut("putPointsInfo", new UserInformation(points, 0, false, id).jsonStringify());}
+    public String sendPoints(int points, int tokens, int tokensSpent, String id){ return restPut("putPointsInfo", new UserInformation(points, tokens, 0,tokensSpent, id).jsonStringify());}
 
     //
     // This section covers the methods related to RedeemModel
@@ -59,26 +59,20 @@ public class Presenter {
     //
     // This section covers methods related to ScratchModel
     //
-    public void setScratchModel(String modelName, int[] imageBank, int[] winners){
-        if(Objects.equals(modelName, "scratchModel")) scratchModel = new ScratchModel(imageBank, winners);
-        if(modelName.equals("tokenModel")) bonusScratchModel = new ScratchModel(imageBank, winners);
+    public void setScratchModel(String modelName, int[] imageBank){
+        if(modelName.equals("scratchModel")) scratchModel = new ScratchModel(imageBank);
+        if(modelName.equals("tokenModel")) bonusScratchModel = new ScratchModel(imageBank);
     }
 
     public int scratchNumGen(String modelName){
-        if(Objects.equals(modelName, "scratchModel")) return scratchModel.numGen();
-        if(Objects.equals(modelName, "tokenModel")) return bonusScratchModel.numGen();
+        if(modelName.equals("scratchModel")) return scratchModel.numGen();
+        if(modelName.equals("tokenModel")) return bonusScratchModel.numGen();
         return 0;
     }
 
-    public int checkScratchWin(String modelName){
-        if(Objects.equals(modelName, "scratchModel")) return scratchModel.win();
-        if(modelName.equals("tokenModel")) return bonusScratchModel.win();
-        return 0;
-    }
-
-    public int getScratchWinner(String modelName){
-        if(Objects.equals(modelName, "scratchModel")) return scratchModel.getWinningImage();
-        if(modelName.equals("tokenModel")) return bonusScratchModel.getWinningImage();
+    public int checkScratchFrequency(String modelName, int image){
+        if(modelName.equals("scratchModel")) return scratchModel.checkFrequency(image);
+        if(modelName.equals("tokenModel")) return bonusScratchModel.checkFrequency(image);
         return 0;
     }
 

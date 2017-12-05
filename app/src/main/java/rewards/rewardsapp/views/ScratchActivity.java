@@ -1,14 +1,19 @@
 package rewards.rewardsapp.views;
 
-import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.ViewGroup.LayoutParams;
 
 import com.cooltechworks.views.ScratchImageView;
 import com.google.android.gms.ads.AdRequest;
@@ -17,10 +22,7 @@ import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
-import java.util.ArrayList;
-import java.util.List;
 import rewards.rewardsapp.R;
-import rewards.rewardsapp.models.UserInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class ScratchActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -33,22 +35,20 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     private ScratchImageView scratch6;
     private ScratchImageView tokenScratch;
 
-    private static int[] imageBank = {R.drawable.scratch_cow, R.drawable.scratch_dog, R.drawable.scratch_pig, R.drawable.scratch_sheep}; //, R.drawable.scratch_cat
-    private static int[] winner1 = {R.drawable.scratch_dog};
-
-    private static int[] tokenBank = {R.drawable.scratch_one_token, R.drawable.scratch_token_pile, R.drawable.scratch_token_jackpot, R.drawable.scratch_one_token, R.drawable.scratch_lose};
-    private static int[] winner2 = {R.drawable.scratch_one_token, R.drawable.scratch_token_jackpot, R.drawable.scratch_token_pile};
-
-    //    private TextView resultMessage;
+    private static int[] imageBank = {R.drawable.scratch_one_token, R.drawable.scratch_cow, R.drawable.scratch_dog, R.drawable.scratch_pig, R.drawable.scratch_sheep};
+    private static int[] tokenBank = {R.drawable.scratch_one_token, R.drawable.scratch_one_token, R.drawable.scratch_one_token,
+            R.drawable.scratch_token_pile, R.drawable.scratch_token_pile, R.drawable.scratch_token_pile, R.drawable.scratch_token_jackpot,
+            R.drawable.scratch_lose, R.drawable.scratch_lose, R.drawable.scratch_lose};
     private boolean[] revealed;
     private boolean over;
     private RewardedVideoAd mRewardedVideoAd;
     private int winAmount;
-    private int tokenWin;
-//    private Button claim;
+    private int tokenWinAmount;
     private ImageView winner;
     private Presenter presenter;
     private boolean rewarded;
+    private PopupWindow popUp;
+    private ConstraintLayout cLayout;
 
     //constants
     private static final int SCRATCH_WIN = 100;
@@ -57,17 +57,18 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        winAmount = 0;
+        tokenWinAmount = 0;
         over = false;
         rewarded = true;
         presenter = new Presenter();
 
-        presenter.setScratchModel( "tokenModel",tokenBank, winner2);
-        presenter.setScratchModel( "scratchModel",imageBank, winner1);
+        presenter.setScratchModel( "tokenModel",tokenBank);
+        presenter.setScratchModel( "scratchModel",imageBank);
 
         revealed = new boolean[7];
-//        resultMessage = (TextView) findViewById(R.id.end_result);
-//        claim = (Button) findViewById(R.id.claim_button);
         setContentView(R.layout.activity_scratch);
+        cLayout = (ConstraintLayout) findViewById(R.id.scratch_layout);
         ImageView background = (ImageView) findViewById(R.id.card_background);
         background.setImageResource(R.drawable.background_field);
         winner = (ImageView) findViewById(R.id.match_symbol);
@@ -82,25 +83,75 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
     private void endGame(){
 
-        int winNum = presenter.checkScratchWin("scratchModel");
-        int tokenWinNum = presenter.checkScratchWin("tokenModel");
-
-        if(winNum >= 3){
+        if(presenter.checkScratchFrequency("scratchModel", R.drawable.scratch_dog) >= 3){
             winAmount = SCRATCH_WIN;
+        }
+
+        tokenWinAmount += presenter.checkScratchFrequency("scratchModel", R.drawable.scratch_one_token);
+        tokenWinAmount += presenter.checkScratchFrequency("tokenModel", R.drawable.scratch_one_token);
+        tokenWinAmount += (5 * presenter.checkScratchFrequency("tokenModel", R.drawable.scratch_token_pile));
+        tokenWinAmount += (10 * presenter.checkScratchFrequency("tokenModel", R.drawable.scratch_token_jackpot));
+
+        if(winAmount != 0 || tokenWinAmount != 0){
             rewarded = false;
-        }
-        if(tokenWinNum > 0){
-            int tokenWinner = presenter.getScratchWinner("tokenModel");
-            tokenWin = 1;
-        }
-        if(winNum < 3 && tokenWinNum < 1){
-            winAmount = 0;
-        }
+            LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View claimView = inflater.inflate(R.layout.claim_popup,null);
+            popUp = new PopupWindow(
+                    claimView,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
+            );
 
+            // requires API level 21
+            if(Build.VERSION.SDK_INT>=21){
+                popUp.setElevation(5.0f);
+            }
 
-        if(winAmount != 0 || tokenWin != 0){
-//            claim.setVisibility(View.VISIBLE);
-//            claim.setClickable(true);
+            Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    runAd();
+                }
+            });
+
+            TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+
+            if(tokenWinAmount != 0 && winAmount != 0) {
+                prizeText.setText(tokenWinAmount + " tokens\n" + winAmount + " points");
+            }
+            else if(tokenWinAmount != 0){
+                prizeText.setText(tokenWinAmount + " tokens");
+            }
+            else if(winAmount != 0){
+                prizeText.setText(winAmount + " points");
+            }
+            popUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
+        }
+        else{
+            LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View claimView = inflater.inflate(R.layout.lose_popup,null);
+            popUp = new PopupWindow(
+                    claimView,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
+            );
+
+            // requires API level 21
+            if(Build.VERSION.SDK_INT>=21){
+                popUp.setElevation(5.0f);
+            }
+
+            Button closeButton = (Button) claimView.findViewById(R.id.okay_button);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    popUp.dismiss();
+                    ScratchActivity.this.onBackPressed();
+                }
+            });
+
+            popUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
         }
     }
 
@@ -148,10 +199,6 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         });
     }
 
-//    public void claimPoints(View view){
-//        runAd();
-//    }
-
     //Checks if ad is loaded until it is loaded and then runs ad
     private void runAd(){
         final Handler handler = new Handler();
@@ -197,8 +244,8 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
-        presenter.sendPoints(winAmount, getIntent().getStringExtra("id"));
-        Toast.makeText(this, "+" + winAmount + " Points", Toast.LENGTH_SHORT).show();
+        presenter.sendPoints(winAmount, tokenWinAmount, 0, getIntent().getStringExtra("id"));
+        Toast.makeText(this, "+" + winAmount + " Points, +" + tokenWinAmount + " Tokens", Toast.LENGTH_SHORT).show();
         rewarded = true;
     }
 

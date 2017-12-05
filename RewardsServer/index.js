@@ -82,12 +82,20 @@ app.put('/pointsInfo', function (req, res) {
     // If for some reason the JSON isn't parsed, return HTTP error 400
     if (!req.body) return res.sendStatus(400);
 
-    mongodb.updateUser(req.body.id, req.body);
+    var negResponse = {
+        id: '444', status: 'negative'
+    };
+    var updatedResponse = {
+        id: '123', status: 'updated'
+    };
 
-    var jsonResponse = {
-                id: '123', status: 'updated'
-            };
-    res.json(jsonResponse);
+    mongodb.updateUser(req.body.id, req.body, function(updated){
+        if(!updated){
+            res.json(negResponse);
+        } else{
+            res.json(updatedResponse);
+        }
+    });
 });
 
 
