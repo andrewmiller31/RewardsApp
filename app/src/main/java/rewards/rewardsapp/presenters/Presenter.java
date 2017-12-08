@@ -1,11 +1,6 @@
 package rewards.rewardsapp.presenters;
 
-import android.app.Activity;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import java.util.List;
-import java.util.Objects;
 
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.RestModel;
@@ -13,7 +8,7 @@ import rewards.rewardsapp.models.ScratchModel;
 import rewards.rewardsapp.models.SlotReel;
 import rewards.rewardsapp.models.SlotsModel;
 import rewards.rewardsapp.models.UserInformation;
-import rewards.rewardsapp.views.SlotsActivity;
+import rewards.rewardsapp.models.ImageInfo;
 
 /**
  * Created by Andrew Miller on 9/28/2017.
@@ -59,7 +54,7 @@ public class Presenter {
     //
     // This section covers methods related to ScratchModel
     //
-    public void setScratchModel(String modelName, int[] imageBank){
+    public void setScratchModel(String modelName, ImageInfo[] imageBank){
         if(modelName.equals("scratchModel")) scratchModel = new ScratchModel(imageBank);
         if(modelName.equals("tokenModel")) bonusScratchModel = new ScratchModel(imageBank);
     }
@@ -70,10 +65,10 @@ public class Presenter {
         return 0;
     }
 
-    public int checkScratchFrequency(String modelName, int image){
-        if(modelName.equals("scratchModel")) return scratchModel.checkFrequency(image);
-        if(modelName.equals("tokenModel")) return bonusScratchModel.checkFrequency(image);
-        return 0;
+    public List<ImageInfo> getFrequencies(String modelName){
+        if(modelName.equals("scratchModel")) return scratchModel.getFrequencies();
+        if(modelName.equals("tokenModel")) return bonusScratchModel.getFrequencies();
+        return null;
     }
 
     public boolean checkAllRevealed(boolean[] revealed){return scratchModel.checkAllRevealed(revealed);}

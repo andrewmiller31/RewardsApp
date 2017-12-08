@@ -10,25 +10,20 @@ var app = express();
 app.set("port", 5000);
 
 // Support encoded bodies
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({
+    limit: '50mb',
     extended: true
 }));
 
 // Support JSON-encoded bodies
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+
 //loads the mongo functions in this file
 //var mongodb = require('./mongoDBFunctions.js');
 //console.log(mongodb);
 
 var CLIENT_ID = '82658629626-fpsre8l5v7orb9ngqaogjnos9usvr1pc.apps.googleusercontent.com';
-
-var user = {
-    totalEarned: 0,
-    totalSpent: 0,
-    currentPoints: 0,
-    newRank: 10000,
-    rank: 1
-};
 
 var votes = {
     charity1: 0,
@@ -38,6 +33,39 @@ var votes = {
     charity5: 0,
     winning: 0
 }
+
+var scratchTest = {
+    title: "default",
+    background: "none",
+    icons: {},
+    bonusIcons: {}
+}
+
+/*
+ **********
+ * TESTS
+ **********
+ */
+
+ app.put('/scratchTest', function(req, res){
+    if (!req.body) return res.sendStatus(400);
+    scratchTest.title = req.body.title;
+    scratchTest.background = req.body.background;
+    scratchTest.icons = req.body.icons;
+    scratchTest.bonusIcons = req.body.bonusIcons;
+    var updatedResponse = {
+            id: '123', status: 'updated'
+        };
+    res.json(updatedResponse);
+ });
+
+ app.get('/scratchTest', function (req,res) {
+    res.body = JSON.stringify(scratchTest);
+    res.send(scratchTest);
+ });
+
+
+
 
 /*
  ************************

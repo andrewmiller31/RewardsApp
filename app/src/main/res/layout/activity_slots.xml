@@ -153,49 +153,69 @@
                 android:layout_marginBottom="30dp"
                 />
 
-            <TextView
-                android:id="@+id/jackpot_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/ultra"
-                android:text="Jackpot:"
-                android:textColor="@color/primaryText"
-                android:layout_marginTop="3dp"
-                app:layout_constraintBottom_toTopOf="@+id/jackpot_box"
-                app:layout_constraintLeft_toLeftOf="@+id/slot_images"/>
-
             <android.support.v7.widget.CardView
-                android:id="@+id/jackpot_box"
-                android:layout_width="wrap_content"
+                android:layout_width="235dp"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/whiteSmoke"
-                app:cardCornerRadius="2dp"
-                android:layout_marginTop="3dp"
-                app:layout_constraintLeft_toLeftOf="@+id/jackpot_title"
+                app:layout_constraintLeft_toLeftOf="@+id/slot_images"
                 app:layout_constraintTop_toBottomOf="@+id/slot_cost"
-                app:layout_constraintBottom_toTopOf="@+id/spin">
+                app:layout_constraintBottom_toTopOf="@+id/spin"
+                app:cardCornerRadius="8dp">
 
                 <android.support.constraint.ConstraintLayout
-                    android:layout_width="235dp"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_reels">
 
                     <TextView
-                        android:id="@+id/jackpot"
+                        android:id="@+id/jackpot_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="50sp"
-                        android:fontFamily="@font/digital_regular"
-                        android:text="0000010000"
-                        android:textColor="@color/red"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:fontFamily="@font/ultra"
+                        android:text="Jackpot:"
+                        android:textColor="@color/primaryText"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        app:layout_constraintBottom_toTopOf="@+id/jackpot_box"
+                        app:layout_constraintLeft_toLeftOf="@+id/jackpot_box"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/jackpot_box"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/whiteSmoke"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="7dp"
+                        android:elevation="0dp"
+                        android:padding="3dp"
+                        app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"/>
+                        app:layout_constraintLeft_toLeftOf="parent">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_gray_border">
+
+                            <TextView
+                                android:id="@+id/jackpot"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:lines="1"
+                                android:textSize="45sp"
+                                android:fontFamily="@font/digital_regular"
+                                android:text="8888888888"
+                                android:padding="2dp"
+                                android:background="@color/primaryText"
+                                android:textColor="@color/red"/>
+
+                        </android.support.constraint.ConstraintLayout>
+
+                    </android.support.v7.widget.CardView>
 
                 </android.support.constraint.ConstraintLayout>
 
             </android.support.v7.widget.CardView>
-
 
         </android.support.constraint.ConstraintLayout>
 

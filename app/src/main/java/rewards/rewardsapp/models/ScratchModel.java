@@ -3,9 +3,8 @@ package rewards.rewardsapp.models;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-
-import rewards.rewardsapp.R;
 
 /**
  * Created by Andrew Miller on 10/1/2017.
@@ -13,26 +12,18 @@ import rewards.rewardsapp.R;
 
 public class ScratchModel {
 
-    private  int[] imageBank;
-    private int[] frequencies; //parallel to imageBank
+    private  ImageInfo[] imageBank;
+    private List<ImageInfo> frequencies;
     private List<Integer> values;
 
     /**
      * Ctor for ScratchModel
      * @param imageBank the array of images to randomly place
      */
-    public ScratchModel(int[] imageBank){
+    public ScratchModel(ImageInfo[] imageBank){
         this.imageBank = imageBank.clone();
-        frequenciesInit();
+        frequencies = new LinkedList<>();
         values = new ArrayList<>();
-    }
-
-    //sets the frequency of each image to 0
-    public void frequenciesInit(){
-        frequencies = new int[imageBank.length];
-        for(int i = 0; i < imageBank.length; i++){
-            frequencies[i] = 0;
-        }
     }
 
     //randomly chooses a picture and adds to values for comparing later
@@ -40,17 +31,15 @@ public class ScratchModel {
     public int numGen(){
         int num = (int)(Math.random() * imageBank.length);
         values.add(num);
-        frequencies[num]++;
-        return imageBank[num];
+        if(imageBank[num].isWinner()) {
+            frequencies.add(imageBank[num]);
+        }
+        return imageBank[num].getImageID();
     }
 
-    //checks how many times a given image was chosen
-    public int checkFrequency(int image){
-        int freq = 0;
-        for(int i = 0; i < imageBank.length; i++){
-            if(imageBank[i] == image) freq += frequencies[i];
-        }
-        return freq;
+
+    public List<ImageInfo> getFrequencies(){
+        return frequencies;
     }
 
     //checks if all of the array of boolean values are true

@@ -2,6 +2,8 @@ package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +40,8 @@ import org.json.JSONObject;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.RedeemModel;
+import rewards.rewardsapp.models.ScratchInformation;
+import rewards.rewardsapp.models.ImageInfo;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class HomeActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -61,6 +65,26 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         toast = new Toast(this);
         viewSetup();
         adSetup();
+        setScratchTest();
+    }
+
+    private void setScratchTest(){
+        ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_dog));
+        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 1, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_one_token));
+        ImageInfo imageInfo3 = new ImageInfo(true, "tokens", 1003, 5, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_token_pile));
+        ImageInfo imageInfo4 = new ImageInfo(true, "tokens", 1004, 10, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_token_jackpot));
+        ImageInfo loser = new ImageInfo(999, intToBM(R.drawable.scratch_lose));
+
+        ImageInfo[] icons = {imageInfo1, imageInfo2, new ImageInfo(1, intToBM(R.drawable.scratch_cow)),
+                new ImageInfo(2, intToBM(R.drawable.scratch_pig)),new ImageInfo(3, intToBM(R.drawable.scratch_sheep))};
+        ImageInfo[] bonusIcons = {imageInfo2, imageInfo2, imageInfo2, imageInfo3, imageInfo3, imageInfo3, imageInfo4, loser, loser, loser};
+        ScratchInformation si = new ScratchInformation("test", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
+
+        presenter.restPut("scratch", si.jsonStringify());
+    }
+
+    private Bitmap intToBM(int images){
+        return BitmapFactory.decodeResource(getResources(), images);
     }
 
     //ad setup

@@ -48,6 +48,7 @@ public class RestModel {
         switch (putString){
             case "putPointsInfo": return putPointsInfo(data);
             case "putCharityVote": return putCharityInfo(data);
+            case "scratch": return putScratchInfo(data);
             default:
                 Log.d("NO ROUTE FOR: ", putString);
                 return null;
@@ -62,6 +63,7 @@ public class RestModel {
         switch (getString){
             case "getPointsInfo": return getPointsInfo(data);
             case "getVotesInfo": return getVotesInfo();
+            case "scratch": return getScratchInfo();
             default:
                 Log.d("NO ROUTE FOR: ", getString);
                 return null;
@@ -79,6 +81,25 @@ public class RestModel {
                 Log.d("NO ROUTE FOR: ", deleteString);
                 return null;
         }
+    }
+
+    private String putScratchInfo(String data){
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/scratchTest", "PUT", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getScratchInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/scratchTest", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private String putPointsInfo(String data) {
