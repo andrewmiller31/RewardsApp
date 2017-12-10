@@ -49,6 +49,8 @@ public class RestModel {
             case "putPointsInfo": return putPointsInfo(data);
             case "putCharityVote": return putCharityInfo(data);
             case "scratch": return putScratchInfo(data);
+            case "slots": return putSlotsInfo(data);
+            case "slotsJackpot": return putSlotsJackpot(data);
             default:
                 Log.d("NO ROUTE FOR: ", putString);
                 return null;
@@ -64,6 +66,7 @@ public class RestModel {
             case "getPointsInfo": return getPointsInfo(data);
             case "getVotesInfo": return getVotesInfo();
             case "scratch": return getScratchInfo();
+            case "slots": return getSlotsInfo();
             default:
                 Log.d("NO ROUTE FOR: ", getString);
                 return null;
@@ -92,9 +95,37 @@ public class RestModel {
         return null;
     }
 
+    private String putSlotsInfo(String data){
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsTest", "PUT", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String putSlotsJackpot(String data){
+        try {
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsJackpot", "PUT", data).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private String getScratchInfo(){
         try{
             return new HTTPAsyncTask().execute(serverAddress + "/scratchTest", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getSlotsInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsTest", "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

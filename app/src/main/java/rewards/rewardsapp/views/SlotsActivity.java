@@ -1,11 +1,14 @@
 package rewards.rewardsapp.views;
 
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +28,12 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.models.ImageInfo;
 import rewards.rewardsapp.models.SlotReel;
+import rewards.rewardsapp.models.SlotsInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -37,28 +44,29 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     //arrays
     private SlotReel.ReelListener[] reelListeners;
     private ImageView[] slotImgs;
-    private static int[] imageBank = {R.drawable.slots_cherry, R.drawable.slots_chili, R.drawable.slots_gold,
-            R.drawable.slots_horseshoe, R.drawable.slots_moneybag}; //R.drawable.slots_bell
 
     //views
     private Button spin;
     TextView tokensLeft;
     TextView totalEarned;
+    TextView jackpotView;
     private boolean rewarded;
     private PopupWindow claimPopUp;
     private ConstraintLayout cLayout;
 
 
     //constants
-    private static final int SMALL_WIN = 100;
-    private static final int MEDIUM_WIN = 1000;
-    private static final int LARGE_WIN = 10000;
+    private static final int SMALL_WIN = 3;
+    private static final int MEDIUM_WIN = 5;
+    private static final int LARGE_WIN = 10;
     private static final long AUTO_CLICK_WAIT = 100;
-    private static final int COST = 2;
 
-    private int tokenCount, pointsEarned, currentPoints;
+    private int tokenCount, pointsEarned, currentPoints, cost, jackpot, jackpotID;
 
     private RewardedVideoAd mRewardedVideoAd;
+
+    private SlotsInformation testSlots;
+    private ImageInfo[]icons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +76,6 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         slotImgs = new ImageView[5];
         reelListeners = new SlotReel.ReelListener[slotImgs.length];
         reelListenerSetup();
-        presenter.setSlotsModel(imageBank, reelListeners);
-        findViews();
-        initTokensPointsCount();
         pointsEarned = 0;
 
         rewarded = true;
@@ -79,13 +84,36 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
         cLayout = (ConstraintLayout) findViewById(R.id.slots_layout);
+
+        try {
+            String test = presenter.restGet("slots", null);
+            JSONObject testObject = new JSONObject(test);
+            testSlots = new SlotsInformation(testObject);
+            icons = testSlots.getIcons();
+            findViews();
+            cLayout.setBackground(new BitmapDrawable(getResources(), testSlots.getBackground()));
+            cost = testSlots.getCost();
+            updateJackpot(testSlots.getJackpot());
+            jackpotID = testSlots.getJackpotImageID();
+            presenter.setSlotsModel(icons, reelListeners);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        initTokensPointsCount();
     }
+
 
     //spins the reels and waits for them to stop spinning before checking for win
     public void spin(View view){
         try{
-            String jsonResponse = presenter.sendPoints(0, 0, COST, getIntent().getStringExtra("id"));
+            String jsonResponse = presenter.sendPoints(0, 0, cost, getIntent().getStringExtra("id"));
             JSONObject updateResult = new JSONObject(jsonResponse);
+
+            JSONObject slotCost = new JSONObject();
+            slotCost.put("cost", cost);
+            String newJackpot = presenter.restPut("slotsJackpot", slotCost.toString());
+            JSONObject updateSlots = new JSONObject(newJackpot);
+            updateJackpot(updateSlots.getInt("jackpot"));
             if(updateResult.get("status").toString().equals("negative")){
                 Toast.makeText(this, "You don't have enough tokens!", Toast.LENGTH_SHORT).show();
                 return;
@@ -93,7 +121,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             else{
                 spin.setText("Spinning...");
                 spin.setClickable(false);
-                tokenCount -= COST;
+                tokenCount -= cost;
                 tokensLeft.setText(Integer.toString(tokenCount));
                 presenter.spinReels();
 
@@ -112,6 +140,15 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         }
     }
 
+    private void updateJackpot(int newPot){
+        jackpot = newPot;
+        String viewString = Integer.toString(newPot);
+        while(viewString.length() != 10){
+            viewString = "0" + viewString;
+        }
+        jackpotView.setText(viewString);
+    }
+
 
     //sets the reel listeners that are sent to the SlotsModel through the presenter
     private void reelListenerSetup(){
@@ -119,11 +156,11 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             final int finalI = i;
             reelListeners[i] = new SlotReel.ReelListener() {
                 @Override
-                public void newIcon(final int img) {
+                public void newIcon(final Bitmap img) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            slotImgs[finalI].setImageResource(img);
+                            slotImgs[finalI].setImageBitmap(img);
                         }
                     });
                 }
@@ -134,9 +171,9 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     //checks with the presenter for the number of matches and processes the result
     private void checkWinStatus(){
-        int winNum = presenter.checkSlotsWin();
+        List winner = presenter.checkSlotsWin();
 
-        switch (winNum){
+        switch ((Integer)winner.get(1)){
             case 3:
                 pointsEarned = SMALL_WIN;
                 break;
@@ -144,7 +181,11 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 pointsEarned = MEDIUM_WIN;
                 break;
             case 5:
-                pointsEarned = LARGE_WIN;
+                ImageInfo winningImg = (ImageInfo)winner.get(0);
+                Log.d("ID is", Integer.toString(winningImg.getImageID()));
+                Log.d("ID is", Integer.toString(jackpotID));
+                if(winningImg.getImageID() == jackpotID) pointsEarned = jackpot;
+                else pointsEarned = LARGE_WIN;
                 break;
             default:
                 return;
@@ -189,15 +230,17 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         slotImgs[2] = (ImageView) findViewById(R.id.slot_3);
         slotImgs[3] = (ImageView) findViewById(R.id.slot_4);
         slotImgs[4] = (ImageView) findViewById(R.id.slot_5);
+        setSlotsImgs();
         spin = (Button) findViewById(R.id.spin);
         tokensLeft = (TextView) findViewById(R.id.tokens_available);
         totalEarned = (TextView) findViewById(R.id.current_points);
+        jackpotView = findViewById(R.id.jackpot);
+    }
 
-//        TextView jackpot = (TextView) findViewById(R.id.jackpot);
-//
-//        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/digital_regular.ttf");
-//
-//        jackpot.setTypeface(custom_font);
+    private void setSlotsImgs(){
+        for(ImageView curView : slotImgs){
+            curView.setImageBitmap(icons[1].getImage());
+        }
     }
 
     //Checks if ad is loaded until it is loaded and then runs ad

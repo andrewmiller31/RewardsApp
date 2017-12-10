@@ -13,8 +13,10 @@ import java.util.List;
 public class ScratchModel {
 
     private  ImageInfo[] imageBank;
-    private List<ImageInfo> frequencies;
-    private List<Integer> values;
+    private int[] frequencies;
+    private List<ImageInfo> winners;
+    private List<Integer> potentialWinners;
+    private List<Integer> indexBank;
 
     /**
      * Ctor for ScratchModel
@@ -22,24 +24,35 @@ public class ScratchModel {
      */
     public ScratchModel(ImageInfo[] imageBank){
         this.imageBank = imageBank.clone();
-        frequencies = new LinkedList<>();
-        values = new ArrayList<>();
+        winners = new LinkedList<>();
+        potentialWinners = new LinkedList<>();
+        frequencies = new int[imageBank.length];
+        initIdBank();
     }
 
     //randomly chooses a picture and adds to values for comparing later
     //should only be used when setting images on the scratch card
     public int numGen(){
-        int num = (int)(Math.random() * imageBank.length);
-        values.add(num);
-        if(imageBank[num].isWinner()) {
-            frequencies.add(imageBank[num]);
+        int num = (int)(Math.random() * indexBank.size());
+        ImageInfo chosenImageInfo = imageBank[indexBank.get(num)];
+        if(chosenImageInfo.isWinner()) {
+            int index = potentialWinners.indexOf(chosenImageInfo.getImageID());
+            if(chosenImageInfo.getAmountNeeded() == 1) winners.add(chosenImageInfo);
+            else if(index != -1){
+                frequencies[index]++;
+                if(frequencies[index] >= chosenImageInfo.getAmountNeeded()) winners.add(chosenImageInfo);
+            }
+            else {
+                potentialWinners.add(chosenImageInfo.getImageID());
+                frequencies[potentialWinners.indexOf(chosenImageInfo.getImageID())] = 1;
+            }
         }
-        return imageBank[num].getImageID();
+        return indexBank.get(num);
     }
 
 
-    public List<ImageInfo> getFrequencies(){
-        return frequencies;
+    public List<ImageInfo> getWinners(){
+        return winners;
     }
 
     //checks if all of the array of boolean values are true
@@ -51,5 +64,19 @@ public class ScratchModel {
             i++;
         }
         return allRevealed;
+    }
+
+    private void initIdBank(){
+        indexBank = new ArrayList<>();
+        for(int i = 0; i < imageBank.length; i++){
+            int j = imageBank[i].getWeight();
+            if(j > 1){
+                while (j > 0){
+                    indexBank.add(i);
+                    j--;
+                }
+            }
+            else indexBank.add(i);
+        }
     }
 }

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,14 +96,6 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         setCard();
     }
 
-    private int[] creatParallel(Bitmap[] imageArray){
-        int[] parallelImages = new int[imageArray.length];
-        for(int i = 0; i < imageArray.length; i++){
-            parallelImages[i] = i;
-        }
-        return parallelImages;
-    }
-
     private void endGame(){
         checkWin();
 
@@ -173,21 +166,9 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         List<ImageInfo> iconsImageInfos = presenter.getFrequencies("scratchModel");
         List<ImageInfo> bonusIconsImageInfos = presenter.getFrequencies("tokenModel");
 
-        int[] winFreq = new int[iconsImageInfos.size()];
-        List<Integer> winID = new LinkedList<>();
         for(int i = 0; i < iconsImageInfos.size(); i++) {
             if (iconsImageInfos.get(i).getType().equals("points")) {
-                if(winID.indexOf(iconsImageInfos.get(i).getImageID()) != -1){
-                    winFreq[winID.indexOf(iconsImageInfos.get(i).getImageID())]++;
-                    if(winFreq[winID.indexOf(iconsImageInfos.get(i).getImageID())] >= 3){
-                        winAmount = iconsImageInfos.get(i).getReward();
-                    }
-                }
-                else {
-                    winID.add(iconsImageInfos.get(i).getImageID());
-                    winFreq[winID.indexOf(iconsImageInfos.get(i).getImageID())] = 1;
-                }
-
+                winAmount = iconsImageInfos.get(i).getReward();
             } else if (iconsImageInfos.get(i).getType().equals("tokens")) {
                 tokenWinAmount += iconsImageInfos.get(i).getReward();
             }
@@ -197,6 +178,8 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             if (bonusIconsImageInfos.get(i).getType().equals("points")) {
                 winAmount += bonusIconsImageInfos.get(i).getReward();
             } else if (bonusIconsImageInfos.get(i).getType().equals("tokens")) {
+                Log.d("Token id: ", Integer.toString(bonusIconsImageInfos.get(i).getImageID()));
+                Log.d("Token reward: ", Integer.toString(bonusIconsImageInfos.get(i).getReward()));
                 tokenWinAmount += bonusIconsImageInfos.get(i).getReward();
             }
         }
@@ -211,12 +194,12 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         scratch5 = (ScratchImageView) findViewById(R.id.scratch_view5);
         scratch6 = (ScratchImageView) findViewById(R.id.scratch_view6);
 
-        scratch1.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
-        scratch2.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
-        scratch3.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
-        scratch4.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
-        scratch5.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
-        scratch6.setImageBitmap(icons[getImageFromID(icons, presenter.scratchNumGen("scratchModel"))].getImage());
+        scratch1.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
+        scratch2.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
+        scratch3.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
+        scratch4.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
+        scratch5.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
+        scratch6.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
 
         scratchListenerSet(scratch1, 0);
         scratchListenerSet(scratch2, 1);
@@ -226,17 +209,8 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         scratchListenerSet(scratch6, 5);
 
         tokenScratch = (ScratchImageView) findViewById(R.id.token_scratch);
-        tokenScratch.setImageBitmap(bonusIcons[getImageFromID(bonusIcons, presenter.scratchNumGen("tokenModel"))].getImage());
+        tokenScratch.setImageBitmap(bonusIcons[presenter.scratchNumGen("tokenModel")].getImage());
         scratchListenerSet(tokenScratch, 6);
-    }
-
-    private int getImageFromID(ImageInfo[] ImageInfos, int ID){
-        for(int i = 0; i < ImageInfos.length; i++){
-            if(ImageInfos[i].getImageID() == ID){
-                return i;
-            }
-        }
-        return -1;
     }
 
     private void scratchListenerSet(ScratchImageView siv, final int num) {

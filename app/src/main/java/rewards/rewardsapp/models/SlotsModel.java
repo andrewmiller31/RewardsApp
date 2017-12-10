@@ -1,7 +1,9 @@
 package rewards.rewardsapp.models;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -18,10 +20,10 @@ public class SlotsModel {
     private static Random RANDOM = new Random();
     private long frameDuration, lowerBound, upperBound, spinTime;
     private SlotReel.ReelListener[] reelListeners;
-    private static int[] imageBank;
+    private static ImageInfo[] imageBank;
     private SlotReel[] reels;
 
-    public SlotsModel(int[] imageBank, SlotReel.ReelListener[] reelListeners){
+    public SlotsModel(ImageInfo[] imageBank, SlotReel.ReelListener[] reelListeners){
         frameDuration = 75;
         lowerBound = 150;
         upperBound = 600;
@@ -58,21 +60,31 @@ public class SlotsModel {
     }
 
     //counts the highest match number in a given array of reels
-    public int checkWin(){
-        List values = new ArrayList();
+    public List checkWin(){
+        List<ImageInfo> values = new ArrayList();
         for(int i = 0; i < reels.length; i++){
-            values.add(reels[i].curIndex);
+            values.add(imageBank[reels[i].getCurIndex()]);
         }
+
         int matchCounter;
         int winNum = 0;
+
+        List winner = new ArrayList();
+        winner.add(null);
+        winner.add(null);
+
         for(int i = 0; i < values.size(); i++){
-            matchCounter = 0;
+            matchCounter = 1;
             for(int j = i + 1; j < values.size(); j++){
-                if(values.get(i).equals(values.get(j))) matchCounter++;
+                if(values.get(i).getImageID() == (values.get(j).getImageID())) matchCounter++;
             }
-            if(matchCounter >= 1 && winNum < matchCounter + 1) winNum = matchCounter + 1;
+            if(winNum < matchCounter){
+                winNum = matchCounter;
+                winner.set(0, values.get(i));
+                winner.set(1, winNum);
+            }
         }
-        return winNum;
+        return winner;
     }
 
     //spins the slot machine

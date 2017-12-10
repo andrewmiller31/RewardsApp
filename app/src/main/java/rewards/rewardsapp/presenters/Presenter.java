@@ -66,8 +66,8 @@ public class Presenter {
     }
 
     public List<ImageInfo> getFrequencies(String modelName){
-        if(modelName.equals("scratchModel")) return scratchModel.getFrequencies();
-        if(modelName.equals("tokenModel")) return bonusScratchModel.getFrequencies();
+        if(modelName.equals("scratchModel")) return scratchModel.getWinners();
+        if(modelName.equals("tokenModel")) return bonusScratchModel.getWinners();
         return null;
     }
 
@@ -77,9 +77,9 @@ public class Presenter {
     //
     // This section covers methods related to SlotsModel
     //
-    public void setSlotsModel(int[] imageBank, SlotReel.ReelListener[] reelListeners){ slotsModel = new SlotsModel(imageBank, reelListeners);}
+    public void setSlotsModel(ImageInfo[] imageBank, SlotReel.ReelListener[] reelListeners){ slotsModel = new SlotsModel(imageBank, reelListeners);}
 
-    public int checkSlotsWin(){ return slotsModel.checkWin();}
+    public List checkSlotsWin(){ return slotsModel.checkWin();}
 
     public void spinReels(){slotsModel.spinReels();}
 

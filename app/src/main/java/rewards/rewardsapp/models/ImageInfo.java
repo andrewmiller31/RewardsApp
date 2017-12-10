@@ -15,18 +15,22 @@ import java.io.ByteArrayOutputStream;
 
 public class ImageInfo {
 
-    boolean winner;
-    String type;
-    int imageID;
-    int reward;
-    Bitmap image;
+    private boolean winner;
+    private String type;
+    private int imageID;
+    private int reward;
+    private Bitmap image;
+    private int weight;
+    private int amountNeeded;
 
-    public ImageInfo(boolean winner, String type, int imageID, int reward, Bitmap image){
+    public ImageInfo(boolean winner, String type, int imageID, int reward, Bitmap image, int amountNeeded){
         this.winner = winner;
         this.type = type;
         this.imageID = imageID;
         this.reward = reward;
         this.image = image;
+        weight = 1;
+        this.amountNeeded = amountNeeded;
     }
 
     public ImageInfo(int imageID, Bitmap image){
@@ -35,6 +39,8 @@ public class ImageInfo {
         type = "n/a";
         reward = 0;
         winner = false;
+        amountNeeded = 1;
+        weight = 1;
     }
 
     public ImageInfo(JSONObject winnerInfo){
@@ -47,6 +53,8 @@ public class ImageInfo {
             byte[] bitmapData = Base64.decode(imageString, Base64.NO_WRAP);
             image = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
             imageID = winnerInfo.getInt("imageID");
+            amountNeeded = winnerInfo.getInt("amountNeeded");
+            weight = winnerInfo.getInt("weight");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -56,7 +64,7 @@ public class ImageInfo {
         String imageString;
         JSONObject jsonString = null;
         ByteArrayOutputStream bitStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, bitStream);
+        image.compress(Bitmap.CompressFormat.PNG, 100, bitStream);
         imageString = Base64.encodeToString(bitStream.toByteArray(), Base64.NO_WRAP);
         try {
             jsonString = new JSONObject();
@@ -65,6 +73,8 @@ public class ImageInfo {
             jsonString.put("winner", winner);
             jsonString.put("imageID", imageID);
             jsonString.put("image", imageString);
+            jsonString.put("weight", weight);
+            jsonString.put("amountNeeded", amountNeeded);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,6 +99,18 @@ public class ImageInfo {
 
     public Bitmap getImage() {
         return image;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public int getAmountNeeded() {
+        return amountNeeded;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
 

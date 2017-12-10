@@ -41,6 +41,15 @@ var scratchTest = {
     bonusIcons: {}
 }
 
+var slotsTest = {
+    title: "default",
+    background: "none",
+    icons: {},
+    jackpot: 0,
+    cost: 1,
+    jackpotID: 0
+}
+
 /*
  **********
  * TESTS
@@ -64,8 +73,34 @@ var scratchTest = {
     res.send(scratchTest);
  });
 
+ app.put('/slotsTest', function(req, res){
+    if (!req.body) return res.sendStatus(400);
+    slotsTest.title = req.body.title;
+    slotsTest.background = req.body.background;
+    slotsTest.icons = req.body.icons;
+    slotsTest.jackpot = req.body.jackpot;
+    slotsTest.cost = req.body.cost;
+    slotsTest.jackpotID = req.body.jackpotID;
+    var updatedResponse = {
+            id: '123', status: 'updated'
+        };
+    res.json(updatedResponse);
+ });
 
+ app.put('/slotsJackpot', function(req, res){
+     if (!req.body) return res.sendStatus(400);
+     slotsTest.jackpot += req.body.cost;
+     var updatedResponse = {
+             jackpot: slotsTest.jackpot
+         };
+     res.body = JSON.stringify(updatedResponse);
+     res.send(res.body);
+  });
 
+ app.get('/slotsTest', function (req,res) {
+    res.body = JSON.stringify(slotsTest);
+    res.send(slotsTest);
+ });
 
 /*
  ************************

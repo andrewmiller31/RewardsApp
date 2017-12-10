@@ -42,6 +42,7 @@ import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
+import rewards.rewardsapp.models.SlotsInformation;
 import rewards.rewardsapp.presenters.Presenter;
 
 public class HomeActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -69,18 +70,33 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     private void setScratchTest(){
-        ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_dog));
-        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 1, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_one_token));
-        ImageInfo imageInfo3 = new ImageInfo(true, "tokens", 1003, 5, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_token_pile));
-        ImageInfo imageInfo4 = new ImageInfo(true, "tokens", 1004, 10, BitmapFactory.decodeResource(getResources(), R.drawable.scratch_token_jackpot));
-        ImageInfo loser = new ImageInfo(999, intToBM(R.drawable.scratch_lose));
-
+        ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.scratch_dog), 3);
+        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 500, intToBM(R.drawable.scratch_one_token), 1);
         ImageInfo[] icons = {imageInfo1, imageInfo2, new ImageInfo(1, intToBM(R.drawable.scratch_cow)),
                 new ImageInfo(2, intToBM(R.drawable.scratch_pig)),new ImageInfo(3, intToBM(R.drawable.scratch_sheep))};
-        ImageInfo[] bonusIcons = {imageInfo2, imageInfo2, imageInfo2, imageInfo3, imageInfo3, imageInfo3, imageInfo4, loser, loser, loser};
+
+        ImageInfo imageInfo5 = new ImageInfo(true, "tokens", 1002, 1, intToBM(R.drawable.scratch_one_token), 1);
+        ImageInfo imageInfo3 = new ImageInfo(true, "tokens", 1003, 5, intToBM(R.drawable.scratch_token_pile), 1);
+        ImageInfo imageInfo4 = new ImageInfo(true, "tokens", 1004, 10, intToBM(R.drawable.scratch_token_jackpot), 1);
+        ImageInfo loser = new ImageInfo(999, intToBM(R.drawable.scratch_lose));
+
+        imageInfo5.setWeight(3);
+        imageInfo3.setWeight(3);
+        loser.setWeight(3);
+        ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
         ScratchInformation si = new ScratchInformation("test", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
 
         presenter.restPut("scratch", si.jsonStringify());
+
+        ImageInfo slots1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.slots_cherry), 1);
+        ImageInfo slots2 = new ImageInfo(true, "points", 1002, 3, intToBM(R.drawable.slots_chili), 1);
+        ImageInfo slots3 = new ImageInfo(true, "points", 1003, 3, intToBM(R.drawable.slots_gold), 1);
+        ImageInfo slots4 = new ImageInfo(true, "points", 1004, 3, intToBM(R.drawable.slots_horseshoe), 1);
+        ImageInfo slots5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.slots_moneybag), 1);
+
+        ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
+        SlotsInformation si2 = new SlotsInformation("slot test", intToBM(R.drawable.background_field), slotImages, 2, 1000000000, 1002);
+        presenter.restPut("slots", si2.jsonStringify());
     }
 
     private Bitmap intToBM(int images){

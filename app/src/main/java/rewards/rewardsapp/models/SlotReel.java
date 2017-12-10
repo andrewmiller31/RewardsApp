@@ -1,5 +1,11 @@
 package rewards.rewardsapp.models;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import rewards.rewardsapp.R;
 
 /**
@@ -9,29 +15,50 @@ import rewards.rewardsapp.R;
 public class SlotReel extends Thread{
 
     public interface ReelListener {
-        void newIcon(int img);
+        void newIcon(Bitmap img);
     }
 
-    private static int[] images;
-    public int curIndex;
+    private static ImageInfo[] images;
+    private List<Integer> imageIndex;
+    private int curIndex;
+    private int curIndexFind;
     private ReelListener reelListener;
     private long duration;
     private long startTime;
     private boolean isStarted;
 
-    public SlotReel(ReelListener reelListener, long duration, int[] images) {
+    public SlotReel(ReelListener reelListener, long duration, ImageInfo[] imageInfos) {
         this.reelListener = reelListener;
         this.duration = duration;
-        this.images = images.clone();
+        this.images = imageInfos.clone();
         curIndex = 0;
+        curIndexFind = 0;
         isStarted = true;
+        images = imageInfos;
+        imageIndexSetUp();
+    }
+
+    private void imageIndexSetUp(){
+        imageIndex = new LinkedList();
+        for(int i = 0; i < images.length; i++){
+            int weight = images[i].getWeight();
+            if(weight > 1){
+                while (weight > 0){
+                    imageIndex.add(i);
+                    weight--;
+                }
+            }
+            else{
+                imageIndex.add(i);
+            }
+        }
     }
 
     //keeps track of the index for the images array
     private void nextImg() {
-        ++curIndex;
-        if (curIndex == images.length) {
-            curIndex = 0;
+        curIndex = imageIndex.get(curIndexFind++);
+        if (curIndexFind == imageIndex.size()) {
+            curIndexFind = 0;
         }
     }
 
@@ -52,7 +79,7 @@ public class SlotReel extends Thread{
             nextImg();
 
             if (reelListener != null) {
-                reelListener.newIcon(images[curIndex]);
+                reelListener.newIcon(images[imageIndex.get(curIndex)].getImage());
             }
         }
     }
@@ -67,6 +94,10 @@ public class SlotReel extends Thread{
         this.startTime = startTime;
         isStarted = true;
         start();
+    }
+
+    public int getCurIndex() {
+        return curIndex;
     }
 
 }
