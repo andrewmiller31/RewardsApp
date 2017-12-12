@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 public class SlotsInformation {
     private String title;
     private Bitmap background;
+    private String winMessage;
     private ImageInfo[] icons;
     private int jackpot;
     private int jackpotImageID;
@@ -29,6 +30,7 @@ public class SlotsInformation {
         this.cost = cost;
         this.jackpot = jackpot;
         this.jackpotImageID = imageID;
+        winMessage = "Win points/tokens!";
     }
 
     public SlotsInformation(JSONObject scratchInfo){
@@ -39,6 +41,7 @@ public class SlotsInformation {
             cost = scratchInfo.getInt("cost");
             jackpot = scratchInfo.getInt("jackpot");
             jackpotImageID = scratchInfo.getInt("jackpotID");
+            winMessage = scratchInfo.getString("winMessage");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,6 +72,14 @@ public class SlotsInformation {
         return jackpotImageID;
     }
 
+    public String getWinMessage() {
+        return winMessage;
+    }
+
+    public void setWinMessage(String winMessage) {
+        this.winMessage = winMessage;
+    }
+
     public String jsonStringify(){
         JSONObject jsonString = null;
         try {
@@ -78,6 +89,7 @@ public class SlotsInformation {
             jsonString.put("icons", jsonWinners(icons));
             jsonString.put("jackpot", jackpot);
             jsonString.put("cost", cost);
+            jsonString.put("winMessage", winMessage);
             jsonString.put("jackpotID", jackpotImageID);
 
         } catch (JSONException e) {

@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 
 public class ScratchInformation {
     private String title;
+    private String winMessage;
     private Bitmap background;
     private ImageInfo[] icons;
     private ImageInfo[] bonusIcons;
@@ -25,6 +26,7 @@ public class ScratchInformation {
         this.background = background;
         this.icons = icons.clone();
         this.bonusIcons = bonusIcons.clone();
+        winMessage = "Win points/tokens!";
     }
 
     public ScratchInformation(JSONObject scratchInfo){
@@ -33,6 +35,7 @@ public class ScratchInformation {
             background = decodeImage(scratchInfo.getString("background"));
             icons = jsonArrayToWinnerArray(scratchInfo.getJSONArray("icons"));
             bonusIcons = jsonArrayToWinnerArray(scratchInfo.getJSONArray("bonusIcons"));
+            winMessage = scratchInfo.getString("winMessage");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,12 +57,21 @@ public class ScratchInformation {
         return bonusIcons;
     }
 
+    public String getWinMessage() {
+        return winMessage;
+    }
+
+    public void setWinMessage(String winMessage) {
+        this.winMessage = winMessage;
+    }
+
     public String jsonStringify(){
         JSONObject jsonString = null;
         try {
             jsonString = new JSONObject();
             jsonString.put("title", title);
             jsonString.put("background", encodeImage(background));
+            jsonString.put("winMessage", winMessage);
             jsonString.put("icons", jsonWinners(icons));
             jsonString.put("bonusIcons", jsonWinners(bonusIcons));
 

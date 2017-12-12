@@ -36,7 +36,7 @@
                 android:id="@+id/scratch_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sketchetik_light"
+                android:fontFamily="@font/cocoa_mochi"
                 android:gravity="center"
                 android:text="@string/scratch_title"
                 android:textColor="@color/black"
@@ -80,9 +80,10 @@
                                 android:id="@+id/instructions_text1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="35dp"
-                                android:fontFamily="@font/sketchetik_light"
+                                android:layout_marginStart="25dp"
+                                android:fontFamily="@font/cocoa_mochi"
                                 android:text="Match three"
+                                android:layout_marginTop="2dp"
                                 android:textColor="@color/black"
                                 android:textSize="15sp"/>
 
@@ -97,10 +98,11 @@
                                 android:id="@+id/instructions_text2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/sketchetik_light"
+                                android:fontFamily="@font/cocoa_mochi"
                                 android:text="to win!"
                                 android:textColor="@color/black"
                                 android:textSize="15sp"
+                                android:layout_marginTop="2dp"
                                 android:layout_toRightOf="@id/match_symbol"/>
                         </RelativeLayout>
 
@@ -200,11 +202,11 @@
                     <TextView
                         android:id="@+id/bonus_tokens"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="18dp"
                         android:gravity="center"
                         android:textColor="@color/primaryText"
                         android:text="Bonus Tokens"
-                        android:fontFamily="@font/sketchetik_light"
+                        android:fontFamily="@font/cocoa_mochi"
                         android:background="@color/gray80"
                         app:layout_constraintLeft_toRightOf="parent"
                         app:layout_constraintRight_toRightOf="parent"

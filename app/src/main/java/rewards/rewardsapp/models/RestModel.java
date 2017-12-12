@@ -67,6 +67,8 @@ public class RestModel {
             case "getVotesInfo": return getVotesInfo();
             case "scratch": return getScratchInfo();
             case "slots": return getSlotsInfo();
+            case "scratchGameInfo": return getScratchGameInfo();
+            case "slotsGameInfo": return getSlotsGameInfo();
             default:
                 Log.d("NO ROUTE FOR: ", getString);
                 return null;
@@ -123,9 +125,29 @@ public class RestModel {
         return null;
     }
 
+    private String getScratchGameInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/scratchGameInfo", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private String getSlotsInfo(){
         try{
             return new HTTPAsyncTask().execute(serverAddress + "/slotsTest", "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getSlotsGameInfo(){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsGameInfo", "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

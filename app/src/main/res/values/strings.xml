@@ -14,6 +14,7 @@
     <string name="title_activity_earn_points">EarnPointsActivity</string>
     <string name="scratch_offs">Scratch Offs</string>
     <string name="slots">Slots</string>
+    <string name="slots_title">Spin &amp; Win</string>
     <string name="passive_earn">Surf &amp; Earn</string>
     <string name="coming_soon">Coming Soon!</string>
     <string name="title_activity_home">HomeActivity</string>
@@ -48,5 +49,7 @@
     <string name="title_activity_test">testAct</string>
 
     <string name="server_client_id">82658629626-fpsre8l5v7orb9ngqaogjnos9usvr1pc.apps.googleusercontent.com</string>
+    <string name="surf_phrase">Earn points by surfing the web!</string>
+    <string name="win_points_tokens">Win points/tokens!</string>
 
 </resources>

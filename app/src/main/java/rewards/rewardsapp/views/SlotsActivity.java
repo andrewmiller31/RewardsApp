@@ -47,11 +47,12 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     //views
     private Button spin;
-    TextView tokensLeft;
-    TextView totalEarned;
-    TextView jackpotView;
+    private TextView tokensLeft;
+    private TextView totalEarned;
+    private TextView jackpotView;
     private boolean rewarded;
     private PopupWindow claimPopUp;
+    private ImageView background;
     private ConstraintLayout cLayout;
 
 
@@ -83,7 +84,8 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
-        cLayout = (ConstraintLayout) findViewById(R.id.slots_layout);
+        background = findViewById(R.id.background);
+        cLayout = findViewById(R.id.slots_layout);
 
         try {
             String test = presenter.restGet("slots", null);
@@ -91,7 +93,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             testSlots = new SlotsInformation(testObject);
             icons = testSlots.getIcons();
             findViews();
-            cLayout.setBackground(new BitmapDrawable(getResources(), testSlots.getBackground()));
+            background.setImageBitmap(testSlots.getBackground());
             cost = testSlots.getCost();
             updateJackpot(testSlots.getJackpot());
             jackpotID = testSlots.getJackpotImageID();

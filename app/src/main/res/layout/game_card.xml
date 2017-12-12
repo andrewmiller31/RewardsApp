@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="150dp"
+    android:layout_height="175dp"
+    app:cardCornerRadius="14dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_game_info">
+
+        <View
+            android:id="@+id/type_box"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/background_green_game_type"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/game_type1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/ultra"
+            android:text="@string/slots_title"
+            android:textColor="@color/primaryText"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/type_box"
+            app:layout_constraintLeft_toLeftOf="@+id/type_box"
+            app:layout_constraintRight_toRightOf="@+id/type_box"
+            app:layout_constraintTop_toTopOf="@+id/type_box" />
+
+        <TextView
+            android:id="@+id/game_type2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/cocoa_mochi"
+            android:text="@string/scratch_title"
+            android:textColor="@color/primaryText"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/type_box"
+            app:layout_constraintLeft_toLeftOf="@+id/type_box"
+            app:layout_constraintRight_toRightOf="@+id/type_box"
+            app:layout_constraintTop_toTopOf="@+id/type_box" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_win_box">
+
+                <TextView
+                    android:id="@+id/win_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/bree_serif"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp"
+                    android:text="@string/win_points_tokens"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <rewards.rewardsapp.views.CustomImageView
+            android:id="@+id/background"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="133dp"
+            android:src="@drawable/background_big_bucks"
+            android:layout_marginEnd="2dp"
+            android:layout_marginStart="2dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/type_box" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/palamecia_titling"
+            android:gravity="center"
+            android:text="Big Bucks"
+            android:textColor="@color/primaryText"
+            android:shadowColor="@color/white"
+            android:shadowRadius="7"
+            android:textSize="23sp"
+            app:layout_constraintBottom_toTopOf="@+id/type_box"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <View
+            android:id="@+id/cost_box"
+            android:layout_width="50dp"
+            android:layout_height="22dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="1dp"
+            android:background="@drawable/background_cost"
+            app:layout_constraintBottom_toTopOf="@+id/type_box"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <ImageView
+            android:id="@+id/token_image"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/app_token"
+            app:layout_constraintBottom_toBottomOf="@+id/cost_box"
+            app:layout_constraintLeft_toLeftOf="@+id/cost_box"
+            app:layout_constraintTop_toTopOf="@+id/cost_box" />
+
+        <TextView
+            android:id="@+id/cost_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:fontFamily="@font/carbon"
+            android:text="20"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/cost_box"
+            app:layout_constraintLeft_toRightOf="@+id/token_image"
+            app:layout_constraintTop_toTopOf="@+id/cost_box" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

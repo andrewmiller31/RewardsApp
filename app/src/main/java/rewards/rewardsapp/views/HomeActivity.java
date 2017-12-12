@@ -1,12 +1,18 @@
 package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -14,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +45,11 @@ import com.google.android.gms.common.api.Status;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.models.GameInfo;
+import rewards.rewardsapp.models.GameInfoAdapter;
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
@@ -64,14 +75,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         super.onCreate(savedInstanceState);
         presenter = new Presenter();
         toast = new Toast(this);
+        setGameTests();
         viewSetup();
         adSetup();
-        setScratchTest();
     }
 
-    private void setScratchTest(){
+    private void setGameTests(){
         ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.scratch_dog), 3);
-        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 500, intToBM(R.drawable.scratch_one_token), 1);
+        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 1, intToBM(R.drawable.scratch_one_token), 1);
         ImageInfo[] icons = {imageInfo1, imageInfo2, new ImageInfo(1, intToBM(R.drawable.scratch_cow)),
                 new ImageInfo(2, intToBM(R.drawable.scratch_pig)),new ImageInfo(3, intToBM(R.drawable.scratch_sheep))};
 
@@ -84,8 +95,8 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         imageInfo3.setWeight(3);
         loser.setWeight(3);
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
-        ScratchInformation si = new ScratchInformation("test", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
-
+        ScratchInformation si = new ScratchInformation("Farm Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
+        si.setWinMessage("Win 100 points!");
         presenter.restPut("scratch", si.jsonStringify());
 
         ImageInfo slots1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.slots_cherry), 1);
@@ -95,7 +106,8 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         ImageInfo slots5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.slots_moneybag), 1);
 
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("slot test", intToBM(R.drawable.background_field), slotImages, 2, 1000000000, 1002);
+        SlotsInformation si2 = new SlotsInformation("Big Bucks", intToBM(R.drawable.background_big_bucks), slotImages, 2, 10000, 1002);
+        si2.setWinMessage("Win 10,000+ points!");
         presenter.restPut("slots", si2.jsonStringify());
     }
 
@@ -118,7 +130,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Rewards App");
         setSupportActionBar(toolbar);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), id);
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -197,7 +209,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
     }
 
-    public void scratchOff(View view) {
+    public void scratchOff() {
 //        if(!OverlayHUD.isIsRunning()) {
 //            loadRewardedVideoAd();
 //            earnIntent = new Intent(this, ScratchActivity.class);
@@ -212,7 +224,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         startActivity(earnIntent);
     }
 
-    public void slots(View view){
+    public void slots(){
 //        if (!OverlayHUD.isIsRunning()) {
 //            loadRewardedVideoAd();
 //            earnIntent = new Intent(this, SlotsActivity.class);
@@ -328,6 +340,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     public static class PlaceholderFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Bundle extras;
+        private String userID;
 
         public PlaceholderFragment() {
 //            presenter = new Presenter();
@@ -341,7 +354,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             this.extras = extras;
         }
 
-        public static PlaceholderFragment newInstance(int sectionNumber, Bundle extras) {
+        public static PlaceholderFragment newInstance(int sectionNumber, Bundle extras, String id) {
             PlaceholderFragment fragment = new PlaceholderFragment(extras);
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -355,6 +368,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             View rootView;
             if(getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
                 rootView = inflater.inflate(R.layout.fragment_earn, container, false);
+                setEarnPage(rootView);
             }
             else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
                 rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
@@ -367,7 +381,31 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             return rootView;
         }
 
-        public void setRedeemPage(View rootView){
+        private void setEarnPage(View rootView) {
+            Presenter presenter = new Presenter();
+            RecyclerView.LayoutManager layoutManager1 = new GridLayoutManager(rootView.getContext(), 2);
+            RecyclerView recyclerView1 = rootView.findViewById(R.id.recycler_one);
+            recyclerView1.setLayoutManager(layoutManager1);
+
+            try {
+                ArrayList<GameInfo> list1 = new ArrayList<>();
+                GameInfo slotGame = new GameInfo(new JSONObject(presenter.restGet("slotsGameInfo", null)));
+                GameInfo scratchGame = new GameInfo(new JSONObject(presenter.restGet("scratchGameInfo", null)));
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                recyclerView1.addItemDecoration(new GridDecoration(2, dpToPx(30), true));
+                recyclerView1.setAdapter(new GameInfoAdapter(list1, recyclerView1, rootView.getContext(), extras.getString("id")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private int dpToPx(int dp) {
+            Resources r = getResources();
+            return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+        }
+
+        private void setRedeemPage(View rootView){
             TextView currentPoints = (TextView) rootView.findViewById(R.id.redeem_cur_points);
             currentPoints.setText("Current points: " + extras.getString("currentPoints"));
 //            try {
@@ -378,7 +416,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 //            }
         }
 
-        public void setAccountPage(View rootView) {
+        private void setAccountPage(View rootView) {
             TextView progressView = (TextView) rootView.findViewById(R.id.progress);
             TextView rank = (TextView) rootView.findViewById(R.id.rank_view);
             TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
@@ -416,16 +454,19 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        
+        private String userID;
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public SectionsPagerAdapter(FragmentManager fm, String userID) {
             super(fm);
+            this.userID = userID;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Fragment test = PlaceholderFragment.newInstance(position + 1, getIntent().getExtras());
+            Fragment test = PlaceholderFragment.newInstance(position + 1, getIntent().getExtras(), userID);
             test.setUserVisibleHint(true);
             return test;
         }

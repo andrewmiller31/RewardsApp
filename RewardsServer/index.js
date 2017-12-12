@@ -35,15 +35,22 @@ var votes = {
 }
 
 var scratchTest = {
+    id: 123,
+    type: "scratch",
     title: "default",
     background: "none",
+    winMessage: "Win points/tokens!",
+    cost: 0,
     icons: {},
     bonusIcons: {}
 }
 
 var slotsTest = {
+    id: 321,
+    type: "slots",
     title: "default",
     background: "none",
+    winMessage: "Win points/tokens!",
     icons: {},
     jackpot: 0,
     cost: 1,
@@ -62,6 +69,7 @@ var slotsTest = {
     scratchTest.background = req.body.background;
     scratchTest.icons = req.body.icons;
     scratchTest.bonusIcons = req.body.bonusIcons;
+    scratchTest.winMessage = req.body.winMessage;
     var updatedResponse = {
             id: '123', status: 'updated'
         };
@@ -73,6 +81,19 @@ var slotsTest = {
     res.send(scratchTest);
  });
 
+ app.get('/scratchGameInfo', function(req, res) {
+    var gameInfo = {
+        id: scratchTest.id,
+        type: scratchTest.type,
+        title: scratchTest.title,
+        background: scratchTest.background,
+        cost: scratchTest.cost,
+        winMessage: scratchTest.winMessage
+    }
+    res.body = JSON.stringify(gameInfo);
+    res.send(res.body);
+ });
+
  app.put('/slotsTest', function(req, res){
     if (!req.body) return res.sendStatus(400);
     slotsTest.title = req.body.title;
@@ -81,6 +102,7 @@ var slotsTest = {
     slotsTest.jackpot = req.body.jackpot;
     slotsTest.cost = req.body.cost;
     slotsTest.jackpotID = req.body.jackpotID;
+    slotsTest.winMessage = req.body.winMessage;
     var updatedResponse = {
             id: '123', status: 'updated'
         };
@@ -101,6 +123,19 @@ var slotsTest = {
     res.body = JSON.stringify(slotsTest);
     res.send(slotsTest);
  });
+
+ app.get('/slotsGameInfo', function(req, res) {
+     var gameInfo = {
+         id: slotsTest.id,
+         type: slotsTest.type,
+         title: slotsTest.title,
+         background: slotsTest.background,
+         cost: slotsTest.cost,
+         winMessage: slotsTest.winMessage
+     }
+     res.body = JSON.stringify(gameInfo);
+     res.send(res.body);
+  });
 
 /*
  ************************
