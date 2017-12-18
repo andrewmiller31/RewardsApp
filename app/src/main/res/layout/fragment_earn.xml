@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/earn_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -42,7 +44,7 @@
         android:id="@+id/passive_button"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_surf_and_earn"
+        android:background="@drawable/background_green_button"
         android:textAllCaps="false"
         android:textColor="@color/primaryText"
         android:textSize="25sp"

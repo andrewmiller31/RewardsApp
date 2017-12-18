@@ -184,8 +184,6 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 break;
             case 5:
                 ImageInfo winningImg = (ImageInfo)winner.get(0);
-                Log.d("ID is", Integer.toString(winningImg.getImageID()));
-                Log.d("ID is", Integer.toString(jackpotID));
                 if(winningImg.getImageID() == jackpotID) pointsEarned = jackpot;
                 else pointsEarned = LARGE_WIN;
                 break;
@@ -195,7 +193,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
         if(pointsEarned > 0){
             LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-            View claimView = inflater.inflate(R.layout.claim_popup,null);
+            View claimView = inflater.inflate(R.layout.claim_popup,(ViewGroup)findViewById(R.id.claim_popup));
             claimPopUp = new PopupWindow(
                     claimView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -207,7 +205,10 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 claimPopUp.setElevation(5.0f);
             }
 
+            Typeface face = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
+
             Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -216,9 +217,16 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             });
 
             TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+            prizeText.setTypeface(face);
+
+            TextView youWin = (TextView) claimView.findViewById(R.id.winner_text);
+            youWin.setTypeface(face);
+
+            TextView youWin2 = claimView.findViewById(R.id.you_win_text);
+            youWin2.setTypeface(face);
 
             if(pointsEarned != 0){
-                prizeText.setText(pointsEarned + " points");
+                prizeText.setText(pointsEarned + " point(s)");
             }
             claimPopUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
             rewarded = false;

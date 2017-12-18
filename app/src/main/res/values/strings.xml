@@ -51,5 +51,13 @@
     <string name="server_client_id">82658629626-fpsre8l5v7orb9ngqaogjnos9usvr1pc.apps.googleusercontent.com</string>
     <string name="surf_phrase">Earn points by surfing the web!</string>
     <string name="win_points_tokens">Win points/tokens!</string>
+    <string name="example_prize">1000 tokens  3 points</string>
+    <string name="you_win">You win:</string>
+    <string name="youre_a_winner">You\'re a Winner!</string>
+    <string name="claim">Claim</string>
+    <string name="better_luck_next_time">Better luck next time!</string>
+    <string name="okay">Okay</string>
+    <string name="points_for_cash">Points For Cash</string>
+    <string name="sweepstakes_gift_cards"><![CDATA[Sweepstakes & Gift Cards]]></string>
 
 </resources>

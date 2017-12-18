@@ -1,4 +1,4 @@
-package rewards.rewardsapp.models;
+package rewards.rewardsapp.views;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
-import rewards.rewardsapp.views.ScratchActivity;
-import rewards.rewardsapp.views.SlotsActivity;
+import rewards.rewardsapp.models.GameInfo;
 
 /**
  * Created by Andrew Miller on 12/11/2017.
@@ -75,26 +75,30 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
         final String gameType = curGameInfo.getType();
 
         if(gameType.equals("scratch")){
-            TextView type = holder.cardView.findViewById(R.id.game_type1);
-            type.setVisibility(View.VISIBLE);
-        } else if(curGameInfo.getType().equals("slots")){
             TextView type = holder.cardView.findViewById(R.id.game_type2);
+            TextView otherType = holder.cardView.findViewById(R.id.game_type1);
             type.setVisibility(View.VISIBLE);
+            otherType.setVisibility(View.GONE);
+        } else if(curGameInfo.getType().equals("slots")){
+            TextView type = holder.cardView.findViewById(R.id.game_type1);
+            TextView otherType = holder.cardView.findViewById(R.id.game_type2);
+            type.setVisibility(View.VISIBLE);
+            otherType.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                if(gameType.equals("scratch")) {
+                if (gameType.equals("scratch") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, ScratchActivity.class);
                     intent.putExtra("id", userId);
                     context.startActivity(intent);
-                } else if(gameType.equals("slots")){
+                } else if (gameType.equals("slots") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, SlotsActivity.class);
                     intent.putExtra("id", userId);
                     context.startActivity(intent);
-                }
+                } else Toast.makeText(context, "Cannot play games while using Surf & Earn", Toast.LENGTH_SHORT).show();
             }
         });
     }

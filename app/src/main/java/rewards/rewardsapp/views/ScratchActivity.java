@@ -1,6 +1,7 @@
 package rewards.rewardsapp.views;
 
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -101,6 +102,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
         if(winAmount != 0 || tokenWinAmount != 0){
             rewarded = false;
+            Typeface face = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
             LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
             View claimView = inflater.inflate(R.layout.claim_popup,null);
             popUp = new PopupWindow(
@@ -115,6 +117,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             }
 
             Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -123,15 +126,22 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             });
 
             TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+            prizeText.setTypeface(face);
+
+            TextView winText = (TextView) claimView.findViewById(R.id.winner_text);
+            winText.setTypeface(face);
+
+            TextView youWin2 = claimView.findViewById(R.id.you_win_text);
+            youWin2.setTypeface(face);
 
             if(tokenWinAmount != 0 && winAmount != 0) {
                 prizeText.setText(tokenWinAmount + " tokens\n" + winAmount + " points");
             }
             else if(tokenWinAmount != 0){
-                prizeText.setText(tokenWinAmount + " tokens");
+                prizeText.setText(tokenWinAmount + " token(s)");
             }
             else if(winAmount != 0){
-                prizeText.setText(winAmount + " points");
+                prizeText.setText(winAmount + " point(s)");
             }
             popUp.showAtLocation(cLayout, Gravity.CENTER,0,0);
         }
@@ -144,12 +154,19 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
                     LayoutParams.MATCH_PARENT
             );
 
+            Typeface face = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
+
+
             // requires API level 21
             if(Build.VERSION.SDK_INT>=21){
                 popUp.setElevation(5.0f);
             }
 
+            TextView lose = claimView.findViewById(R.id.lose_text);
+            lose.setTypeface(face);
+
             Button closeButton = (Button) claimView.findViewById(R.id.okay_button);
+            closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

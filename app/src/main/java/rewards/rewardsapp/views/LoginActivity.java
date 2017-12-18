@@ -77,6 +77,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("id", userInfo.get("id").toString());
                 intent.putExtra("currentPoints", userInfo.get("currentPoints").toString());
+                intent.putExtra("currentTokens", userInfo.get("currentTokens").toString());
                 intent.putExtra("totalEarned", userInfo.get("totalEarned").toString());
                 intent.putExtra("totalSpent", userInfo.get("totalSpent").toString());
                 intent.putExtra("rank", userInfo.get("rank").toString());

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/claim_popup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/op50Black">
 
     <android.support.v7.widget.CardView
@@ -25,7 +27,8 @@
                 android:id="@+id/winner_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="You're a Winner!"
+                android:text="@string/youre_a_winner"
+                android:fontFamily="@font/bree_serif"
                 android:textSize="20sp"
                 android:textColor="@color/primaryText"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -38,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/whiteSmoke"
-                android:text="You win: "
+                android:fontFamily="@font/bree_serif"
+                android:text="@string/you_win"
                 android:textSize="15sp"
                 android:layout_marginTop="7dp"
                 android:layout_marginStart="12dp"
@@ -51,8 +55,10 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorAccent"
                 android:lines="2"
-                android:text="1000 tokens \n3 points"
+                android:fontFamily="@font/bree_serif"
+                android:text="@string/example_prize"
                 android:textSize="15sp"
+                android:layout_marginStart="3dp"
                 app:layout_constraintTop_toTopOf="@+id/you_win_text"
                 app:layout_constraintLeft_toRightOf="@+id/you_win_text"/>
 
@@ -63,7 +69,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:text="Claim"
+                android:text="@string/claim"
+                android:fontFamily="@font/bree_serif"
                 android:textAllCaps="false"
                 android:textColor="@color/whiteSmoke"
                 android:background="@drawable/claim_button"

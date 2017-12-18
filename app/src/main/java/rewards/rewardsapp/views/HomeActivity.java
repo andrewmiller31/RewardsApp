@@ -1,7 +1,6 @@
 package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,7 +10,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
@@ -20,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.GameInfo;
-import rewards.rewardsapp.models.GameInfoAdapter;
 import rewards.rewardsapp.models.RedeemModel;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
@@ -106,7 +104,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         ImageInfo slots5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.slots_moneybag), 1);
 
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("Big Bucks", intToBM(R.drawable.background_big_bucks), slotImages, 2, 10000, 1002);
+        SlotsInformation si2 = new SlotsInformation("Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 2, 10000, 1002);
         si2.setWinMessage("Win 10,000+ points!");
         presenter.restPut("slots", si2.jsonStringify());
     }
@@ -300,13 +298,15 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         TextView currentPoints = (TextView) findViewById(R.id.points_current);
         TextView totalPoints = (TextView) findViewById(R.id.points_total);
         TextView totalSpent = (TextView) findViewById(R.id.points_spent);
-        TextView redeemCurPoints = (TextView) findViewById(R.id.redeem_cur_points);
+        TextView redeemCurPoints = (TextView) findViewById(R.id.points_available);
+        TextView redeemCurTokens = (TextView) findViewById(R.id.tokens_available);
 
         if(progressView != null) {
             try {
                 String jsonResponse = presenter.restGet("getPointsInfo", getIntent().getStringExtra("id"));
                 JSONObject userInfo = new JSONObject(jsonResponse);
-                redeemCurPoints.setText("Current points: " + userInfo.get("currentPoints").toString());
+                redeemCurPoints.setText(userInfo.get("currentPoints").toString());
+                redeemCurTokens.setText(userInfo.get("currentTokens").toString());
                 progressView.setText(userInfo.get("totalEarned").toString() + "/" + userInfo.get("newRank").toString());
                 rank.setText(userInfo.get("rank").toString());
                 currentPoints.setText(userInfo.get("currentPoints").toString());
@@ -340,17 +340,11 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     public static class PlaceholderFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Bundle extras;
-        private String userID;
-
         public PlaceholderFragment() {
-//            presenter = new Presenter();
-//            jsonResponse = presenter.restGet("getPointsInfo", null);
         }
 
         @SuppressLint("ValidFragment")
         public PlaceholderFragment(Bundle extras) {
-//            presenter = new Presenter();
-//            jsonResponse = presenter.restGet("getPointsInfo", null);
             this.extras = extras;
         }
 
@@ -393,7 +387,30 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 GameInfo scratchGame = new GameInfo(new JSONObject(presenter.restGet("scratchGameInfo", null)));
                 list1.add(slotGame);
                 list1.add(scratchGame);
-                recyclerView1.addItemDecoration(new GridDecoration(2, dpToPx(30), true));
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                list1.add(slotGame);
+                list1.add(scratchGame);
+                ConstraintLayout earnLayout = rootView.findViewById(R.id.earn_layout);
+                recyclerView1.addItemDecoration(new GridDecoration(2, dpToPx(20)));
                 recyclerView1.setAdapter(new GameInfoAdapter(list1, recyclerView1, rootView.getContext(), extras.getString("id")));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -406,14 +423,10 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
 
         private void setRedeemPage(View rootView){
-            TextView currentPoints = (TextView) rootView.findViewById(R.id.redeem_cur_points);
-            currentPoints.setText("Current points: " + extras.getString("currentPoints"));
-//            try {
-//                JSONObject pointsInfo = new JSONObject(jsonResponse);
-//                currentPoints.setText("Current points: " + pointsInfo.get("currentPoints").toString());
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            TextView currentPoints = (TextView) rootView.findViewById(R.id.points_available);
+            TextView currentTokens = (TextView) rootView.findViewById(R.id.tokens_available);
+            currentPoints.setText(extras.getString("currentPoints"));
+            currentTokens.setText(extras.getString("currentTokens"));
         }
 
         private void setAccountPage(View rootView) {
@@ -434,18 +447,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 totalPoints.setText(extras.getString("totalEarned"));
                 totalSpent.setText(extras.getString("totalSpent"));
             }
-
-//            try {
-//                JSONObject pointsInfo = new JSONObject(jsonResponse);
-//                progressView.setText(pointsInfo.get("totalEarned").toString() + "/" + pointsInfo.get("newRank").toString());
-//                rank.setText(pointsInfo.get("rank").toString());
-//                currentPoints.setText(pointsInfo.get("currentPoints").toString());
-//                totalPoints.setText(pointsInfo.get("totalEarned").toString());
-//                totalSpent.setText(pointsInfo.get("totalSpent").toString());
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
@@ -485,7 +486,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 case 1:
                     return "Redeem";
                 case 2:
-                    return "My Account";
+                    return "Account";
             }
             return null;
         }
