@@ -60,31 +60,33 @@ public class SlotsModel {
     }
 
     //counts the highest match number in a given array of reels
-    public List checkWin(){
+    public List<ImageInfo> checkWin(){
         List<ImageInfo> values = new ArrayList();
         for(int i = 0; i < reels.length; i++){
             values.add(imageBank[reels[i].getCurIndex()]);
         }
 
-        int matchCounter;
-        int winNum = 0;
+        int[] frequencies = new int[imageBank.length];
+        List<Integer> potentialWinners = new ArrayList();
+        List<ImageInfo> winners = new ArrayList();
 
-        List winner = new ArrayList();
-        winner.add(null);
-        winner.add(null);
-
-        for(int i = 0; i < values.size(); i++){
-            matchCounter = 1;
-            for(int j = i + 1; j < values.size(); j++){
-                if(values.get(i).getImageID() == (values.get(j).getImageID())) matchCounter++;
-            }
-            if(winNum < matchCounter){
-                winNum = matchCounter;
-                winner.set(0, values.get(i));
-                winner.set(1, winNum);
+        for (ImageInfo curImage: values) {
+            if (curImage.isWinner()) {
+                int index = potentialWinners.indexOf(curImage.getImageID());
+                if (curImage.getAmountNeeded() == 1) winners.add(curImage);
+                else if (index != -1) {
+                    frequencies[index]++;
+                    if (frequencies[index] >= curImage.getAmountNeeded()){
+                        frequencies[index] = 0;
+                        winners.add(curImage);
+                    }
+                } else {
+                    potentialWinners.add(curImage.getImageID());
+                    frequencies[potentialWinners.indexOf(curImage.getImageID())] = 1;
+                }
             }
         }
-        return winner;
+        return winners;
     }
 
     //spins the slot machine

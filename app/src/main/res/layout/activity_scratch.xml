@@ -38,6 +38,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/cocoa_mochi"
                 android:gravity="center"
+                android:shadowColor="@color/white"
+                android:shadowRadius="7"
                 android:text="@string/scratch_title"
                 android:textColor="@color/black"
                 android:textSize="50sp"

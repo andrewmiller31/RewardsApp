@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
@@ -18,7 +19,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +48,7 @@ import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.GameInfo;
-import rewards.rewardsapp.models.RedeemModel;
+import rewards.rewardsapp.models.RedeemInformation;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
 import rewards.rewardsapp.models.SlotsInformation;
@@ -97,14 +97,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         si.setWinMessage("Win 100 points!");
         presenter.restPut("scratch", si.jsonStringify());
 
-        ImageInfo slots1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.slots_cherry), 1);
-        ImageInfo slots2 = new ImageInfo(true, "points", 1002, 3, intToBM(R.drawable.slots_chili), 1);
-        ImageInfo slots3 = new ImageInfo(true, "points", 1003, 3, intToBM(R.drawable.slots_gold), 1);
-        ImageInfo slots4 = new ImageInfo(true, "points", 1004, 3, intToBM(R.drawable.slots_horseshoe), 1);
-        ImageInfo slots5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.slots_moneybag), 1);
+        ImageInfo slots1 = new ImageInfo(true, "points", 1001, 5, intToBM(R.drawable.slots_cherry), 3);
+        ImageInfo slots2 = new ImageInfo(true, "points", 1002, 10000, intToBM(R.drawable.slots_chili), 5);
+        ImageInfo slots3 = new ImageInfo(true, "tokens", 1003, 1, intToBM(R.drawable.scratch_one_token), 1);
+        ImageInfo slots4 = new ImageInfo(true, "points", 1004, 3, intToBM(R.drawable.slots_horseshoe), 3);
+        ImageInfo slots5 = new ImageInfo(true, "points", 1005, 10, intToBM(R.drawable.slots_moneybag), 3);
 
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 2, 10000, 1002);
+        SlotsInformation si2 = new SlotsInformation("Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 0, 10000, 1002);
         si2.setWinMessage("Win 10,000+ points!");
         presenter.restPut("slots", si2.jsonStringify());
     }
@@ -171,39 +171,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     //onClick Methods
 
-    public void cashClick(View view){
-        presenter.setRedeemModel(1000, RedeemModel.redeemType.cash, id);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
+    public void redeemCash(View view){
+        RedeemInformation cashRedeem = new RedeemInformation(100, "cash", "cash redeem", id);
+        String result = cashRedeem.redeem();
+        if(result.equals("444")){
             showToast("Insufficient Points.");
         }
         else {
-            showToast("Congrats! You earned $1.");
-            refreshAccountInfo();
-        }
-    }
-
-    public void sweepClick(View view){
-        presenter.setRedeemModel(50, RedeemModel.redeemType.sweepstakes, id);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
-            showToast("Insufficient Points.");
-        }
-        else {
-            showToast("Congrats! You have entered the contest.");
-            refreshAccountInfo();
-        }
-    }
-
-    public void giftClick(View view){
-        presenter.setRedeemModel(10000, RedeemModel.redeemType.card, id);
-        String result = presenter.redeemPoints();
-        if(result.equals("333")){
-            showToast("Insufficient Points.");
-        }
-        else {
-            showToast("Congrats! You earned a $10 card.");
-            refreshAccountInfo();
+            showToast("$1 redeemed.");
         }
     }
 
@@ -396,20 +371,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 list1.add(slotGame);
                 list1.add(scratchGame);
                 list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                ConstraintLayout earnLayout = rootView.findViewById(R.id.earn_layout);
                 recyclerView1.addItemDecoration(new GridDecoration(2, dpToPx(20)));
                 recyclerView1.setAdapter(new GameInfoAdapter(list1, recyclerView1, rootView.getContext(), extras.getString("id")));
             } catch (JSONException e) {
@@ -427,6 +388,22 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             TextView currentTokens = (TextView) rootView.findViewById(R.id.tokens_available);
             currentPoints.setText(extras.getString("currentPoints"));
             currentTokens.setText(extras.getString("currentTokens"));
+            String id = extras.getString("id");
+            ArrayList<RedeemInformation> redeemData = new ArrayList<>();
+            redeemData.add(new RedeemInformation(1000, "card", "$10 Amazon Gift Card", "1,000 points", id));
+            redeemData.add(new RedeemInformation(10, "sweepstakes", "tokens", "Chance to win $10,000!", "10 tokens", id));
+            redeemData.add(new RedeemInformation(10000, "card", "$100 Amazon Gift Card", "10,000 points", id));
+            redeemData.add(new RedeemInformation(1, "sweepstakes", "tokens", "Chance to win $10!", "1 tokens", id));
+            redeemData.add(new RedeemInformation(3, "sweepstakes", "tokens", "Chance to win $1,000!", "3 tokens", id));
+            redeemData.add(new RedeemInformation(10000, "card", "$100 Best Buy Gift Card", "10,000 points", id));
+            redeemData.add(new RedeemInformation(10000, "card", "$100 Walmart Gift Card", "10,000 points", id));
+            redeemData.add(new RedeemInformation(5, "sweepstakes", "tokens", "Chance to win a trip to Florida!", "5 tokens", id));
+
+            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(rootView.getContext(), 1);
+            RecyclerView recyclerView = rootView.findViewById(R.id.redeem_recycler);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.addItemDecoration(new GridDecoration(1, dpToPx(20)));
+            recyclerView.setAdapter(new RedeemInfoAdapter(redeemData, recyclerView, rootView.getContext(), extras.getString("id")));
         }
 
         private void setAccountPage(View rootView) {

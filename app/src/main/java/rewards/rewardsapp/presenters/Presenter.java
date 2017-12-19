@@ -2,7 +2,7 @@ package rewards.rewardsapp.presenters;
 
 import java.util.List;
 
-import rewards.rewardsapp.models.RedeemModel;
+import rewards.rewardsapp.models.RedeemInformation;
 import rewards.rewardsapp.models.RestModel;
 import rewards.rewardsapp.models.ScratchModel;
 import rewards.rewardsapp.models.SlotReel;
@@ -20,7 +20,7 @@ public class Presenter {
     private SlotsModel slotsModel;
     private ScratchModel scratchModel;
     private ScratchModel bonusScratchModel;
-    private RedeemModel redeemModel;
+    private RedeemInformation redeemModel;
 
     public Presenter(){
         restModel = new RestModel();
@@ -45,11 +45,12 @@ public class Presenter {
     public String sendPoints(int points, int tokens, int tokensSpent, String id){ return restPut("putPointsInfo", new UserInformation(points, tokens, 0,tokensSpent, id).jsonStringify());}
 
     //
-    // This section covers the methods related to RedeemModel
+    // This section covers the methods related to RedeemInformation
     //
-    public void setRedeemModel(int cost, RedeemModel.redeemType type, String id){redeemModel = new RedeemModel(cost, type, id);}
 
-    public String redeemPoints(){return redeemModel.redeem();}
+//    public void setRedeemModel(int cost, String type, String title, String id){redeemModel = new RedeemInformation(cost, type, id);}
+//
+//    public String redeemPoints(){return redeemModel.redeem();}
 
     //
     // This section covers methods related to ScratchModel
@@ -79,7 +80,7 @@ public class Presenter {
     //
     public void setSlotsModel(ImageInfo[] imageBank, SlotReel.ReelListener[] reelListeners){ slotsModel = new SlotsModel(imageBank, reelListeners);}
 
-    public List checkSlotsWin(){ return slotsModel.checkWin();}
+    public List<ImageInfo> checkSlotsWin(){ return slotsModel.checkWin();}
 
     public void spinReels(){slotsModel.spinReels();}
 

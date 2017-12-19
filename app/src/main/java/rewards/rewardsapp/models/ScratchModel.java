@@ -40,7 +40,10 @@ public class ScratchModel {
             if(chosenImageInfo.getAmountNeeded() == 1) winners.add(chosenImageInfo);
             else if(index != -1){
                 frequencies[index]++;
-                if(frequencies[index] >= chosenImageInfo.getAmountNeeded()) winners.add(chosenImageInfo);
+                if(frequencies[index] >= chosenImageInfo.getAmountNeeded()){
+                    frequencies[index] = 0;
+                    winners.add(chosenImageInfo);
+                }
             }
             else {
                 potentialWinners.add(chosenImageInfo.getImageID());

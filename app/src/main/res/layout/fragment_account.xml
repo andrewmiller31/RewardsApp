@@ -6,7 +6,35 @@
     android:layout_height="match_parent"
     android:background="@color/whiteSmoke"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="rewards.rewardsapp.views.HomeActivity">
+    tools:context="rewards.rewardsapp.views.HomeActivity"
+    android:backgroundTint="@color/colorPrimaryLight">
+
+    <View
+        android:id="@+id/title_background"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/my_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/my_account"
+        android:fontFamily="@font/bree_serif"
+        android:textColor="@color/primaryText"
+        android:textSize="35sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/secondaryText"
+        app:layout_constraintTop_toBottomOf="@+id/title_background"/>
 
     <android.support.v7.widget.CardView
         android:id="@+id/info_card"
@@ -14,52 +42,42 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="5dp"
         app:cardBackgroundColor="@color/gray80"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/my_account"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/my_account"
-                android:textColor="@color/black"
-                android:textSize="30sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            android:background="@drawable/background_green_button">
 
             <TextView
                 android:id="@+id/rank_view"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
+                android:background="@drawable/background_yellow_button"
                 android:gravity="center"
+                android:fontFamily="@font/sonsie_one"
                 android:text="1"
                 android:textColor="@color/whiteSmoke"
-                android:textSize="70sp"
+                android:textSize="45sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/my_account" />
+                app:layout_constraintTop_toBottomOf="parent" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:layout_marginStart="6dp"
+                android:fontFamily="@font/pakenham_free"
                 android:text="@string/rank"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/rank_view"
                 app:layout_constraintLeft_toLeftOf="@+id/rank_view" />
 
@@ -68,6 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
+                android:fontFamily="@font/bree_serif"
                 android:text="@string/next_level_progress"
                 android:textColor="@color/black"
                 app:layout_constraintLeft_toLeftOf="@+id/rank_view"
@@ -77,10 +96,12 @@
                 android:id="@+id/progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/bree_serif"
                 android:text="0/10,000 points"
                 android:textColor="@color/whiteSmoke"
-                app:layout_constraintLeft_toLeftOf="@+id/next_level"
-                app:layout_constraintTop_toBottomOf="@+id/next_level"
+                android:layout_marginStart="5dp"
+                app:layout_constraintLeft_toRightOf="@+id/next_level"
+                app:layout_constraintTop_toTopOf="@+id/next_level"
                 android:paddingBottom="3dp"/>
 
             <TextView
@@ -90,8 +111,9 @@
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="3dp"
                 android:text="John Doe"
-                android:textColor="@color/black"
-                android:textSize="18sp"
+                android:fontFamily="@font/bree_serif"
+                android:textColor="@color/primaryText"
+                android:textSize="15sp"
                 app:layout_constraintLeft_toRightOf="@+id/rank_view"
                 app:layout_constraintTop_toTopOf="@+id/rank_view" />
 
@@ -102,20 +124,12 @@
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
                 android:text="johndoe56@gmail.com"
-                android:textColor="@color/black"
-                android:textSize="18sp"
+                android:fontFamily="@font/bree_serif"
+                android:textColor="@color/primaryText"
+                android:textSize="15sp"
                 app:layout_constraintLeft_toRightOf="@+id/rank_view"
                 app:layout_constraintTop_toBottomOf="@+id/name" />
 
-            <Button
-                android:id="@+id/edit_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:text="@string/edit"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginBottom="5dp"/>
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
@@ -126,7 +140,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         app:cardBackgroundColor="@color/gray80"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -136,20 +150,32 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@drawable/background_green_button">
+
+            <TextView
+                android:id="@+id/stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primaryText"
+                android:text="Statistics"
+                android:fontFamily="@font/bree_serif"
+                android:textSize="25sp"
+                android:paddingStart="5dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 android:id="@+id/current_points"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
                 android:text="Current Points: "
-                android:textColor="@color/black"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
+                android:fontFamily="@font/coolvetica_regular"
                 android:paddingStart="5dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/total_points"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/stats"/>
+
 
             <TextView
                 android:id="@+id/points_current"
@@ -157,10 +183,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="0"
-                android:textColor="@color/black"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toRightOf="@+id/current_points"
                 app:layout_constraintTop_toTopOf="@+id/current_points" />
+
+            <TextView
+                android:id="@+id/current_tokens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Current tokens:"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
+                android:textSize="18sp"
+                android:paddingStart="5dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/current_points"/>
+
+            <TextView
+                android:id="@+id/tokens_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="0"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toRightOf="@+id/current_tokens"
+                app:layout_constraintTop_toTopOf="@+id/current_tokens" />
 
             <TextView
                 android:id="@+id/total_points"
@@ -168,12 +220,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/total_points_earned"
-                android:textColor="@color/black"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
                 android:paddingStart="5dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/current_points"
-                app:layout_constraintBottom_toTopOf="@+id/total_spent"/>
+                app:layout_constraintTop_toBottomOf="@+id/current_tokens"/>
 
             <TextView
                 android:id="@+id/points_total"
@@ -181,7 +233,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="0"
-                android:textColor="@color/black"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toRightOf="@+id/total_points"
                 app:layout_constraintTop_toTopOf="@+id/total_points"/>
@@ -192,12 +245,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/total_points_spent"
-                android:textColor="@color/black"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
                 android:paddingStart="5dp"
                 app:layout_constraintLeft_toLeftOf="@+id/total_points"
                 app:layout_constraintTop_toBottomOf="@+id/total_points"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                android:paddingBottom="10dp"/>
 
             <TextView
                 android:id="@+id/points_spent"
@@ -206,7 +260,8 @@
                 android:layout_marginStart="5dp"
                 android:paddingBottom="5dp"
                 android:text="0"
-                android:textColor="@color/black"
+                android:fontFamily="@font/coolvetica_regular"
+                android:textColor="@color/whiteSmoke"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toRightOf="@+id/total_spent"
                 app:layout_constraintTop_toTopOf="@+id/total_spent" />
@@ -215,18 +270,19 @@
     </android.support.v7.widget.CardView>
 
     <Button
-        android:layout_width="350dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/stats_card"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         android:text="@string/choose_a_charity"
         android:textAllCaps="false"
-        android:textSize="70sp"
-        android:background="@color/colorPrimary"
-        android:layout_marginBottom="50dp"
-        android:onClick="charityPoll"/>
+        android:fontFamily="@font/bree_serif"
+        android:textColor="@color/primaryText"
+        android:textSize="35sp"
+        android:background="@drawable/background_yellow_button"
+        android:onClick="charityPoll"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/stats_card"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
 
 </android.support.constraint.ConstraintLayout>

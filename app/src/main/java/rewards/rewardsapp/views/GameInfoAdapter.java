@@ -93,10 +93,12 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
                 if (gameType.equals("scratch") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, ScratchActivity.class);
                     intent.putExtra("id", userId);
+                    //runAd();
                     context.startActivity(intent);
                 } else if (gameType.equals("slots") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, SlotsActivity.class);
                     intent.putExtra("id", userId);
+                    //runAd();
                     context.startActivity(intent);
                 } else Toast.makeText(context, "Cannot play games while using Surf & Earn", Toast.LENGTH_SHORT).show();
             }

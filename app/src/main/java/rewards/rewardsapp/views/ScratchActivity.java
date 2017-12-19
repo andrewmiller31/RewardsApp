@@ -73,8 +73,6 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         setContentView(R.layout.activity_scratch);
         cLayout = (ConstraintLayout) findViewById(R.id.scratch_layout);
         ImageView background = (ImageView) findViewById(R.id.card_background);
-        winner = (ImageView) findViewById(R.id.match_symbol);
-        winner.setImageResource(R.drawable.scratch_dog);
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
@@ -195,8 +193,6 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             if (bonusIconsImageInfos.get(i).getType().equals("points")) {
                 winAmount += bonusIconsImageInfos.get(i).getReward();
             } else if (bonusIconsImageInfos.get(i).getType().equals("tokens")) {
-                Log.d("Token id: ", Integer.toString(bonusIconsImageInfos.get(i).getImageID()));
-                Log.d("Token reward: ", Integer.toString(bonusIconsImageInfos.get(i).getReward()));
                 tokenWinAmount += bonusIconsImageInfos.get(i).getReward();
             }
         }
@@ -204,6 +200,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     }
 
     private void setCard(){
+        winner = (ImageView) findViewById(R.id.match_symbol);
         scratch1 = (ScratchImageView) findViewById(R.id.scratch_view1);
         scratch2 = (ScratchImageView) findViewById(R.id.scratch_view2);
         scratch3 = (ScratchImageView) findViewById(R.id.scratch_view3);
@@ -228,6 +225,18 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         tokenScratch = (ScratchImageView) findViewById(R.id.token_scratch);
         tokenScratch.setImageBitmap(bonusIcons[presenter.scratchNumGen("tokenModel")].getImage());
         scratchListenerSet(tokenScratch, 6);
+
+        Bitmap winImage = null;
+        int prize = 0;
+        for(ImageInfo image: icons){
+            if(image.getReward() > prize){
+                prize = image.getReward();
+                winImage = image.getImage();
+            }
+        }
+        if(winImage != null) {
+            winner.setImageBitmap(winImage);
+        }
     }
 
     private void scratchListenerSet(ScratchImageView siv, final int num) {
