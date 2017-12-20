@@ -3,12 +3,54 @@ var mongojs = require("mongojs");
 
 var url = 'mongodb://127.0.0.1:27017/rewardsDB';
 
-var collections = ['users', 'slots', 'scratches', 'charities'];
+var collections = ['users', 'slots', 'scratches'];
 
 var assert = require('assert');
 
 var mongoDBRef = mongojs(url, collections);
 console.log("MongoDB is active.")
+
+module.exports.addGame = function(type, gameData, callback){
+    if(type === 'scratch'){
+        mongoDBRef.collection('scratches').save(gameData, function(err, result){
+            if(err || !result) console.log("Scratch game failed to save in database.");
+            else {
+                console.log("Scratch game inserted into the collection in MongoDB.");
+                callback(result);
+            }
+        });
+    } else if( type === 'slots'){
+        mongoDBRef.collection('slots').save(gameData, function(err, result){
+            if(err || !result) console.log("Slots game failed to save in database.");
+            else {
+                console.log("Slots game inserted into the collection in MongoDB.");
+                callback(result);
+            }
+        });
+    }
+};
+
+module.exports.findGame = function(gameID, type, callback){
+    if(type === 'scratch'){
+        mongoDBRef.scratches.find({id: gameID}).toArray(function(err, docs) {
+            callback(docs);
+        });
+    } else if(type === "slots"){
+        mongoDBRef.slots.find({id: gameID}).toArray(function(err, docs) {
+               callback(docs);
+        });
+    }
+};
+
+module.exports.updateJackpot = function(gameID, callback){
+    mongoDBRef.slots.find({id: gameID}).toArray(function(err, docs) {
+        var newJackpot = docs[0].jackpot + docs[0].cost;
+        var updateJackpot = {$set: {jackpot: newJackpot}};
+        mongoDBRef.slots.findAndModify({query: {id: gameID}, update: updateJackpot, new: true},
+            function (err, tank) { if (err) throw err; });
+        callback(newJackpot);
+    });
+};
 
 /**
 * Finds a specific user. If the user hasn't initiated an account before, it is created.

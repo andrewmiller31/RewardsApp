@@ -17,7 +17,7 @@ public class GameInfo {
     private String winMessage;
     private Bitmap background;
     private String cost;
-    private int id;
+    private String id;
 
     public GameInfo(JSONObject gameObject){
         try{
@@ -26,7 +26,7 @@ public class GameInfo {
             background = decodeImage(gameObject.getString("background"));
             cost = gameObject.getString("cost");
             winMessage = gameObject.getString("winMessage");
-            id = gameObject.getInt("id");
+            id = gameObject.getString("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -58,7 +58,7 @@ public class GameInfo {
         return cost;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

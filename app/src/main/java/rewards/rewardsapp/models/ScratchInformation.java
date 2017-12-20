@@ -17,11 +17,13 @@ import java.io.ByteArrayOutputStream;
 public class ScratchInformation {
     private String title;
     private String winMessage;
+    private String id;
     private Bitmap background;
     private ImageInfo[] icons;
     private ImageInfo[] bonusIcons;
 
-    public ScratchInformation(String title, Bitmap background, ImageInfo[] icons, ImageInfo[] bonusIcons){
+    public ScratchInformation(String id, String title, Bitmap background, ImageInfo[] icons, ImageInfo[] bonusIcons){
+        this.id = id;
         this.title = title;
         this.background = background;
         this.icons = icons.clone();
@@ -33,9 +35,10 @@ public class ScratchInformation {
         try{
             title = scratchInfo.getString("title");
             background = decodeImage(scratchInfo.getString("background"));
-            icons = jsonArrayToWinnerArray(scratchInfo.getJSONArray("icons"));
-            bonusIcons = jsonArrayToWinnerArray(scratchInfo.getJSONArray("bonusIcons"));
+            icons = jsonArrayToImageInfoArray(scratchInfo.getJSONArray("icons"));
+            bonusIcons = jsonArrayToImageInfoArray(scratchInfo.getJSONArray("bonusIcons"));
             winMessage = scratchInfo.getString("winMessage");
+            id = scratchInfo.getString("id");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -74,14 +77,14 @@ public class ScratchInformation {
             jsonString.put("winMessage", winMessage);
             jsonString.put("icons", jsonWinners(icons));
             jsonString.put("bonusIcons", jsonWinners(bonusIcons));
-
+            jsonString.put("id", id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonString.toString();
     }
 
-    private ImageInfo[] jsonArrayToWinnerArray(JSONArray jsonArray){
+    private ImageInfo[] jsonArrayToImageInfoArray(JSONArray jsonArray){
         ImageInfo[] imageInfoArray = new ImageInfo[jsonArray.length()];
         try {
             for (int i = 0; i < imageInfoArray.length; i++){

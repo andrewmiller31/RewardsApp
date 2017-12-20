@@ -18,12 +18,14 @@ public class SlotsInformation {
     private String title;
     private Bitmap background;
     private String winMessage;
+    private String id;
     private ImageInfo[] icons;
     private int jackpot;
     private int jackpotImageID;
     private int cost;
 
-    public SlotsInformation(String title, Bitmap background, ImageInfo[] icons, int cost, int jackpot, int imageID){
+    public SlotsInformation(String id, String title, Bitmap background, ImageInfo[] icons, int cost, int jackpot, int imageID){
+        this.id = id;
         this.title = title;
         this.background = background;
         this.icons = icons.clone();
@@ -42,6 +44,7 @@ public class SlotsInformation {
             jackpot = scratchInfo.getInt("jackpot");
             jackpotImageID = scratchInfo.getInt("jackpotID");
             winMessage = scratchInfo.getString("winMessage");
+            id = scratchInfo.getString("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -91,6 +94,7 @@ public class SlotsInformation {
             jsonString.put("cost", cost);
             jsonString.put("winMessage", winMessage);
             jsonString.put("jackpotID", jackpotImageID);
+            jsonString.put("id", id);
 
         } catch (JSONException e) {
             e.printStackTrace();

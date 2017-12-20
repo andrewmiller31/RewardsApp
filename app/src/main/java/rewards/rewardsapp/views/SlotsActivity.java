@@ -85,7 +85,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         cLayout = findViewById(R.id.slots_layout);
 
         try {
-            String test = presenter.restGet("slots", null);
+            String test = presenter.restGet("slotsInfo", getIntent().getStringExtra("gameID"));
             JSONObject testObject = new JSONObject(test);
             testSlots = new SlotsInformation(testObject);
             icons = testSlots.getIcons();
@@ -115,7 +115,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             else{
                 JSONObject slotCost = new JSONObject();
                 slotCost.put("cost", cost);
-                String newJackpot = presenter.restPut("slotsJackpot", slotCost.toString());
+                String newJackpot = presenter.restGet("slotsJackpot", getIntent().getStringExtra("gameID"));
                 JSONObject updateSlots = new JSONObject(newJackpot);
                 updateJackpot(updateSlots.getInt("jackpot"));
                 spin.setText("Spinning...");

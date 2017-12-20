@@ -1,6 +1,7 @@
 package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -19,6 +20,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +44,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -93,7 +97,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         imageInfo3.setWeight(3);
         loser.setWeight(3);
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
-        ScratchInformation si = new ScratchInformation("Farm Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
+        ScratchInformation si = new ScratchInformation("124", "Animal Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
         si.setWinMessage("Win 100 points!");
         presenter.restPut("scratch", si.jsonStringify());
 
@@ -104,7 +108,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         ImageInfo slots5 = new ImageInfo(true, "points", 1005, 10, intToBM(R.drawable.slots_moneybag), 3);
 
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 0, 10000, 1002);
+        SlotsInformation si2 = new SlotsInformation("125", "Hot Jackpot That Costs Money", intToBM(R.drawable.background_peppers), slotImages, 1, 10000, 1002);
         si2.setWinMessage("Win 10,000+ points!");
         presenter.restPut("slots", si2.jsonStringify());
     }
@@ -269,10 +273,11 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 //    refreshes account info
     public void refreshAccountInfo() {
         TextView progressView = (TextView) findViewById(R.id.progress);
-        TextView rank = (TextView) findViewById(R.id.rank_view);
-        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+        TextView rank = (TextView) findViewById(R.id.rank);
         TextView totalPoints = (TextView) findViewById(R.id.points_total);
         TextView totalSpent = (TextView) findViewById(R.id.points_spent);
+        TextView currentPoints = (TextView) findViewById(R.id.points_current);
+        TextView currentTokens = (TextView) findViewById(R.id.tokens_current);
         TextView redeemCurPoints = (TextView) findViewById(R.id.points_available);
         TextView redeemCurTokens = (TextView) findViewById(R.id.tokens_available);
 
@@ -282,6 +287,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 JSONObject userInfo = new JSONObject(jsonResponse);
                 redeemCurPoints.setText(userInfo.get("currentPoints").toString());
                 redeemCurTokens.setText(userInfo.get("currentTokens").toString());
+                currentTokens.setText(userInfo.get("currentTokens").toString());
                 progressView.setText(userInfo.get("totalEarned").toString() + "/" + userInfo.get("newRank").toString());
                 rank.setText(userInfo.get("rank").toString());
                 currentPoints.setText(userInfo.get("currentPoints").toString());
@@ -357,25 +363,35 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             recyclerView1.setLayoutManager(layoutManager1);
 
             try {
-                ArrayList<GameInfo> list1 = new ArrayList<>();
-                GameInfo slotGame = new GameInfo(new JSONObject(presenter.restGet("slotsGameInfo", null)));
-                GameInfo scratchGame = new GameInfo(new JSONObject(presenter.restGet("scratchGameInfo", null)));
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                list1.add(scratchGame);
-                list1.add(slotGame);
-                recyclerView1.addItemDecoration(new GridDecoration(2, dpToPx(20)));
-                recyclerView1.setAdapter(new GameInfoAdapter(list1, recyclerView1, rootView.getContext(), extras.getString("id")));
+                JSONObject jsonObject1 = new JSONObject(presenter.restGet("scratchIDs", null));
+                JSONObject jsonObject2 = new JSONObject(presenter.restGet("slotsIDs", null));
+                String[] scratchArray = jsonArrayToStringArray(jsonObject1.getJSONArray("idArray"));
+                String[] slotsArray = jsonArrayToStringArray(jsonObject2.getJSONArray("idArray"));
+
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                int width = displayMetrics.widthPixels;
+                width = width - dpToPx(300);
+                width = width / 3;
+                Log.d("Calculated Spacing:", Integer.toString(width));
+
+                recyclerView1.addItemDecoration(new GridDecoration(2, width));
+                recyclerView1.setAdapter(new GameInfoAdapter(slotsArray, scratchArray, recyclerView1, rootView.getContext(), extras.getString("id")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        private String[] jsonArrayToStringArray(JSONArray jsonArray){
+            String[] stringArray = new String[jsonArray.length()];
+            try {
+                for (int i = 0; i < stringArray.length; i++){
+                    stringArray[i] = jsonArray.getString(i);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return stringArray;
         }
 
         private int dpToPx(int dp) {
@@ -403,17 +419,19 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             RecyclerView recyclerView = rootView.findViewById(R.id.redeem_recycler);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.addItemDecoration(new GridDecoration(1, dpToPx(20)));
+
             recyclerView.setAdapter(new RedeemInfoAdapter(redeemData, recyclerView, rootView.getContext(), extras.getString("id")));
         }
 
         private void setAccountPage(View rootView) {
             TextView progressView = (TextView) rootView.findViewById(R.id.progress);
-            TextView rank = (TextView) rootView.findViewById(R.id.rank_view);
+            TextView rank = (TextView) rootView.findViewById(R.id.rank);
             TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
             TextView totalPoints = (TextView) rootView.findViewById(R.id.points_total);
             TextView totalSpent = (TextView) rootView.findViewById(R.id.points_spent);
             TextView name = (TextView) rootView.findViewById(R.id.name);
             TextView email = (TextView) rootView.findViewById(R.id.email);
+            TextView tokens = rootView.findViewById(R.id.tokens_current);
 
             if (extras != null) {
                 name.setText(extras.getString("name"));
@@ -423,6 +441,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 currentPoints.setText(extras.getString("currentPoints"));
                 totalPoints.setText(extras.getString("totalEarned"));
                 totalSpent.setText(extras.getString("totalSpent"));
+                tokens.setText(extras.getString("currentTokens"));
             }
         }
     }

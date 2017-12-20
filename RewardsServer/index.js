@@ -34,109 +34,117 @@ var votes = {
     winning: 0
 }
 
-var scratchTest = {
-    id: 123,
-    type: "scratch",
-    title: "default",
-    background: "none",
-    winMessage: "Win points/tokens!",
-    cost: 0,
-    icons: {},
-    bonusIcons: {}
-}
-
-var slotsTest = {
-    id: 321,
-    type: "slots",
-    title: "default",
-    background: "none",
-    winMessage: "Win points/tokens!",
-    icons: {},
-    jackpot: 0,
-    cost: 1,
-    jackpotID: 0
-}
-
 /*
  **********
  * TESTS
  **********
  */
 
- app.put('/scratchTest', function(req, res){
-    if (!req.body) return res.sendStatus(400);
-    scratchTest.title = req.body.title;
-    scratchTest.background = req.body.background;
-    scratchTest.icons = req.body.icons;
-    scratchTest.bonusIcons = req.body.bonusIcons;
-    scratchTest.winMessage = req.body.winMessage;
-    var updatedResponse = {
-            id: '123', status: 'updated'
+ app.get('/scratch/:mongoID', function (req,res) {
+    mongodb.findGame(req.params.mongoID, 'scratch', function(result){
+        res.body = JSON.stringify(result[0]);
+        res.send(res.body);
+    });
+ });
+
+ app.get('/slots/:mongoID', function (req,res) {
+    mongodb.findGame(req.params.mongoID, 'slots', function(result){
+        res.body = JSON.stringify(result[0]);
+        res.send(res.body);
+    });
+ });
+
+ app.get('/scratchGameIDs', function(req, res) {
+    mongodb.getCollection('scratches', function(result){
+        var mongoIDs = {
+            idArray: []
         };
-    res.json(updatedResponse);
+
+        result.forEach(function(game){
+            mongoIDs.idArray.push(game.id);
+        });
+
+        res.json(mongoIDs);
+    });
  });
 
- app.get('/scratchTest', function (req,res) {
-    res.body = JSON.stringify(scratchTest);
-    res.send(scratchTest);
- });
-
- app.get('/scratchGameInfo', function(req, res) {
-    var gameInfo = {
-        id: scratchTest.id,
-        type: scratchTest.type,
-        title: scratchTest.title,
-        background: scratchTest.background,
-        cost: scratchTest.cost,
-        winMessage: scratchTest.winMessage
-    }
-    res.body = JSON.stringify(gameInfo);
-    res.send(res.body);
- });
-
- app.put('/slotsTest', function(req, res){
-    if (!req.body) return res.sendStatus(400);
-    slotsTest.title = req.body.title;
-    slotsTest.background = req.body.background;
-    slotsTest.icons = req.body.icons;
-    slotsTest.jackpot = req.body.jackpot;
-    slotsTest.cost = req.body.cost;
-    slotsTest.jackpotID = req.body.jackpotID;
-    slotsTest.winMessage = req.body.winMessage;
-    var updatedResponse = {
-            id: '123', status: 'updated'
+ app.get('/slotsGameIDs', function(req, res) {
+     mongodb.getCollection('slots', function(result){
+        var mongoIDs = {
+            idArray: []
         };
-    res.json(updatedResponse);
+
+        result.forEach(function(game){
+            mongoIDs.idArray.push(game.id);
+        });
+
+        res.json(mongoIDs);
+    });
  });
 
- app.put('/slotsJackpot', function(req, res){
+
+
+ app.get('/scratch/card/:mongoID', function(req, res){
+    mongodb.findGame(req.params.mongoID, 'scratch', function(result){
+        var game = result[0];
+        var cardInfo = {
+            type: 'scratch',
+            title: game.title,
+            winMessage: game.winMessage,
+            background: game.background,
+            cost: 0,
+            id: req.params.mongoID
+        }
+        res.body = JSON.stringify(cardInfo);
+        res.send(res.body);
+    });
+ });
+
+ app.get('/slots/card/:mongoID', function(req, res){
+    mongodb.findGame(req.params.mongoID, 'slots', function(result){
+        var game = result[0];
+        var cardInfo = {
+            type: 'slots',
+            title: game.title,
+            winMessage: game.winMessage,
+            background: game.background,
+            cost: game.cost,
+            id: req.params.mongoID
+        }
+        res.body = JSON.stringify(cardInfo);
+        res.send(res.body);
+    });
+ });
+
+ app.put('/scratch', function(req, res){
      if (!req.body) return res.sendStatus(400);
-     slotsTest.jackpot += req.body.cost;
+     mongodb.addGame('scratch', req.body, function(gameData){
+     });
      var updatedResponse = {
-             jackpot: slotsTest.jackpot
+             id: '123', status: 'updated'
          };
-     res.body = JSON.stringify(updatedResponse);
-     res.send(res.body);
-  });
-
- app.get('/slotsTest', function (req,res) {
-    res.body = JSON.stringify(slotsTest);
-    res.send(slotsTest);
+     res.json(updatedResponse);
  });
 
- app.get('/slotsGameInfo', function(req, res) {
-     var gameInfo = {
-         id: slotsTest.id,
-         type: slotsTest.type,
-         title: slotsTest.title,
-         background: slotsTest.background,
-         cost: slotsTest.cost,
-         winMessage: slotsTest.winMessage
-     }
-     res.body = JSON.stringify(gameInfo);
-     res.send(res.body);
-  });
+app.put('/slots', function(req, res){
+    if (!req.body) return res.sendStatus(400);
+    mongodb.addGame('slots', req.body, function(gameData){
+    });
+    var updatedResponse = {
+            id: '123', status: 'updated'
+        };
+    res.json(updatedResponse);
+ });
 
+ app.get('/slotsJackpot/:mongoID', function(req, res){
+     if (!req.body) return res.sendStatus(400);
+     mongodb.updateJackpot(req.params.mongoID, function(newJackpot){
+        var updatedJackpot = {
+            jackpot: newJackpot
+        };
+        res.json(updatedJackpot);
+     });
+  });
 /*
  ************************
  * POST ROUTE SECTION
@@ -259,12 +267,6 @@ app.get('/users/:userID', function (req,res) {
          res.body = JSON.stringify(user);
          res.send(res.body);
      });
-});
-
-app.get('/pointsInfo', function (req, res) {
-    console.log("\nSending points info:\ntotalEarned: " + user.totalEarned + "\ntotalSpent: "
-    + user.totalSpent + "\ncurrentPoints: " + user.currentPoints + "\nrank: " + user.rank + "\n");
-    res.send(JSON.stringify(user));
 });
 
 app.get('/charityVotes', function (req, res) {

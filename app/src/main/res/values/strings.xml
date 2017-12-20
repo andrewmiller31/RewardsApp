@@ -59,5 +59,6 @@
     <string name="okay">Okay</string>
     <string name="points_for_cash">Points For Cash</string>
     <string name="sweepstakes_gift_cards"><![CDATA[Sweepstakes & Gift Cards]]></string>
+    <string name="john_doe">John Doe</string>
 
 </resources>

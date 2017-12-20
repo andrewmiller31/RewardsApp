@@ -22,8 +22,7 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class RestModel {
-    public final String serverAddress = "http://192.168.1.32:5000";
-//    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
+    public final String serverAddress = "http://10.0.2.2:5000"; //Emulator Tunnel
 //    public final String serverAddress = "http://akka.d.umn.edu:5000";
 
     public RestModel(){}
@@ -51,7 +50,6 @@ public class RestModel {
             case "putCharityVote": return putCharityInfo(data);
             case "scratch": return putScratchInfo(data);
             case "slots": return putSlotsInfo(data);
-            case "slotsJackpot": return putSlotsJackpot(data);
             default:
                 Log.d("NO ROUTE FOR: ", putString);
                 return null;
@@ -66,10 +64,13 @@ public class RestModel {
         switch (getString){
             case "getPointsInfo": return getPointsInfo(data);
             case "getVotesInfo": return getVotesInfo();
-            case "scratch": return getScratchInfo();
-            case "slots": return getSlotsInfo();
-            case "scratchGameInfo": return getScratchGameInfo();
-            case "slotsGameInfo": return getSlotsGameInfo();
+            case "scratchIDs": return getScratchIDs();
+            case "slotsIDs": return getSlotsIDs();
+            case "scratchCard": return getScratchCardInfo(data);
+            case "slotsCard": return getSlotsCardInfo(data);
+            case "slotsInfo": return getSlotsGameInfo(data);
+            case "scratchInfo": return getScratchGameInfo(data);
+            case "slotsJackpot": return getSlotsJackpot(data);
             default:
                 Log.d("NO ROUTE FOR: ", getString);
                 return null;
@@ -91,7 +92,7 @@ public class RestModel {
 
     private String putScratchInfo(String data){
         try {
-            return new HTTPAsyncTask().execute(serverAddress + "/scratchTest", "PUT", data).get();
+            return new HTTPAsyncTask().execute(serverAddress + "/scratch", "PUT", data).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -100,25 +101,25 @@ public class RestModel {
 
     private String putSlotsInfo(String data){
         try {
-            return new HTTPAsyncTask().execute(serverAddress + "/slotsTest", "PUT", data).get();
+            return new HTTPAsyncTask().execute(serverAddress + "/slots", "PUT", data).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private String putSlotsJackpot(String data){
+    private String getSlotsJackpot(String data){
         try {
-            return new HTTPAsyncTask().execute(serverAddress + "/slotsJackpot", "PUT", data).get();
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsJackpot/" + data, "GET").get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private String getScratchInfo(){
+    private String getScratchIDs(){
         try{
-            return new HTTPAsyncTask().execute(serverAddress + "/scratchTest", "GET").get();
+            return new HTTPAsyncTask().execute(serverAddress + "/scratchGameIDs/", "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -126,9 +127,9 @@ public class RestModel {
         return null;
     }
 
-    private String getScratchGameInfo(){
+    private String getSlotsIDs(){
         try{
-            return new HTTPAsyncTask().execute(serverAddress + "/scratchGameInfo", "GET").get();
+            return new HTTPAsyncTask().execute(serverAddress + "/slotsGameIDs/", "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -136,9 +137,9 @@ public class RestModel {
         return null;
     }
 
-    private String getSlotsInfo(){
+    private String getSlotsCardInfo(String id){
         try{
-            return new HTTPAsyncTask().execute(serverAddress + "/slotsTest", "GET").get();
+            return new HTTPAsyncTask().execute(serverAddress + "/slots/card/" + id, "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -146,9 +147,29 @@ public class RestModel {
         return null;
     }
 
-    private String getSlotsGameInfo(){
+    private String getScratchCardInfo(String id){
         try{
-            return new HTTPAsyncTask().execute(serverAddress + "/slotsGameInfo", "GET").get();
+            return new HTTPAsyncTask().execute(serverAddress + "/scratch/card/" + id, "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getScratchGameInfo(String id){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/scratch/" + id, "GET").get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getSlotsGameInfo(String id){
+        try{
+            return new HTTPAsyncTask().execute(serverAddress + "/slots/" + id, "GET").get();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -256,7 +277,7 @@ public class RestModel {
                 assert serverConnection != null;
                 serverConnection.disconnect();
             }
-            return "Finished!";
+            return "Should not reach this point!";
         }
         protected void onPostExecute(String result) {
             Log.d("onPostExecute JSON: ", result);

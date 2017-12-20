@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
@@ -85,26 +88,42 @@ public class RedeemInfoAdapter extends RecyclerView.Adapter<RedeemInfoAdapter.Vi
                     Toast.makeText(context, "Insufficient Points/Tokens.", Toast.LENGTH_SHORT).show();
                 } else if(curRedeemInfo.getType().equals("sweepstakes")){
                     Toast.makeText(context, "Contest entered.", Toast.LENGTH_SHORT).show();
-                    updateUI(curRedeemInfo);
+                    updateUI();
                 } else if(curRedeemInfo.getType().equals("card")){
                     Toast.makeText(context, "Gift card purchased.", Toast.LENGTH_SHORT).show();
-                    updateUI(curRedeemInfo);
+                    updateUI();
                 }
             }
         });
     }
 
-    private void updateUI(RedeemInformation info){
-        TextView tokens = ((Activity) context).findViewById(R.id.tokens_available);
-        TextView points = ((Activity) context).findViewById(R.id.points_available);
-        if(info.getSpendType().equals("tokens")){
-            int curTokens = Integer.parseInt((String) tokens.getText());
-            curTokens -= info.getCost();
-            tokens.setText(Integer.toString(curTokens));
-        } else if(info.getSpendType().equals("tokens")){
-            int curPoints = Integer.parseInt((String) points.getText());
-            curPoints -= info.getCost();
-            tokens.setText(Integer.toString(curPoints));
+    private void updateUI(){
+        TextView progressView = ((Activity) context).findViewById(R.id.progress);
+        TextView rank = ((Activity) context).findViewById(R.id.rank);
+        TextView totalPoints = ((Activity) context).findViewById(R.id.points_total);
+        TextView totalSpent = ((Activity) context).findViewById(R.id.points_spent);
+        TextView currentPoints = ((Activity) context).findViewById(R.id.points_current);
+        TextView currentTokens = ((Activity) context).findViewById(R.id.tokens_current);
+        TextView redeemCurPoints = ((Activity) context).findViewById(R.id.points_available);
+        TextView redeemCurTokens = ((Activity) context).findViewById(R.id.tokens_available);
+
+        if(progressView != null) {
+            try {
+                Presenter presenter = new Presenter();
+                String jsonResponse = presenter.restGet("getPointsInfo", userId);
+                JSONObject userInfo = new JSONObject(jsonResponse);
+                redeemCurPoints.setText(userInfo.get("currentPoints").toString());
+                redeemCurTokens.setText(userInfo.get("currentTokens").toString());
+                currentTokens.setText(userInfo.get("currentTokens").toString());
+                progressView.setText(userInfo.get("totalEarned").toString() + "/" + userInfo.get("newRank").toString());
+                rank.setText(userInfo.get("rank").toString());
+                currentPoints.setText(userInfo.get("currentPoints").toString());
+                totalPoints.setText(userInfo.get("totalEarned").toString());
+                totalSpent.setText(userInfo.get("totalSpent").toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
     }

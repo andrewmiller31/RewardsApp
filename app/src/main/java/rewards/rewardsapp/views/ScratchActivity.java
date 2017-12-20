@@ -79,7 +79,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
         try {
-            String test = presenter.restGet("scratch", null);
+            String test = presenter.restGet("scratchInfo", getIntent().getStringExtra("gameID"));
             JSONObject testObject = new JSONObject(test);
             testScratch = new ScratchInformation(testObject);
             background.setImageBitmap(testScratch.getBackground());

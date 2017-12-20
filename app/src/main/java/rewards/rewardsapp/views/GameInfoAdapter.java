@@ -13,10 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.GameInfo;
+import rewards.rewardsapp.presenters.Presenter;
 
 /**
  * Created by Andrew Miller on 12/11/2017.
@@ -27,17 +31,37 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
     private RecyclerView recyclerView;
     private Context context;
     private String userId;
+    private Presenter presenter;
 
-    /**
-     *
-     * @param gameData ArrayList of posts
-     * @param recyclerView this view
-     */
-    public GameInfoAdapter(ArrayList<GameInfo> gameData, RecyclerView recyclerView, Context context, String userId) {
-        this.gameData = gameData;
+    public GameInfoAdapter(String[] slotIDs, String[] scratchIDs, RecyclerView recyclerView, Context context, String userId) {
+        presenter = new Presenter();
+        initializeGames(slotIDs, scratchIDs);
         this.recyclerView = recyclerView;
         this.context = context;
         this.userId = userId;
+    }
+
+    private void initializeGames(String[] slotIDs, String[] scratchIDs){
+        gameData = new ArrayList<>();
+        for(String id: slotIDs){
+            try {
+                JSONObject jsonObject = new JSONObject(presenter.restGet("slotsCard", id));
+                GameInfo curInfo = new GameInfo(jsonObject);
+                gameData.add(curInfo);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(String id: scratchIDs){
+            try {
+                JSONObject jsonObject = new JSONObject(presenter.restGet("scratchCard", id));
+                GameInfo curInfo = new GameInfo(jsonObject);
+                gameData.add(curInfo);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -73,6 +97,7 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
         background.setImageBitmap(curGameInfo.getBackground());
 
         final String gameType = curGameInfo.getType();
+        final String gameID = curGameInfo.getId();
 
         if(gameType.equals("scratch")){
             TextView type = holder.cardView.findViewById(R.id.game_type2);
@@ -93,11 +118,13 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
                 if (gameType.equals("scratch") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, ScratchActivity.class);
                     intent.putExtra("id", userId);
+                    intent.putExtra("gameID", gameID);
                     //runAd();
                     context.startActivity(intent);
                 } else if (gameType.equals("slots") && !OverlayHUD.isIsRunning()) {
                     Intent intent = new Intent(context, SlotsActivity.class);
                     intent.putExtra("id", userId);
+                    intent.putExtra("gameID", gameID);
                     //runAd();
                     context.startActivity(intent);
                 } else Toast.makeText(context, "Cannot play games while using Surf & Earn", Toast.LENGTH_SHORT).show();
