@@ -13,7 +13,7 @@
         android:id="@+id/instructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/vote_for_the_charity_you_would_like_a_portion_of_our_profits_to_go_to"
+        android:text="@string/vote_charity"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingTop="10dp"

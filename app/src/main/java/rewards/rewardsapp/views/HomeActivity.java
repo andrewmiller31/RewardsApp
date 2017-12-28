@@ -2,16 +2,15 @@ package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
@@ -48,10 +47,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
-import rewards.rewardsapp.models.GameInfo;
 import rewards.rewardsapp.models.RedeemInformation;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
@@ -73,11 +76,11 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        presenter = new Presenter();
         id = getIntent().getStringExtra("id");
         super.onCreate(savedInstanceState);
-        presenter = new Presenter();
         toast = new Toast(this);
-        setGameTests();
+//        setGameTests();
         viewSetup();
         adSetup();
     }
@@ -97,7 +100,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         imageInfo3.setWeight(3);
         loser.setWeight(3);
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
-        ScratchInformation si = new ScratchInformation("124", "Animal Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
+        ScratchInformation si = new ScratchInformation("scratch1", "Farm Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
         si.setWinMessage("Win 100 points!");
         presenter.restPut("scratch", si.jsonStringify());
 
@@ -108,9 +111,23 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         ImageInfo slots5 = new ImageInfo(true, "points", 1005, 10, intToBM(R.drawable.slots_moneybag), 3);
 
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("125", "Hot Jackpot That Costs Money", intToBM(R.drawable.background_peppers), slotImages, 1, 10000, 1002);
+        SlotsInformation si2 = new SlotsInformation("slots1", "Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 2, 10000, 1002);
         si2.setWinMessage("Win 10,000+ points!");
         presenter.restPut("slots", si2.jsonStringify());
+
+        ImageInfo pirate1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.game_pirate_boat), 3);
+        ImageInfo pirate2 = new ImageInfo(true, "points", 1002, 5, intToBM(R.drawable.game_pirate_jolly), 3);
+        ImageInfo pirate3 = new ImageInfo(1003, intToBM(R.drawable.game_pirate_kraken));
+        ImageInfo pirate4 = new ImageInfo(1004, intToBM(R.drawable.game_pirate_shark));
+        ImageInfo pirate5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.game_pirate_ship), 3);
+        ImageInfo pirate6 = new ImageInfo(true, "points", 1006, 3, intToBM(R.drawable.game_pirate_wheel), 3);
+        ImageInfo pirate7 = new ImageInfo(true, "points", 1007, 5000, intToBM(R.drawable.game_pirate_treasure), 5);
+        ImageInfo pirate8 = new ImageInfo(true, "tokens", 1008, 5, intToBM(R.drawable.scratch_one_token), 1);
+
+        ImageInfo[] pirateImages = {pirate1, pirate2, pirate3, pirate4, pirate5, pirate6, pirate7, pirate8};
+        SlotsInformation pirateSlots = new SlotsInformation("pirateSlots", "Pirate Treasure", intToBM(R.drawable.game_background_pirate), pirateImages, 3, 5000, 1007);
+        pirateSlots.setWinMessage("Win 5,000+ points!");
+        presenter.restPut("slots", pirateSlots.jsonStringify());
     }
 
     private Bitmap intToBM(int images){
@@ -132,7 +149,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Rewards App");
         setSupportActionBar(toolbar);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), id);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -272,14 +289,14 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
 //    refreshes account info
     public void refreshAccountInfo() {
-        TextView progressView = (TextView) findViewById(R.id.progress);
-        TextView rank = (TextView) findViewById(R.id.rank);
-        TextView totalPoints = (TextView) findViewById(R.id.points_total);
-        TextView totalSpent = (TextView) findViewById(R.id.points_spent);
-        TextView currentPoints = (TextView) findViewById(R.id.points_current);
-        TextView currentTokens = (TextView) findViewById(R.id.tokens_current);
-        TextView redeemCurPoints = (TextView) findViewById(R.id.points_available);
-        TextView redeemCurTokens = (TextView) findViewById(R.id.tokens_available);
+        TextView progressView = findViewById(R.id.progress);
+        TextView rank = findViewById(R.id.rank);
+        TextView totalPoints = findViewById(R.id.points_total);
+        TextView totalSpent = findViewById(R.id.points_spent);
+        TextView currentPoints = findViewById(R.id.points_current);
+        TextView currentTokens = findViewById(R.id.tokens_current);
+        TextView redeemCurPoints = findViewById(R.id.points_available);
+        TextView redeemCurTokens = findViewById(R.id.tokens_available);
 
         if(progressView != null) {
             try {
@@ -329,7 +346,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
             this.extras = extras;
         }
 
-        public static PlaceholderFragment newInstance(int sectionNumber, Bundle extras, String id) {
+        public static PlaceholderFragment newInstance(int sectionNumber, Bundle extras) {
             PlaceholderFragment fragment = new PlaceholderFragment(extras);
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -357,41 +374,19 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
 
         private void setEarnPage(View rootView) {
-            Presenter presenter = new Presenter();
             RecyclerView.LayoutManager layoutManager1 = new GridLayoutManager(rootView.getContext(), 2);
             RecyclerView recyclerView1 = rootView.findViewById(R.id.recycler_one);
             recyclerView1.setLayoutManager(layoutManager1);
 
-            try {
-                JSONObject jsonObject1 = new JSONObject(presenter.restGet("scratchIDs", null));
-                JSONObject jsonObject2 = new JSONObject(presenter.restGet("slotsIDs", null));
-                String[] scratchArray = jsonArrayToStringArray(jsonObject1.getJSONArray("idArray"));
-                String[] slotsArray = jsonArrayToStringArray(jsonObject2.getJSONArray("idArray"));
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int width = displayMetrics.widthPixels;
+            width = width - dpToPx(300);
+            width = width / 3;
+            Log.d("Calculated Spacing:", Integer.toString(width));
 
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                int width = displayMetrics.widthPixels;
-                width = width - dpToPx(300);
-                width = width / 3;
-                Log.d("Calculated Spacing:", Integer.toString(width));
-
-                recyclerView1.addItemDecoration(new GridDecoration(2, width));
-                recyclerView1.setAdapter(new GameInfoAdapter(slotsArray, scratchArray, recyclerView1, rootView.getContext(), extras.getString("id")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private String[] jsonArrayToStringArray(JSONArray jsonArray){
-            String[] stringArray = new String[jsonArray.length()];
-            try {
-                for (int i = 0; i < stringArray.length; i++){
-                    stringArray[i] = jsonArray.getString(i);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return stringArray;
+            recyclerView1.addItemDecoration(new GridDecoration(2, width));
+            recyclerView1.setAdapter(new GameInfoAdapter(extras.getStringArray("slotsArray"), extras.getStringArray("scratchArray"), rootView.getContext(), extras.getString("id")));
         }
 
         private int dpToPx(int dp) {
@@ -400,8 +395,8 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
 
         private void setRedeemPage(View rootView){
-            TextView currentPoints = (TextView) rootView.findViewById(R.id.points_available);
-            TextView currentTokens = (TextView) rootView.findViewById(R.id.tokens_available);
+            TextView currentPoints = rootView.findViewById(R.id.points_available);
+            TextView currentTokens = rootView.findViewById(R.id.tokens_available);
             currentPoints.setText(extras.getString("currentPoints"));
             currentTokens.setText(extras.getString("currentTokens"));
             String id = extras.getString("id");
@@ -424,13 +419,13 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
 
         private void setAccountPage(View rootView) {
-            TextView progressView = (TextView) rootView.findViewById(R.id.progress);
-            TextView rank = (TextView) rootView.findViewById(R.id.rank);
-            TextView currentPoints = (TextView) rootView.findViewById(R.id.points_current);
-            TextView totalPoints = (TextView) rootView.findViewById(R.id.points_total);
-            TextView totalSpent = (TextView) rootView.findViewById(R.id.points_spent);
-            TextView name = (TextView) rootView.findViewById(R.id.name);
-            TextView email = (TextView) rootView.findViewById(R.id.email);
+            TextView progressView = rootView.findViewById(R.id.progress);
+            TextView rank = rootView.findViewById(R.id.rank);
+            TextView currentPoints = rootView.findViewById(R.id.points_current);
+            TextView totalPoints = rootView.findViewById(R.id.points_total);
+            TextView totalSpent = rootView.findViewById(R.id.points_spent);
+            TextView name = rootView.findViewById(R.id.name);
+            TextView email =  rootView.findViewById(R.id.email);
             TextView tokens = rootView.findViewById(R.id.tokens_current);
 
             if (extras != null) {
@@ -451,19 +446,17 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        
-        private String userID;
 
-        public SectionsPagerAdapter(FragmentManager fm, String userID) {
+        public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.userID = userID;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Fragment test = PlaceholderFragment.newInstance(position + 1, getIntent().getExtras(), userID);
+            Bundle extras = getIntent().getExtras();
+            Fragment test = PlaceholderFragment.newInstance(position + 1, extras);
             test.setUserVisibleHint(true);
             return test;
         }
@@ -569,6 +562,80 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         mGoogleApiClient.connect();
         super.onStart();
     }
+
+//    private void gamesInit() {
+//        try {
+//            JSONObject jsonObject1 = new JSONObject(presenter.restGet("scratchIDs", null));
+//            JSONObject jsonObject2 = new JSONObject(presenter.restGet("slotsIDs", null));
+//            scratchArray = jsonArrayToStringArray(jsonObject1.getJSONArray("idArray"));
+//            slotsArray = jsonArrayToStringArray(jsonObject2.getJSONArray("idArray"));
+//            findGames("scratch", scratchArray);
+//            findGames("slots", slotsArray);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void findGames(String type, String[] array){
+//        for (String id : array) {
+//            String cardName = id + "CARD";
+//            String gameName = id;
+//            String fileData = readFile(cardName);
+//            String gameData = readFile(gameName);
+//            if (fileData.equals("")) {
+//                Log.d("FILE NOT FOUND", "Card file not found with ID: " + id);
+//                String gameString = presenter.restGet(type + "Card", id);
+//                writeFile(cardName, gameString);
+//            }
+//            if (gameData.equals("")) {
+//                Log.d("FILE NOT FOUND", "Game file not found with ID: " + id);
+//                String gameString = presenter.restGet(type + "Info", id);
+//                writeFile(gameName, gameString);
+//            }
+//        }
+//    }
+//
+//    private String readFile(String fileName){
+//        try {
+//            FileInputStream fis = getApplicationContext().openFileInput(fileName);
+//            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+//            BufferedReader bufferedReader = new BufferedReader(isr);
+//            StringBuilder sb = new StringBuilder();
+//            String line;
+//            while ((line = bufferedReader.readLine()) != null) {
+//                sb.append(line);
+//            }
+//            fis.close();
+//            return sb.toString();
+//        } catch (IOException e) {
+//            return "";
+//        }
+//    }
+//
+//    private boolean writeFile(String fileName, String data){
+//        FileOutputStream outputStream;
+//        try{
+//            outputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+//            outputStream.write(data.getBytes());
+//            outputStream.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    private String[] jsonArrayToStringArray(JSONArray jsonArray){
+//        String[] stringArray = new String[jsonArray.length()];
+//        try {
+//            for (int i = 0; i < stringArray.length; i++){
+//                stringArray[i] = jsonArray.getString(i);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return stringArray;
+//    }
 
 }
 

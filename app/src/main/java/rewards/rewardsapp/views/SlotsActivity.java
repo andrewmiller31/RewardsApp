@@ -2,13 +2,11 @@ package rewards.rewardsapp.views;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +48,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
     private TextView tokensLeft;
     private TextView totalEarned;
     private TextView jackpotView;
+    private TextView costView;
     private boolean rewarded;
     private PopupWindow claimPopUp;
     private ImageView background;
@@ -63,7 +62,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     private RewardedVideoAd mRewardedVideoAd;
 
-    private SlotsInformation testSlots;
+    private SlotsInformation slots;
     private ImageInfo[]icons;
 
     @Override
@@ -87,13 +86,14 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         try {
             String test = presenter.restGet("slotsInfo", getIntent().getStringExtra("gameID"));
             JSONObject testObject = new JSONObject(test);
-            testSlots = new SlotsInformation(testObject);
-            icons = testSlots.getIcons();
+            slots = new SlotsInformation(testObject);
+            icons = slots.getIcons();
             findViews();
-            background.setImageBitmap(testSlots.getBackground());
-            cost = testSlots.getCost();
-            updateJackpot(testSlots.getJackpot());
-            jackpotID = testSlots.getJackpotImageID();
+            background.setImageBitmap(slots.getBackground());
+            cost = slots.getCost();
+            costView.setText("Costs " + Integer.toString(cost));
+            updateJackpot(slots.getJackpot());
+            jackpotID = slots.getJackpotImageID();
             presenter.setSlotsModel(icons, reelListeners);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -174,7 +174,9 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
         for(ImageInfo image: winners){
             if(image.getType().equals("points")){
-                pointsEarned += image.getReward();
+                if(image.getImageID() == jackpotID){
+                    pointsEarned += jackpot;
+                } else pointsEarned += image.getReward();
             } else if(image.getType().equals("tokens")){
                 tokensEarned += image.getReward();
             }
@@ -235,15 +237,16 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     //locates all the views used
     private void findViews(){
-        slotImgs[0] = (ImageView) findViewById(R.id.slot_1);
-        slotImgs[1] = (ImageView) findViewById(R.id.slot_2);
-        slotImgs[2] = (ImageView) findViewById(R.id.slot_3);
-        slotImgs[3] = (ImageView) findViewById(R.id.slot_4);
-        slotImgs[4] = (ImageView) findViewById(R.id.slot_5);
+        costView = findViewById(R.id.slot_cost);
+        slotImgs[0] = findViewById(R.id.slot_1);
+        slotImgs[1] = findViewById(R.id.slot_2);
+        slotImgs[2] = findViewById(R.id.slot_3);
+        slotImgs[3] = findViewById(R.id.slot_4);
+        slotImgs[4] = findViewById(R.id.slot_5);
         setSlotsImgs();
-        spin = (Button) findViewById(R.id.spin);
-        tokensLeft = (TextView) findViewById(R.id.tokens_available);
-        totalEarned = (TextView) findViewById(R.id.current_points);
+        spin = findViewById(R.id.spin);
+        tokensLeft = findViewById(R.id.tokens_available);
+        totalEarned = findViewById(R.id.current_points);
         jackpotView = findViewById(R.id.jackpot);
     }
 

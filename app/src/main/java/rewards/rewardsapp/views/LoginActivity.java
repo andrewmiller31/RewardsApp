@@ -73,8 +73,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 jsonString.put("token", idToken);
                 String jsonResponse = presenter.verifySignIn(jsonString.toString());
                 JSONObject userInfo = new JSONObject(jsonResponse);
-
                 Intent intent = new Intent(this, HomeActivity.class);
+                intent.putExtras(getIntent());
                 intent.putExtra("id", userInfo.get("id").toString());
                 intent.putExtra("currentPoints", userInfo.get("currentPoints").toString());
                 intent.putExtra("currentTokens", userInfo.get("currentTokens").toString());
@@ -85,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 intent.putExtra("email", account.getEmail());
                 intent.putExtra("name", account.getDisplayName());
                 startActivity(intent);
+                finish();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

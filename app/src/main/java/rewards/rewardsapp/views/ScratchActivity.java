@@ -1,5 +1,6 @@
 package rewards.rewardsapp.views;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -28,6 +29,11 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,6 +62,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     private PopupWindow popUp;
     private ConstraintLayout cLayout;
     private ScratchInformation testScratch;
+    private ImageView background;
     private ImageInfo[] icons;
     private ImageInfo[] bonusIcons;
 
@@ -72,27 +79,61 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         revealed = new boolean[7];
         setContentView(R.layout.activity_scratch);
         cLayout = (ConstraintLayout) findViewById(R.id.scratch_layout);
-        ImageView background = (ImageView) findViewById(R.id.card_background);
+        background = (ImageView) findViewById(R.id.card_background);
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
-        try {
-            String test = presenter.restGet("scratchInfo", getIntent().getStringExtra("gameID"));
-            JSONObject testObject = new JSONObject(test);
-            testScratch = new ScratchInformation(testObject);
-            background.setImageBitmap(testScratch.getBackground());
-
-            icons = testScratch.getIcons();
-            bonusIcons = testScratch.getBonusIcons();
-            presenter.setScratchModel( "scratchModel", icons);
-            presenter.setScratchModel( "tokenModel", bonusIcons);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        getGameInfo();
         setCard();
+    }
+
+    private void getGameInfo(){
+//        try {
+//            String test = presenter.restGet("scratchInfo", getIntent().getStringExtra("gameID"));
+//            JSONObject testObject = new JSONObject(test);
+//            testScratch = new ScratchInformation(testObject);
+//            background.setImageBitmap(testScratch.getBackground());
+//
+//            icons = testScratch.getIcons();
+//            bonusIcons = testScratch.getBonusIcons();
+//            presenter.setScratchModel( "scratchModel", icons);
+//            presenter.setScratchModel( "tokenModel", bonusIcons);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+    }
+
+    private String readFile(String fileName){
+        try {
+            FileInputStream fis = getApplicationContext().openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            fis.close();
+            return sb.toString();
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    private boolean writeFile(String fileName, String data){
+        FileOutputStream outputStream;
+        try{
+            outputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private void endGame(){

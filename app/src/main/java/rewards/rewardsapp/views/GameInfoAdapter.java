@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,14 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
@@ -28,40 +37,99 @@ import rewards.rewardsapp.presenters.Presenter;
 
 public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHolder>{
     private ArrayList<GameInfo> gameData;
-    private RecyclerView recyclerView;
     private Context context;
     private String userId;
     private Presenter presenter;
 
-    public GameInfoAdapter(String[] slotIDs, String[] scratchIDs, RecyclerView recyclerView, Context context, String userId) {
+    public GameInfoAdapter(String[] slotIDs, String[] scratchIDs, Context context, String userId) {
         presenter = new Presenter();
-        initializeGames(slotIDs, scratchIDs);
-        this.recyclerView = recyclerView;
         this.context = context;
+        initializeGames(slotIDs, scratchIDs);
         this.userId = userId;
     }
 
     private void initializeGames(String[] slotIDs, String[] scratchIDs){
         gameData = new ArrayList<>();
         for(String id: slotIDs){
-            try {
-                JSONObject jsonObject = new JSONObject(presenter.restGet("slotsCard", id));
-                GameInfo curInfo = new GameInfo(jsonObject);
-                gameData.add(curInfo);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            String fileName = id + "CARD";
+            String fileData = readFile(fileName);
+            Log.d(fileName, fileData);
+            if(!fileData.equals("")){
+                try {
+                    JSONObject jsonObject = new JSONObject(fileData);
+                    GameInfo curInfo = new GameInfo(jsonObject);
+                    gameData.add(curInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else{
+                try {
+                    Log.d("FILE NOT FOUND", "Slots file not found with ID: " + id);
+                    String gameString = presenter.restGet("slotsCard", id);
+                    JSONObject jsonObject = new JSONObject(gameString);
+                    GameInfo curInfo = new GameInfo(jsonObject);
+                    writeFile(fileName, gameString);
+                    gameData.add(curInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         for(String id: scratchIDs){
-            try {
-                JSONObject jsonObject = new JSONObject(presenter.restGet("scratchCard", id));
-                GameInfo curInfo = new GameInfo(jsonObject);
-                gameData.add(curInfo);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            String fileName = id + "CARD";
+            String fileData = readFile(fileName);
+            if(!fileData.equals("")){
+                try {
+                    JSONObject jsonObject = new JSONObject(fileData);
+                    GameInfo curInfo = new GameInfo(jsonObject);
+                    gameData.add(curInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else{
+                try {
+                    Log.d("FILE NOT FOUND", "Scratch file not found with ID: " + id);
+                    String gameString = presenter.restGet("scratchCard", id);
+                    JSONObject jsonObject = new JSONObject(gameString);
+                    GameInfo curInfo = new GameInfo(jsonObject);
+                    writeFile(fileName, gameString);
+                    gameData.add(curInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    private String readFile(String fileName){
+        try {
+            FileInputStream fis = this.context.getApplicationContext().openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            fis.close();
+            return sb.toString();
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    private boolean writeFile(String fileName, String data){
+        FileOutputStream outputStream;
+        try{
+            outputStream = this.context.getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -79,8 +147,7 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.game_card, parent, false);
-        ViewHolder viewHolder = new ViewHolder(cView);
-        return viewHolder;
+        return new ViewHolder(cView);
     }
 
     @Override

@@ -106,7 +106,7 @@
             android:text="Big Bucks"
             android:textColor="@color/primaryText"
             android:shadowColor="@color/white"
-            android:shadowRadius="7"
+            android:shadowRadius="10"
             android:textSize="23sp"
             app:layout_constraintBottom_toTopOf="@+id/type_box"
             app:layout_constraintLeft_toLeftOf="parent"

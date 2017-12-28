@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RewardsApp</string>
+    <string name="app_name">Reward Zone</string>
 
     <string name="log_out">Log Out</string>
     <string name="about_us">About Us</string>
@@ -44,7 +44,7 @@
     <string name="auto_spin">Auto Spin</string>
     <string name="gift_card">Gift Card</string>
     <string name="title_activity_charity_poll">CharityPollActivity</string>
-    <string name="vote_for_the_charity_you_would_like_a_portion_of_our_profits_to_go_to">Vote for the charity you would like a portion of our profits to go to:</string>
+    <string name="vote_charity">Choose a charity:</string>
     <string name="send_vote">Send Vote</string>
     <string name="title_activity_test">testAct</string>
 
@@ -60,5 +60,7 @@
     <string name="points_for_cash">Points For Cash</string>
     <string name="sweepstakes_gift_cards"><![CDATA[Sweepstakes & Gift Cards]]></string>
     <string name="john_doe">John Doe</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
 
 </resources>
