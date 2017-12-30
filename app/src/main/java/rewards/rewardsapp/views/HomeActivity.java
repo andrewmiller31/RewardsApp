@@ -2,12 +2,14 @@ package rewards.rewardsapp.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,12 +24,16 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,15 +49,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
@@ -67,12 +67,17 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     private ViewPager mViewPager;
     private Toast toast;
     private Button closeAd;
+    private PopupWindow charityPopUp;
     private AdView mAdView;
-    private RewardedVideoAd mRewardedVideoAd;
     private Intent earnIntent;
+    private RewardedVideoAd mRewardedVideoAd;
     private boolean adRewarded;
     private GoogleApiClient mGoogleApiClient;
     private String id;
+
+    private RadioGroup radioGroup;
+    private RadioButton chosenOne;
+    private boolean picked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,63 +85,13 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         id = getIntent().getStringExtra("id");
         super.onCreate(savedInstanceState);
         toast = new Toast(this);
-//        setGameTests();
         viewSetup();
         adSetup();
     }
 
-    private void setGameTests(){
-        ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.scratch_dog), 3);
-        ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 1, intToBM(R.drawable.scratch_one_token), 1);
-        ImageInfo[] icons = {imageInfo1, imageInfo2, new ImageInfo(1, intToBM(R.drawable.scratch_cow)),
-                new ImageInfo(2, intToBM(R.drawable.scratch_pig)),new ImageInfo(3, intToBM(R.drawable.scratch_sheep))};
-
-        ImageInfo imageInfo5 = new ImageInfo(true, "tokens", 1002, 1, intToBM(R.drawable.scratch_one_token), 1);
-        ImageInfo imageInfo3 = new ImageInfo(true, "tokens", 1003, 5, intToBM(R.drawable.scratch_token_pile), 1);
-        ImageInfo imageInfo4 = new ImageInfo(true, "tokens", 1004, 10, intToBM(R.drawable.scratch_token_jackpot), 1);
-        ImageInfo loser = new ImageInfo(999, intToBM(R.drawable.scratch_lose));
-
-        imageInfo5.setWeight(3);
-        imageInfo3.setWeight(3);
-        loser.setWeight(3);
-        ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
-        ScratchInformation si = new ScratchInformation("scratch1", "Farm Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
-        si.setWinMessage("Win 100 points!");
-        presenter.restPut("scratch", si.jsonStringify());
-
-        ImageInfo slots1 = new ImageInfo(true, "points", 1001, 5, intToBM(R.drawable.slots_cherry), 3);
-        ImageInfo slots2 = new ImageInfo(true, "points", 1002, 10000, intToBM(R.drawable.slots_chili), 5);
-        ImageInfo slots3 = new ImageInfo(true, "tokens", 1003, 1, intToBM(R.drawable.scratch_one_token), 1);
-        ImageInfo slots4 = new ImageInfo(true, "points", 1004, 3, intToBM(R.drawable.slots_horseshoe), 3);
-        ImageInfo slots5 = new ImageInfo(true, "points", 1005, 10, intToBM(R.drawable.slots_moneybag), 3);
-
-        ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
-        SlotsInformation si2 = new SlotsInformation("slots1", "Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 2, 10000, 1002);
-        si2.setWinMessage("Win 10,000+ points!");
-        presenter.restPut("slots", si2.jsonStringify());
-
-        ImageInfo pirate1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.game_pirate_boat), 3);
-        ImageInfo pirate2 = new ImageInfo(true, "points", 1002, 5, intToBM(R.drawable.game_pirate_jolly), 3);
-        ImageInfo pirate3 = new ImageInfo(1003, intToBM(R.drawable.game_pirate_kraken));
-        ImageInfo pirate4 = new ImageInfo(1004, intToBM(R.drawable.game_pirate_shark));
-        ImageInfo pirate5 = new ImageInfo(true, "points", 1005, 3, intToBM(R.drawable.game_pirate_ship), 3);
-        ImageInfo pirate6 = new ImageInfo(true, "points", 1006, 3, intToBM(R.drawable.game_pirate_wheel), 3);
-        ImageInfo pirate7 = new ImageInfo(true, "points", 1007, 5000, intToBM(R.drawable.game_pirate_treasure), 5);
-        ImageInfo pirate8 = new ImageInfo(true, "tokens", 1008, 5, intToBM(R.drawable.scratch_one_token), 1);
-
-        ImageInfo[] pirateImages = {pirate1, pirate2, pirate3, pirate4, pirate5, pirate6, pirate7, pirate8};
-        SlotsInformation pirateSlots = new SlotsInformation("pirateSlots", "Pirate Treasure", intToBM(R.drawable.game_background_pirate), pirateImages, 3, 5000, 1007);
-        pirateSlots.setWinMessage("Win 5,000+ points!");
-        presenter.restPut("slots", pirateSlots.jsonStringify());
-    }
-
-    private Bitmap intToBM(int images){
-        return BitmapFactory.decodeResource(getResources(), images);
-    }
-
     //ad setup
     private void adSetup(){
-        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView = findViewById(R.id.adView);
         MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -146,18 +101,18 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     //view setup
     private void viewSetup(){
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Rewards App");
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
 
-        closeAd = (Button) findViewById(R.id.close_ad);
+        closeAd = findViewById(R.id.close_ad);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 
@@ -203,45 +158,87 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         }
     }
 
-    public void scratchOff() {
-//        if(!OverlayHUD.isIsRunning()) {
-//            loadRewardedVideoAd();
-//            earnIntent = new Intent(this, ScratchActivity.class);
-//        earnIntent.putExtra("id", id);
-//        runAd();
-//    }
-//        else
-//
-//    showToast("Cannot play scratch offs while using Surf & Earn");
-        earnIntent = new Intent(this, ScratchActivity.class);
-        earnIntent.putExtra("id", id);
-        startActivity(earnIntent);
+    public void charityPoll(View view){
+        picked = false;
+        LayoutInflater inflater = (LayoutInflater) HomeActivity.this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        assert inflater != null;
+        final View voteView = inflater.inflate(R.layout.vote_popup,(ViewGroup)findViewById(R.id.vote_popup));
+        radioGroup = voteView.findViewById(R.id.radio_group);
+
+        charityPopUp = new PopupWindow(
+                voteView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
+
+        // requires API level 21
+        if(Build.VERSION.SDK_INT>=21){
+            charityPopUp.setElevation(5.0f);
+        }
+
+        Typeface face1 = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId){
+                picked = true;
+                chosenOne = voteView.findViewById(checkedId);
+            }
+        } );
+
+        Button voteButton = voteView.findViewById(R.id.send_vote);
+        voteButton.setTypeface(face1);
+        voteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!picked){
+                    showToast("Please choose a charity.");
+                } else {
+                    showToast("Current winner: " + vote((String) chosenOne.getText()));
+                    charityPopUp.dismiss();
+                }
+            }
+        });
+
+        Button closeButton = voteView.findViewById(R.id.exit);
+        closeButton.setTypeface(face1);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                charityPopUp.dismiss();
+            }
+        });
+
+        TextView instructions = voteView.findViewById(R.id.instructions);
+        instructions.setTypeface(face1);
+
+        charityPopUp.showAtLocation(voteView.findViewById(R.id.vote_popup), Gravity.CENTER, 0, 0);
     }
 
-    public void slots(){
-//        if (!OverlayHUD.isIsRunning()) {
-//            loadRewardedVideoAd();
-//            earnIntent = new Intent(this, SlotsActivity.class);
-//            earnIntent.putExtra("id", id);
-//            runAd();
-//        }
-//        else showToast("Cannot play slots while using Surf & Earn");
+    public String vote(String charity){
+        JSONObject jsonString = null;
+        try{
+            jsonString = new JSONObject();
+            jsonString.put("vote", charity);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        earnIntent = new Intent(this, SlotsActivity.class);
-        earnIntent.putExtra("id", id);
-        startActivity(earnIntent);
+        String jsonResponse = presenter.restPut("putCharityVote", jsonString.toString());
+        try {
+            JSONObject responseInfo = new JSONObject(jsonResponse);
+            return responseInfo.get("winner").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-
-    public void charityPoll(View view){ startActivity(new Intent(this, CharityPollActivity.class));}
 
     public void passiveEarn(View view) {
         if(!OverlayHUD.isReturningFromAd()) {
             Intent newIntent = new Intent(this, OverlayEarnActivity.class);
             newIntent.putExtra("id", id);
             startActivity(newIntent);
-            if (!OverlayHUD.isIsRunning()) {
-                showToast("Surf & Earn enabled. You can now use your phone freely!");
-            } else if (OverlayHUD.isIsRunning()) {
+            if(OverlayHUD.isIsRunning()) {
                 OverlayHUD.setReturningFromAd(false);
                 showToast("Surf & Earn disabled.");
             }
@@ -447,7 +444,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -562,80 +559,6 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         mGoogleApiClient.connect();
         super.onStart();
     }
-
-//    private void gamesInit() {
-//        try {
-//            JSONObject jsonObject1 = new JSONObject(presenter.restGet("scratchIDs", null));
-//            JSONObject jsonObject2 = new JSONObject(presenter.restGet("slotsIDs", null));
-//            scratchArray = jsonArrayToStringArray(jsonObject1.getJSONArray("idArray"));
-//            slotsArray = jsonArrayToStringArray(jsonObject2.getJSONArray("idArray"));
-//            findGames("scratch", scratchArray);
-//            findGames("slots", slotsArray);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void findGames(String type, String[] array){
-//        for (String id : array) {
-//            String cardName = id + "CARD";
-//            String gameName = id;
-//            String fileData = readFile(cardName);
-//            String gameData = readFile(gameName);
-//            if (fileData.equals("")) {
-//                Log.d("FILE NOT FOUND", "Card file not found with ID: " + id);
-//                String gameString = presenter.restGet(type + "Card", id);
-//                writeFile(cardName, gameString);
-//            }
-//            if (gameData.equals("")) {
-//                Log.d("FILE NOT FOUND", "Game file not found with ID: " + id);
-//                String gameString = presenter.restGet(type + "Info", id);
-//                writeFile(gameName, gameString);
-//            }
-//        }
-//    }
-//
-//    private String readFile(String fileName){
-//        try {
-//            FileInputStream fis = getApplicationContext().openFileInput(fileName);
-//            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-//            BufferedReader bufferedReader = new BufferedReader(isr);
-//            StringBuilder sb = new StringBuilder();
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                sb.append(line);
-//            }
-//            fis.close();
-//            return sb.toString();
-//        } catch (IOException e) {
-//            return "";
-//        }
-//    }
-//
-//    private boolean writeFile(String fileName, String data){
-//        FileOutputStream outputStream;
-//        try{
-//            outputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-//            outputStream.write(data.getBytes());
-//            outputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    private String[] jsonArrayToStringArray(JSONArray jsonArray){
-//        String[] stringArray = new String[jsonArray.length()];
-//        try {
-//            for (int i = 0; i < stringArray.length; i++){
-//                stringArray[i] = jsonArray.getString(i);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return stringArray;
-//    }
 
 }
 

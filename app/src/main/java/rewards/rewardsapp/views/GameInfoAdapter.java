@@ -18,18 +18,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.GameInfo;
-import rewards.rewardsapp.presenters.Presenter;
 
 /**
  * Created by Andrew Miller on 12/11/2017.
@@ -39,10 +34,8 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
     private ArrayList<GameInfo> gameData;
     private Context context;
     private String userId;
-    private Presenter presenter;
 
     public GameInfoAdapter(String[] slotIDs, String[] scratchIDs, Context context, String userId) {
-        presenter = new Presenter();
         this.context = context;
         initializeGames(slotIDs, scratchIDs);
         this.userId = userId;
@@ -52,53 +45,27 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
         gameData = new ArrayList<>();
         for(String id: slotIDs){
             String fileName = id + "CARD";
-            String fileData = readFile(fileName);
-            Log.d(fileName, fileData);
-            if(!fileData.equals("")){
-                try {
-                    JSONObject jsonObject = new JSONObject(fileData);
-                    GameInfo curInfo = new GameInfo(jsonObject);
-                    gameData.add(curInfo);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else{
-                try {
-                    Log.d("FILE NOT FOUND", "Slots file not found with ID: " + id);
-                    String gameString = presenter.restGet("slotsCard", id);
-                    JSONObject jsonObject = new JSONObject(gameString);
-                    GameInfo curInfo = new GameInfo(jsonObject);
-                    writeFile(fileName, gameString);
-                    gameData.add(curInfo);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+            findGameCard(fileName);
         }
 
-        for(String id: scratchIDs){
+        for(String id: scratchIDs) {
             String fileName = id + "CARD";
-            String fileData = readFile(fileName);
-            if(!fileData.equals("")){
-                try {
-                    JSONObject jsonObject = new JSONObject(fileData);
-                    GameInfo curInfo = new GameInfo(jsonObject);
-                    gameData.add(curInfo);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else{
-                try {
-                    Log.d("FILE NOT FOUND", "Scratch file not found with ID: " + id);
-                    String gameString = presenter.restGet("scratchCard", id);
-                    JSONObject jsonObject = new JSONObject(gameString);
-                    GameInfo curInfo = new GameInfo(jsonObject);
-                    writeFile(fileName, gameString);
-                    gameData.add(curInfo);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            findGameCard(fileName);
+        }
+    }
+
+    private void findGameCard(String fileName){
+        String fileData = readFile(fileName);
+        if(!fileData.equals("")){
+            try {
+                JSONObject jsonObject = new JSONObject(fileData);
+                GameInfo curInfo = new GameInfo(jsonObject);
+                gameData.add(curInfo);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+        } else{
+            Log.d("ERROR RETRIEVING FILE", "fileName: " + fileName);
         }
     }
 
@@ -117,19 +84,6 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
         } catch (IOException e) {
             return "";
         }
-    }
-
-    private boolean writeFile(String fileName, String data){
-        FileOutputStream outputStream;
-        try{
-            outputStream = this.context.getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-            outputStream.write(data.getBytes());
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
     }
 
     /**

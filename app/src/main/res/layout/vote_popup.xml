@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/claim_popup"
+    android:id="@+id/vote_popup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/op50Black">
 
     <android.support.v7.widget.CardView
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="250dp"
         android:elevation="20dp"
         app:cardCornerRadius="7dp"
@@ -21,18 +21,18 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_gray_rounded">
+            android:background="@drawable/background_gray_rounded_black_border">
 
             <RadioGroup
                 android:id="@+id/radio_group"
-                android:layout_width="200dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
                 android:padding="3dp"
                 android:background="@drawable/background_card_gray"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/send_vote">
 
@@ -99,7 +99,7 @@
                 android:textAllCaps="false"
                 android:onClick="sendVote"
                 android:textSize="20dp"
-                android:fontFamily="@font/bree_serif"
+                android:fontFamily="@font/coolvetica_regular"
                 android:textColor="@color/whiteSmoke"
                 android:background="@drawable/claim_button"
                 app:layout_constraintTop_toBottomOf="@id/radio_group"
@@ -107,15 +107,15 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
 
-            <TextView
-                android:textSize="25sp"
-                android:textColor="@color/colorAccent"
-                android:id="@+id/vote_stats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/send_vote"
-                app:layout_constraintLeft_toLeftOf="@id/radio_group"/>
+            <Button
+                android:id="@+id/exit"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/background_exit"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
 
         </android.support.constraint.ConstraintLayout>

@@ -185,7 +185,6 @@ app.put('/slots', function(req, res){
  */
 
 app.put('/pointsInfo', function (req, res) {
-    // If for some reason the JSON isn't parsed, return HTTP error 400
     if (!req.body) return res.sendStatus(400);
 
     var negResponse = {
@@ -246,12 +245,6 @@ app.put('/charityVotes', function (req, res) {
         id: '333', status: 'voteSuccess', winner: winning
     };
 
-    console.log("\nAdding vote for: Charity " + req.body.vote + "\nCurrent winner: " + winning
-    + "\nCharity 1 votes: " + votes.charity1
-    + "\nCharity 2 votes: " + votes.charity2
-    + "\nCharity 3 votes: " + votes.charity3
-    + "\nCharity 4 votes: " + votes.charity4
-    + "\nCharity 5 votes: " + votes.charity5);
     res.json(jsonResponse);
 });
 

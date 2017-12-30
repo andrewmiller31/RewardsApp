@@ -15,7 +15,8 @@
 
         <activity
             android:name=".views.SplashScreen"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,31 +25,34 @@
 
         <activity
             android:name=".views.LoginActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".views.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.ScratchActivity"
-            android:theme="@style/no_action_bar" />
+            android:theme="@style/no_action_bar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.SlotsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/FullscreenTheme" />
-        <activity
-            android:name=".views.CharityPollActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/FullscreenTheme"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.OverlayEarnActivity"
-            android:label="OverlayEarnActivity" />
-
+            android:label="OverlayEarnActivity"
+            android:screenOrientation="portrait"/>
         <service
             android:name=".views.OverlayHUD"
             android:exported="true"
-            android:stopWithTask="true" />
+            android:stopWithTask="true"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".views.AboutActivity" />
+        <activity android:name=".views.AboutActivity"
+            android:screenOrientation="portrait"/>
 
     </application>
 

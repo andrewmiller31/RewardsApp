@@ -32,13 +32,11 @@
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="match_parent"
                 android:rotation="4.2"
-                android:scaleType="centerCrop"
-                android:src="@drawable/rewards_logo_action"
-                android:paddingEnd="190dp"
-                android:paddingTop="15dp"
-                android:layout_gravity="left"/>
+                android:paddingTop="10dp"
+                android:paddingEnd="150dp"
+                android:src="@drawable/rewards_logo_action"/>
 
         </android.support.v7.widget.Toolbar>
 
@@ -65,13 +63,11 @@
 
     <Button
         android:id="@+id/close_ad"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="3dp"
-        android:layout_marginBottom="22dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="33dp"
         android:onClick="closeAd"
-        android:text="x"
-        android:textSize="10sp"
+        android:background="@drawable/background_exit"
         android:layout_gravity="right|bottom"/>
 
 </android.support.design.widget.CoordinatorLayout>

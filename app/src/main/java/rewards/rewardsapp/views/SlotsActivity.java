@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,10 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import rewards.rewardsapp.R;
@@ -62,7 +67,6 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     private RewardedVideoAd mRewardedVideoAd;
 
-    private SlotsInformation slots;
     private ImageInfo[]icons;
 
     @Override
@@ -83,22 +87,49 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         background = findViewById(R.id.background);
         cLayout = findViewById(R.id.slots_layout);
 
-        try {
-            String test = presenter.restGet("slotsInfo", getIntent().getStringExtra("gameID"));
-            JSONObject testObject = new JSONObject(test);
-            slots = new SlotsInformation(testObject);
-            icons = slots.getIcons();
-            findViews();
-            background.setImageBitmap(slots.getBackground());
-            cost = slots.getCost();
-            costView.setText("Costs " + Integer.toString(cost));
-            updateJackpot(slots.getJackpot());
-            jackpotID = slots.getJackpotImageID();
-            presenter.setSlotsModel(icons, reelListeners);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        initGameInfo();
         initTokensPointsCount();
+    }
+
+    private void initGameInfo(){
+        String fileName = getIntent().getStringExtra("gameID");
+        String fileData = readFile(fileName);
+        if(!fileData.equals("")){
+            try {
+                JSONObject jsonObject = new JSONObject(fileData);
+                SlotsInformation slots = new SlotsInformation(jsonObject);
+                icons = slots.getIcons();
+                cost = slots.getCost();
+                findViews();
+                background.setImageBitmap(slots.getBackground());
+                costView.setText(String.format("Costs %s", Integer.toString(cost)));
+                updateJackpot(slots.getJackpot());
+                jackpotID = slots.getJackpotImageID();
+                presenter.setSlotsModel(icons, reelListeners);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else{
+            Log.d("ERROR RETRIEVING FILE", "fileName: " + fileName);
+        }
+
+    }
+
+    private String readFile(String fileName){
+        try {
+            FileInputStream fis = getApplicationContext().openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            fis.close();
+            return sb.toString();
+        } catch (IOException e) {
+            return "";
+        }
     }
 
 
@@ -110,7 +141,6 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
             if(updateResult.get("status").toString().equals("negative")){
                 Toast.makeText(this, "You don't have enough tokens!", Toast.LENGTH_SHORT).show();
-                return;
             }
             else{
                 JSONObject slotCost = new JSONObject();
@@ -118,7 +148,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 String newJackpot = presenter.restGet("slotsJackpot", getIntent().getStringExtra("gameID"));
                 JSONObject updateSlots = new JSONObject(newJackpot);
                 updateJackpot(updateSlots.getInt("jackpot"));
-                spin.setText("Spinning...");
+                spin.setText(R.string.spinning);
                 spin.setClickable(false);
                 tokenCount -= cost;
                 tokensLeft.setText(Integer.toString(tokenCount));
@@ -128,7 +158,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                     @Override
                     public void run() {
                         checkWinStatus();
-                        spin.setText("Spin to Win!");
+                        spin.setText(R.string.spint_to_win);
                         spin.setClickable(true);
                     }
                 }, presenter.getSpinTime() + 100);
@@ -203,7 +233,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
             Typeface face = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
 
-            Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            Button closeButton = claimView.findViewById(R.id.claim_button);
             closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -212,10 +242,10 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 }
             });
 
-            TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+            TextView prizeText = claimView.findViewById(R.id.prize_text);
             prizeText.setTypeface(face);
 
-            TextView youWin = (TextView) claimView.findViewById(R.id.winner_text);
+            TextView youWin = claimView.findViewById(R.id.winner_text);
             youWin.setTypeface(face);
 
             TextView youWin2 = claimView.findViewById(R.id.you_win_text);

@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,7 +43,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
     private String id;
 
     //amount the user earns per video watched
-    private static final int EARN_AMOUNT = 10;
+    private static final int EARN_AMOUNT = 3;
     //amount of clicks between ads
     private static final int CLICKS = 30;
     //amount of time ad banner shows(1000 = 1 sec)
@@ -60,14 +61,9 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         loadRewardedVideoAd();
         wmSetup();
 
-
         clickCount = 1;
         isRunning = true;
     }
-
-//    public static void setContext(Context context){
-//        this.context = context;
-//    }
 
     public static boolean isIsRunning() {
         return isRunning;
@@ -146,7 +142,11 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
 
         params.verticalMargin = 0.01f;
         assert wm != null;
-        wm.addView(enabledText, params);
+        try {
+            wm.addView(enabledText, params);
+        } catch (RuntimeException r){
+            Log.d("RunTimeException", "wmSetup: Permissions not yet granted.");
+        }
         showAd = false;
 
         final Handler handler = new Handler();
@@ -166,7 +166,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
                     params.verticalMargin = 0;
                     wm.removeView(enabledText);
                     wm.addView(mAdView, params);
-                    params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+                    params.gravity = Gravity.END | Gravity.BOTTOM;
                     params.verticalMargin = 0.045f;
                     params.horizontalMargin = 0.005f;
                     wm.addView(closeAd, params);
@@ -282,7 +282,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
         mRewardedVideoAd.destroy(this);
         isRunning = false;
         try {
-            assert ((WindowManager) getSystemService(WINDOW_SERVICE)) != null;
+            assert (getSystemService(WINDOW_SERVICE)) != null;
             ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(enabledText);
         }
         catch (Exception e) {
@@ -293,7 +293,7 @@ public class OverlayHUD extends Service implements View.OnTouchListener, Rewarde
 
     @Override
     public void onRewarded(RewardItem reward) {
-        Toast.makeText(this, "+10 Points", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "+" + EARN_AMOUNT + " Points", Toast.LENGTH_SHORT).show();
         presenter.sendPoints(EARN_AMOUNT, 0,0, id);
     }
 

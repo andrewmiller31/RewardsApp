@@ -35,10 +35,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         presenter = new Presenter();
         setContentView(R.layout.activity_login);
-        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setOnClickListener(this);
-
+        signInButton.setVisibility(View.GONE);
         signInInitialize();
     }
 
@@ -67,25 +67,30 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void updateUI(GoogleSignInAccount account){
         if(account != null){
             idToken = account.getIdToken();
-            JSONObject jsonString = null;
+            JSONObject jsonString;
             try {
                 jsonString = new JSONObject();
                 jsonString.put("token", idToken);
                 String jsonResponse = presenter.verifySignIn(jsonString.toString());
                 JSONObject userInfo = new JSONObject(jsonResponse);
-                Intent intent = new Intent(this, HomeActivity.class);
-                intent.putExtras(getIntent());
-                intent.putExtra("id", userInfo.get("id").toString());
-                intent.putExtra("currentPoints", userInfo.get("currentPoints").toString());
-                intent.putExtra("currentTokens", userInfo.get("currentTokens").toString());
-                intent.putExtra("totalEarned", userInfo.get("totalEarned").toString());
-                intent.putExtra("totalSpent", userInfo.get("totalSpent").toString());
-                intent.putExtra("rank", userInfo.get("rank").toString());
-                intent.putExtra("newRank", userInfo.get("newRank").toString());
-                intent.putExtra("email", account.getEmail());
-                intent.putExtra("name", account.getDisplayName());
-                startActivity(intent);
-                finish();
+                if(getIntent().getStringArrayExtra("scratchArray") != null && getIntent().getStringArrayExtra("slotsArray") != null) {
+                    Intent intent = new Intent(this, HomeActivity.class);
+                    intent.putExtras(getIntent());
+                    intent.putExtra("id", userInfo.get("id").toString());
+                    intent.putExtra("currentPoints", userInfo.get("currentPoints").toString());
+                    intent.putExtra("currentTokens", userInfo.get("currentTokens").toString());
+                    intent.putExtra("totalEarned", userInfo.get("totalEarned").toString());
+                    intent.putExtra("totalSpent", userInfo.get("totalSpent").toString());
+                    intent.putExtra("rank", userInfo.get("rank").toString());
+                    intent.putExtra("newRank", userInfo.get("newRank").toString());
+                    intent.putExtra("email", account.getEmail());
+                    intent.putExtra("name", account.getDisplayName());
+                    startActivity(intent);
+                    finish();
+                } else{
+                    startActivity(new Intent(this, SplashScreen.class));
+                    finish();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -122,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onStart(){
         super.onStart();
-        if(getIntent().getBooleanExtra("signOff",false) == true){
+        if(getIntent().getBooleanExtra("signOff", false)){
             signOut();
         }
         else {
@@ -132,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 GoogleSignInResult result = opr.get();
                 handleSignInResult(result);
             } else {
+                signInButton.setVisibility(View.VISIBLE);
                 opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                     @Override
                     public void onResult(GoogleSignInResult googleSignInResult) {

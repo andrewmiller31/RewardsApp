@@ -34,14 +34,15 @@ public class OverlayEarnActivity extends Activity{
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                             Uri.parse("package:" + getPackageName()));
                     startActivityForResult(intent, 1234);
-                    startService(overlay);
                 } else {
+                    Toast.makeText(this, "Surf & Earn enabled. You can now use your phone freely!", Toast.LENGTH_SHORT).show();
                     startService(overlay);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://www.google.com"));
+                    startActivity(browserIntent);
                 }
             }
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.google.com"));
-            startActivity(browserIntent);
+
             finish();
         }
         else{

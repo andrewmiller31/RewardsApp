@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import rewards.rewardsapp.R;
+import rewards.rewardsapp.models.GameInfo;
 import rewards.rewardsapp.models.ScratchInformation;
 import rewards.rewardsapp.models.ImageInfo;
 import rewards.rewardsapp.presenters.Presenter;
@@ -61,7 +62,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     private boolean rewarded;
     private PopupWindow popUp;
     private ConstraintLayout cLayout;
-    private ScratchInformation testScratch;
+    private ScratchInformation scratchGame;
     private ImageView background;
     private ImageInfo[] icons;
     private ImageInfo[] bonusIcons;
@@ -78,8 +79,8 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
         revealed = new boolean[7];
         setContentView(R.layout.activity_scratch);
-        cLayout = (ConstraintLayout) findViewById(R.id.scratch_layout);
-        background = (ImageView) findViewById(R.id.card_background);
+        cLayout = findViewById(R.id.scratch_layout);
+        background = findViewById(R.id.card_background);
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
@@ -90,19 +91,23 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
     }
 
     private void getGameInfo(){
-//        try {
-//            String test = presenter.restGet("scratchInfo", getIntent().getStringExtra("gameID"));
-//            JSONObject testObject = new JSONObject(test);
-//            testScratch = new ScratchInformation(testObject);
-//            background.setImageBitmap(testScratch.getBackground());
-//
-//            icons = testScratch.getIcons();
-//            bonusIcons = testScratch.getBonusIcons();
-//            presenter.setScratchModel( "scratchModel", icons);
-//            presenter.setScratchModel( "tokenModel", bonusIcons);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        String fileName = getIntent().getStringExtra("gameID");
+        String fileData = readFile(fileName);
+        if(!fileData.equals("")){
+            try {
+                JSONObject jsonObject = new JSONObject(fileData);
+                ScratchInformation scratchGame = new ScratchInformation(jsonObject);
+                background.setImageBitmap(scratchGame.getBackground());
+                icons = scratchGame.getIcons();
+                bonusIcons = scratchGame.getBonusIcons();
+                presenter.setScratchModel( "scratchModel", icons);
+                presenter.setScratchModel( "tokenModel", bonusIcons);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else{
+            Log.d("ERROR RETRIEVING FILE", "fileName: " + fileName);
+        }
 
     }
 
@@ -143,6 +148,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             rewarded = false;
             Typeface face = Typeface.createFromAsset(getAssets(),"fonts/bree_serif.ttf");
             LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            assert inflater != null;
             View claimView = inflater.inflate(R.layout.claim_popup,null);
             popUp = new PopupWindow(
                     claimView,
@@ -155,7 +161,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
                 popUp.setElevation(5.0f);
             }
 
-            Button closeButton = (Button) claimView.findViewById(R.id.claim_button);
+            Button closeButton = claimView.findViewById(R.id.claim_button);
             closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -164,10 +170,10 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
                 }
             });
 
-            TextView prizeText = (TextView) claimView.findViewById(R.id.prize_text);
+            TextView prizeText = claimView.findViewById(R.id.prize_text);
             prizeText.setTypeface(face);
 
-            TextView winText = (TextView) claimView.findViewById(R.id.winner_text);
+            TextView winText = claimView.findViewById(R.id.winner_text);
             winText.setTypeface(face);
 
             TextView youWin2 = claimView.findViewById(R.id.you_win_text);
@@ -242,12 +248,12 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
 
     private void setCard(){
         winner = (ImageView) findViewById(R.id.match_symbol);
-        scratch1 = (ScratchImageView) findViewById(R.id.scratch_view1);
-        scratch2 = (ScratchImageView) findViewById(R.id.scratch_view2);
-        scratch3 = (ScratchImageView) findViewById(R.id.scratch_view3);
-        scratch4 = (ScratchImageView) findViewById(R.id.scratch_view4);
-        scratch5 = (ScratchImageView) findViewById(R.id.scratch_view5);
-        scratch6 = (ScratchImageView) findViewById(R.id.scratch_view6);
+        scratch1 = findViewById(R.id.scratch_view1);
+        scratch2 = findViewById(R.id.scratch_view2);
+        scratch3 = findViewById(R.id.scratch_view3);
+        scratch4 = findViewById(R.id.scratch_view4);
+        scratch5 = findViewById(R.id.scratch_view5);
+        scratch6 = findViewById(R.id.scratch_view6);
 
         scratch1.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
         scratch2.setImageBitmap(icons[presenter.scratchNumGen("scratchModel")].getImage());
@@ -263,7 +269,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
         scratchListenerSet(scratch5, 4);
         scratchListenerSet(scratch6, 5);
 
-        tokenScratch = (ScratchImageView) findViewById(R.id.token_scratch);
+        tokenScratch = findViewById(R.id.token_scratch);
         tokenScratch.setImageBitmap(bonusIcons[presenter.scratchNumGen("tokenModel")].getImage());
         scratchListenerSet(tokenScratch, 6);
 
