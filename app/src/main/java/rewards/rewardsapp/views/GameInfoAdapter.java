@@ -42,25 +42,35 @@ public class GameInfoAdapter extends RecyclerView.Adapter<GameInfoAdapter.ViewHo
     }
 
     private void initializeGames(String[] slotIDs, String[] scratchIDs){
-        gameData = new ArrayList<>();
+        ArrayList<GameInfo> ordered = new ArrayList<>();
         for(String id: slotIDs){
             String fileName = id + "CARD";
-            findGameCard(fileName);
+            findGameCard(fileName, ordered);
         }
 
         for(String id: scratchIDs) {
             String fileName = id + "CARD";
-            findGameCard(fileName);
+            findGameCard(fileName, ordered);
+        }
+        randomize(ordered);
+    }
+
+    private void randomize(ArrayList<GameInfo> games){
+        gameData = new ArrayList<>();
+        while(games.size() > 0) {
+            int num = (int) (Math.random() * games.size());
+            gameData.add(games.get(num));
+            games.remove(num);
         }
     }
 
-    private void findGameCard(String fileName){
+    private void findGameCard(String fileName, ArrayList<GameInfo> games){
         String fileData = readFile(fileName);
         if(!fileData.equals("")){
             try {
                 JSONObject jsonObject = new JSONObject(fileData);
                 GameInfo curInfo = new GameInfo(jsonObject);
-                gameData.add(curInfo);
+                games.add(curInfo);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -210,7 +210,7 @@ public class ScratchActivity extends AppCompatActivity implements RewardedVideoA
             TextView lose = claimView.findViewById(R.id.lose_text);
             lose.setTypeface(face);
 
-            Button closeButton = (Button) claimView.findViewById(R.id.okay_button);
+            Button closeButton = claimView.findViewById(R.id.okay_button);
             closeButton.setTypeface(face);
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override

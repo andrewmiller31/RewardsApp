@@ -84,9 +84,7 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
         mRewardedVideoAd.setRewardedVideoAdListener(this);
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
-        background = findViewById(R.id.background);
-        cLayout = findViewById(R.id.slots_layout);
-
+        findViews();
         initGameInfo();
         initTokensPointsCount();
     }
@@ -100,12 +98,12 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
                 SlotsInformation slots = new SlotsInformation(jsonObject);
                 icons = slots.getIcons();
                 cost = slots.getCost();
-                findViews();
                 background.setImageBitmap(slots.getBackground());
                 costView.setText(String.format("Costs %s", Integer.toString(cost)));
                 updateJackpot(slots.getJackpot());
                 jackpotID = slots.getJackpotImageID();
                 presenter.setSlotsModel(icons, reelListeners);
+                setSlotsImgs();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -267,16 +265,15 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
 
     //locates all the views used
     private void findViews(){
+        background = findViewById(R.id.background);
+        cLayout = findViewById(R.id.slots_layout);
         costView = findViewById(R.id.slot_cost);
         slotImgs[0] = findViewById(R.id.slot_1);
         slotImgs[1] = findViewById(R.id.slot_2);
         slotImgs[2] = findViewById(R.id.slot_3);
         slotImgs[3] = findViewById(R.id.slot_4);
         slotImgs[4] = findViewById(R.id.slot_5);
-        setSlotsImgs();
         spin = findViewById(R.id.spin);
-        tokensLeft = findViewById(R.id.tokens_available);
-        totalEarned = findViewById(R.id.current_points);
         jackpotView = findViewById(R.id.jackpot);
     }
 
@@ -309,6 +306,8 @@ public class SlotsActivity extends AppCompatActivity implements RewardedVideoAdL
             JSONObject userInfo = new JSONObject(jsonResponse);
             tokenCount = userInfo.getInt("currentTokens");
             currentPoints = userInfo.getInt("currentPoints");
+            tokensLeft = findViewById(R.id.tokens_available);
+            totalEarned = findViewById(R.id.current_points);
             tokensLeft.setText(Integer.toString(tokenCount));
             totalEarned.setText(Integer.toString(currentPoints));
 
