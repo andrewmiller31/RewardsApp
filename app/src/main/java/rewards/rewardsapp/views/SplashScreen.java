@@ -18,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import rewards.rewardsapp.R;
 import rewards.rewardsapp.models.ImageInfo;
@@ -27,10 +29,13 @@ import rewards.rewardsapp.presenters.Presenter;
 
 public class SplashScreen extends AppCompatActivity {
     private Presenter presenter;
+    final private List<String> scratchDefaults = new ArrayList<String>();
+    final private List<String> slotsDefaults =  new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         presenter = new Presenter();
+        initDefaults();
         setGameTests();
         super.onCreate(savedInstanceState);
         final Intent intent = new Intent(this, LoginActivity.class);
@@ -55,20 +60,55 @@ public class SplashScreen extends AppCompatActivity {
         });
     }
 
+    private void initDefaults(){
+        String[] scratches = {"scratch1", "westScratch", "carnivalScratch"};
+        String[] slots = {"slots1", "pirateSlots", "madScientistSlots", "rockSlots", "spaceSlots"};
+        for(String scratch: scratches){
+            scratchDefaults.add(scratch);
+        }
+        for(String slot: slots){
+            slotsDefaults.add(slot);
+        }
+    }
+
     private void findGames(String type, String[] array){
         for (String id : array) {
             String cardName = id + "CARD";
             if (readFile(cardName).equals("")) {
-                Log.d("FILE NOT FOUND", "Card file not found with ID: " + id);
-                String gameString = presenter.restGet(type + "Card", id);
-                writeFile(cardName, gameString);
+                if(!checkForDefault(type, id)) {
+                    Log.d("FILE NOT FOUND", "Card file not found with ID: " + id);
+                    String cardString = presenter.restGet(type + "Card", id);
+                    writeFile(cardName, cardString);
+                } else writeDefault(type, id);
             }
             if (readFile(id).equals("")) {
                 Log.d("FILE NOT FOUND", "Card file not found with ID: " + id);
                 String gameString = presenter.restGet(type + "Info", id);
                 writeFile(id, gameString);
             }
+        }
+    }
 
+    private boolean checkForDefault(String type, String id){
+        if(type.equals("scratch")) return scratchDefaults.contains(id);
+        else if (type.equals("slots")) return slotsDefaults.contains(id);
+        return false;
+    }
+
+    private void writeDefault(String type, String id){
+        if(type.equals("slots")){
+            Log.d("CHECKING FOR", id);
+            SlotsInformation si = getDefSlots(id);
+            String json = si.jsonStringify();
+            writeFile(id, json);
+            writeFile(id + "CARD", json);
+        }
+        if(type.equals("scratch")){
+            Log.d("CHECKING FOR", id);
+            ScratchInformation si = getDefScratch(id);
+            String json = si.jsonStringify();
+            writeFile(id, json);
+            writeFile(id + "CARD", json);
         }
     }
 
@@ -119,21 +159,41 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void setGameTests(){
-//        sendSpaceGame();
-//        sendScientistGame();
-//        sendWildWestGame();
-//        sendPirateGame();
-//        sendFarmGame();
-//        sendCarnivalGame();
-//        sendInstrumentGame();
-//        sendPepperGame();
+//        defSpaceGame(true);
+//        defScientistGame(true);
+//        defWildWestGame(true);
+//        defPirateGame(true);
+//        defFarmGame(true);
+//        defCarnivalGame(true);
+//        defInstrumentGame(true);
+//        defPepperGame(true);
     }
 
     private Bitmap intToBM(int images){
         return BitmapFactory.decodeResource(getResources(), images);
     }
 
-    private void sendFarmGame(){
+    private SlotsInformation getDefSlots(String id){
+        switch (id) {
+            case("slots1"): return defPepperGame(false);
+            case("pirateSlots"): return defPirateGame(false);
+            case("madScientistSlots"): return defScientistGame(false);
+            case("rockSlots"): return defInstrumentGame(false);
+            case("spaceSlots"): return defSpaceGame(false);
+            default: return null;
+        }
+    }
+
+    private ScratchInformation getDefScratch(String id){
+        switch (id) {
+            case ("scratch1"): return defFarmGame(false);
+            case ("carnivalScratch"): return defCarnivalGame(false);
+            case ("westScratch"): return defWildWestGame(false);
+            default: return null;
+        }
+    }
+
+    private ScratchInformation defFarmGame(boolean sending){
         ImageInfo imageInfo1 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.scratch_dog), 3);
         ImageInfo imageInfo2 = new ImageInfo(true, "tokens", 1002, 1, intToBM(R.drawable.scratch_one_token), 1);
         ImageInfo[] icons = {imageInfo1, imageInfo2, new ImageInfo(1, intToBM(R.drawable.scratch_cow)),
@@ -150,10 +210,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
         ScratchInformation si = new ScratchInformation("scratch1", "Farm Frenzy", BitmapFactory.decodeResource(getResources(), R.drawable.background_field), icons, bonusIcons);
         si.setWinMessage("Win 100 points!");
-        presenter.restPut("scratch", si.jsonStringify());
+        if(sending) presenter.restPut("scratch", si.jsonStringify());
+        return si;
     }
 
-    private void sendPepperGame(){
+    private SlotsInformation defPepperGame(boolean sending){
         ImageInfo slots1 = new ImageInfo(true, "points", 1001, 5, intToBM(R.drawable.slots_cherry), 3);
         ImageInfo slots2 = new ImageInfo(true, "points", 1002, 10000, intToBM(R.drawable.slots_chili), 5);
         ImageInfo slots3 = new ImageInfo(true, "tokens", 1003, 1, intToBM(R.drawable.scratch_one_token), 1);
@@ -163,10 +224,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] slotImages = {slots1, slots2, slots3, slots4, slots5};
         SlotsInformation si2 = new SlotsInformation("slots1", "Hot Jackpot", intToBM(R.drawable.background_peppers), slotImages, 2, 10000, 1002);
         si2.setWinMessage("Win 10,000+ points!");
-        presenter.restPut("slots", si2.jsonStringify());
+        if(sending) presenter.restPut("slots", si2.jsonStringify());
+        return si2;
     }
 
-    private void sendPirateGame(){
+    private SlotsInformation defPirateGame(boolean sending){
         ImageInfo pirate1 = new ImageInfo(true, "points", 1001, 3, intToBM(R.drawable.game_pirate_boat), 3);
         ImageInfo pirate2 = new ImageInfo(true, "points", 1002, 5, intToBM(R.drawable.game_pirate_jolly), 3);
         ImageInfo pirate3 = new ImageInfo(1003, intToBM(R.drawable.game_pirate_kraken));
@@ -179,10 +241,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] pirateImages = {pirate1, pirate2, pirate3, pirate4, pirate5, pirate6, pirate7, pirate8};
         SlotsInformation pirateSlots = new SlotsInformation("pirateSlots", "Pirate Treasure", intToBM(R.drawable.game_background_pirate), pirateImages, 3, 5000, 1007);
         pirateSlots.setWinMessage("Win 5,000+ points!");
-        presenter.restPut("slots", pirateSlots.jsonStringify());
+        if(sending) presenter.restPut("slots", pirateSlots.jsonStringify());
+        return pirateSlots;
     }
 
-    private void sendWildWestGame(){
+    private ScratchInformation defWildWestGame(boolean sending){
         ImageInfo westWin1 = new ImageInfo(true, "points", 1001, 300, intToBM(R.drawable.game_west_gun), 3);
         ImageInfo westWin2 = new ImageInfo(true, "points", 1002, 50, intToBM(R.drawable.game_west_cards), 3);
         ImageInfo west2 = new ImageInfo(999, intToBM(R.drawable.game_west_barrel));
@@ -206,10 +269,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
         ScratchInformation si = new ScratchInformation("westScratch", "Wild West", BitmapFactory.decodeResource(getResources(), R.drawable.game_west_background), icons, bonusIcons);
         si.setWinMessage("Win 300 points!");
-        presenter.restPut("scratch", si.jsonStringify());
+        if(sending) presenter.restPut("scratch", si.jsonStringify());
+        return si;
     }
 
-    private void sendScientistGame(){
+    private SlotsInformation defScientistGame(boolean sending){
         ImageInfo image1 = new ImageInfo(true, "points", 1001, 1000, intToBM(R.drawable.game_scientist_man), 5);
         ImageInfo image2 = new ImageInfo(true, "tokens", 1002, 2, intToBM(R.drawable.game_scientist_atom), 1);
         ImageInfo image3 = new ImageInfo(true, "points", 1003, 2, intToBM(R.drawable.game_scientist_flask), 3);
@@ -221,10 +285,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] images = {image1, image2, image3, image4, image5, image6, image7};
         SlotsInformation slots = new SlotsInformation("madScientistSlots", "Mad Scientist", intToBM(R.drawable.game_scientist_background), images, 2, 1000, 1001);
         slots.setWinMessage("Win 1,000+ points!");
-        presenter.restPut("slots", slots.jsonStringify());
+        if(sending) presenter.restPut("slots", slots.jsonStringify());
+        return slots;
     }
 
-    private void sendCarnivalGame(){
+    private ScratchInformation defCarnivalGame(boolean sending){
         ImageInfo image1 = new ImageInfo(true, "tokens", 1001, 100, intToBM(R.drawable.game_carnival_balloon), 3);
         ImageInfo image2 = new ImageInfo(true, "tokens", 1002, 5, intToBM(R.drawable.game_carnival_ferris), 3);
         ImageInfo image3 = new ImageInfo(true, "tokens", 1003, 5, intToBM(R.drawable.game_carnival_roller), 3);
@@ -246,10 +311,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] bonusIcons = {imageInfo5, imageInfo3, imageInfo4, loser};
         ScratchInformation si = new ScratchInformation("carnivalScratch", "Day at the Carnival", BitmapFactory.decodeResource(getResources(), R.drawable.game_carnival_background), icons, bonusIcons);
         si.setWinMessage("Win 100 tokens!");
-        presenter.restPut("scratch", si.jsonStringify());
+        if(sending) presenter.restPut("scratch", si.jsonStringify());
+        return si;
     }
 
-    private void sendInstrumentGame(){
+    private SlotsInformation defInstrumentGame(boolean sending){
         ImageInfo image1 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.game_inst_guitar), 5);
         ImageInfo image2 = new ImageInfo(true, "points", 1001, 100, intToBM(R.drawable.game_inst_drum), 5);
         ImageInfo image3 = new ImageInfo(true, "tokens", 1002, 3, intToBM(R.drawable.game_inst_acc), 3);
@@ -262,10 +328,11 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] images = {image1, image2, image3, image4, image5, image6, image7, image8};
         SlotsInformation slots = new SlotsInformation("rockSlots", "Rock God", intToBM(R.drawable.game_inst_background), images, 0, 100, 1001);
         slots.setWinMessage("Win 100 points!");
-        presenter.restPut("slots", slots.jsonStringify());
+        if(sending) presenter.restPut("slots", slots.jsonStringify());
+        return slots;
     }
 
-    private void sendSpaceGame(){
+    private SlotsInformation defSpaceGame(boolean sending){
         ImageInfo image1 = new ImageInfo(true, "points", 1001, 50000, intToBM(R.drawable.game_space_earth), 5);
         ImageInfo image2 = new ImageInfo(true, "points", 1002, 300, intToBM(R.drawable.game_space_astro), 5);
         ImageInfo image3 = new ImageInfo(true, "tokens", 1003, 5, intToBM(R.drawable.game_space_sat), 3);
@@ -283,7 +350,8 @@ public class SplashScreen extends AppCompatActivity {
         ImageInfo[] images = {image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13};
         SlotsInformation slots = new SlotsInformation("spaceSlots", "Space Adventure", intToBM(R.drawable.game_space_background), images, 5, 30000, 1001);
         slots.setWinMessage("Win 50,000+ points!");
-        presenter.restPut("slots", slots.jsonStringify());
+        if(sending) presenter.restPut("slots", slots.jsonStringify());
+        return slots;
     }
 
 }

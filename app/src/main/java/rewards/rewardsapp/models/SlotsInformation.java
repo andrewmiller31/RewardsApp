@@ -95,6 +95,7 @@ public class SlotsInformation {
             jsonString.put("winMessage", winMessage);
             jsonString.put("jackpotID", jackpotImageID);
             jsonString.put("id", id);
+            jsonString.put("type", "slots");
 
         } catch (JSONException e) {
             e.printStackTrace();

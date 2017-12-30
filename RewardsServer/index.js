@@ -34,11 +34,16 @@ var votes = {
     winning: 0
 }
 
-/*
- **********
- * TESTS
- **********
- */
+var slotsIDs = {
+    idArray: []
+};
+
+var scratchIDs = {
+    idArray: []
+};
+
+var slotsInitialized = false;
+var scratchInitialized = false;
 
  app.get('/scratch/:mongoID', function (req,res) {
     mongodb.findGame(req.params.mongoID, 'scratch', function(result){
@@ -55,34 +60,33 @@ var votes = {
  });
 
  app.get('/scratchGameIDs', function(req, res) {
-    mongodb.getCollection('scratches', function(result){
-        var mongoIDs = {
-            idArray: []
-        };
-
-        result.forEach(function(game){
-            mongoIDs.idArray.push(game.id);
+    if(!scratchInitialized){
+        console.log('Fetching scratch IDs');
+        mongodb.getCollection('scratches', function(result){
+            result.forEach(function(game){
+                scratchIDs.idArray.push(game.id);
+            });
+            console.log('Finished fetching scratch IDs');
+            scratchInitialized = true;
+            res.json(scratchIDs);
         });
-
-        res.json(mongoIDs);
-    });
+    } else res.json(scratchIDs);
  });
+
 
  app.get('/slotsGameIDs', function(req, res) {
-     mongodb.getCollection('slots', function(result){
-        var mongoIDs = {
-            idArray: []
-        };
-
-        result.forEach(function(game){
-            mongoIDs.idArray.push(game.id);
-        });
-
-        res.json(mongoIDs);
-    });
+     if(!slotsInitialized){
+         console.log('Fetching slots IDs');
+             mongodb.getCollection('slots', function(result){
+             result.forEach(function(game){
+                 slotsIDs.idArray.push(game.id);
+             });
+             console.log('Finished fetching slots IDs');
+             slotsInitialized = true;
+             res.json(slotsIDs);
+             });
+     } else res.json(slotsIDs);
  });
-
-
 
  app.get('/scratch/card/:mongoID', function(req, res){
     mongodb.findGame(req.params.mongoID, 'scratch', function(result){
@@ -120,6 +124,7 @@ var votes = {
      if (!req.body) return res.sendStatus(400);
      mongodb.addGame('scratch', req.body, function(gameData){
      });
+     scratchIDs.idArray.push(req.body.id);
      var updatedResponse = {
              id: '123', status: 'updated'
          };
@@ -130,6 +135,7 @@ app.put('/slots', function(req, res){
     if (!req.body) return res.sendStatus(400);
     mongodb.addGame('slots', req.body, function(gameData){
     });
+    slotsIDs.idArray.push(req.body.id);
     var updatedResponse = {
             id: '123', status: 'updated'
         };
@@ -263,13 +269,11 @@ app.get('/users/:userID', function (req,res) {
 });
 
 app.get('/charityVotes', function (req, res) {
-    console.log("\nSending votes info.");
     res.send(JSON.stringify(votes));
 });
 
 app.listen(app.get("port"), function () {
     console.log('RewardsApp listening on port: ', app.get("port"));
-
 });
 
 

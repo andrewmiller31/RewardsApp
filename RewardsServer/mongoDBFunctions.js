@@ -1,7 +1,7 @@
 //loads the MongoDB package
 var mongojs = require("mongojs");
 
-var url = 'mongodb://127.0.0.1:27017/rewardsDB';
+var url = 'mongodb://Admin:<password>@ds135747.mlab.com:35747/rewards';
 
 var collections = ['users', 'slots', 'scratches'];
 

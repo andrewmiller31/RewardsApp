@@ -78,6 +78,8 @@ public class ScratchInformation {
             jsonString.put("icons", jsonWinners(icons));
             jsonString.put("bonusIcons", jsonWinners(bonusIcons));
             jsonString.put("id", id);
+            jsonString.put("type", "scratch");
+            jsonString.put("cost", 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
