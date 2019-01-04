@@ -1,7 +1,10 @@
-# RewardsApp
+# RewardsApp (Unfinished)
+This a proof of concept for a rewards application where users can earn money.  
+
+The project will likely never be finished due to a lack of funding and possible legal hurdles.
 
 # License
 
-Dont forget to document use of ScratchView by Harish Sridharan
+ScratchView by Harish Sridharan
 
-Link for icon website needs to be added in the about section & google play store UNLESS license is purchased. (Icons8)
+Images by Icons8
